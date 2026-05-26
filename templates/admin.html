@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AVOD-Lab — admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+    @media (max-width: 800px) { .admin-grid { grid-template-columns: 1fr; } }
+    .admin-card { background: var(--panel); border-radius: 10px; padding: 20px 24px; }
+    .admin-card h2 { margin: 0 0 14px; font-size: 16px; color: var(--muted);
+                     text-transform: uppercase; letter-spacing: 0.06em; }
+    .balance-bar-wrap { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+    .balance-bar-bg { flex: 1; height: 8px; background: #2a2a31; border-radius: 4px; overflow: hidden; }
+    .balance-bar-fill { height: 100%; background: var(--accent); border-radius: 4px;
+                        transition: width 0.3s ease; }
+    .balance-label { min-width: 28px; font-size: 13px; color: var(--muted); text-align: right; }
+    .cond-code { font-family: SFMono-Regular, Menlo, Consolas, monospace;
+                 font-size: 12px; background: #2a2a31; padding: 2px 6px;
+                 border-radius: 4px; color: var(--accent-soft); }
+    .url-cell { font-family: SFMono-Regular, Menlo, Consolas, monospace;
+                font-size: 12px; color: var(--muted); }
+    .url-cell a { color: var(--accent-soft); text-decoration: none; }
+    .url-cell a:hover { text-decoration: underline; }
+    .source-badge { font-size: 11px; padding: 2px 7px; border-radius: 10px;
+                    font-weight: 600; letter-spacing: 0.03em; }
+    .source-balanced { background: #1a3a1a; color: #5cdb5c; }
+    .source-override  { background: #3a2a1a; color: #e0a050; }
+    .source-random    { background: #1a2a3a; color: #5090e0; }
+    .source-fixed     { background: #2a2a2a; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <main class="admin">
+    <header class="admin-header" style="margin-bottom:24px;">
+      <h1 style="margin:0 0 6px;">AVOD-Lab — Admin</h1>
+      <p style="margin:0;">
+        <a href="{{ url_for('admin_export_csv', token=token) }}">Download all events (CSV)</a>
+      </p>
+    </header>
+
+    <!-- ── Two-column top row ── -->
+    <div class="admin-grid">
+
+      <!-- Cell balance (Experiment 1) -->
+      <div class="admin-card">
+        <h2>Experiment 1 — cell balance</h2>
+        {% set total = cell_counts.values() | sum %}
+        {% if exp1_pool %}
+          {% for code in exp1_pool %}
+            {% set n     = cell_counts.get(code, 0) %}
+            {% set label = conditions_meta[code].get('label', code) if code in conditions_meta else code %}
+            {% set pct   = ((n / total * 100) | round(1)) if total > 0 else 0 %}
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                <span><span class="cond-code">{{ code }}</span>
+                  <span style="font-size:13px;margin-left:8px;">{{ label }}</span></span>
+                <span style="font-size:13px;font-weight:600;">{{ n }}</span>
+              </div>
+              <div class="balance-bar-wrap">
+                <div class="balance-bar-bg">
+                  <div class="balance-bar-fill" style="width:{{ pct }}%"></div>
+                </div>
+                <span class="balance-label">{{ pct }}%</span>
+              </div>
+            </div>
+          {% endfor %}
+          <p style="margin:14px 0 0;font-size:12px;color:var(--muted);">
+            Total sessions: <strong style="color:var(--text);">{{ total }}</strong>
+          </p>
+        {% else %}
+          <p style="color:var(--muted);font-size:13px;">No conditions configured in random_pool.</p>
+        {% endif %}
+      </div>
+
+      <!-- Condition URLs reference -->
+      <div class="admin-card">
+        <h2>Condition URLs (Experiment 1)</h2>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="text-align:left;font-size:12px;color:var(--muted);padding:4px 8px 8px 0;">Code</th>
+              <th style="text-align:left;font-size:12px;color:var(--muted);padding:4px 8px 8px;">Label</th>
+              <th style="text-align:left;font-size:12px;color:var(--muted);padding:4px 0 8px;">URL</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for code in exp1_pool %}
+            {% set label = conditions_meta[code].get('label', code) if code in conditions_meta else code %}
+            <tr style="border-top:1px solid #2a2a31;">
+              <td style="padding:7px 8px 7px 0;vertical-align:top;">
+                <span class="cond-code">{{ code }}</span>
+              </td>
+              <td style="padding:7px 8px;font-size:13px;vertical-align:top;">{{ label }}</td>
+              <td style="padding:7px 0;vertical-align:top;" class="url-cell">
+                <a href="/?cond={{ code }}" target="_blank">/?cond={{ code }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /admin-grid -->
+
+    <!-- ── Session list ── -->
+    <h2 style="font-size:16px;color:var(--muted);text-transform:uppercase;
+               letter-spacing:0.06em;margin:0 0 12px;">Recent sessions (last 200)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Session</th>
+          <th>Created</th>
+          <th>Condition</th>
+          <th>Source</th>
+          <th>UA</th>
+          <th># events</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for s in sessions %}
+        {% set cond_code = s['condition'] %}
+        {% set src       = s['condition_source'] or '' %}
+        <tr>
+          <td><a href="{{ url_for('admin_session', sid=s['id'], token=token) }}">{{ s['id'][:8] }}&hellip;</a></td>
+          <td>{{ s['created_at'] }}</td>
+          <td>
+            {% if cond_code %}
+              <span class="cond-code">{{ cond_code }}</span>
+              {% if cond_code in conditions_meta %}
+                <span style="font-size:12px;color:var(--muted);margin-left:5px;">
+                  {{ conditions_meta[cond_code].get('label','') }}</span>
+              {% endif %}
+            {% else %}
+              <span style="color:var(--muted);font-size:12px;">{{ s['condition_label'] }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if src %}
+              <span class="source-badge source-{{ src }}">{{ src }}</span>
+            {% endif %}
+          </td>
+          <td class="ua">{{ s['user_agent'][:60] }}</td>
+          <td>{{ s['n_events'] }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+  </main>
+</body>
+</html>

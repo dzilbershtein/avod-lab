@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Data — SQLite database stays local, not in git
+data/events.sqlite
+data/*.sqlite
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Session {{ session['id'][:8] }} — admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="admin">
+    <header class="admin-header">
+      <h1>Session {{ session['id'][:8] }}…</h1>
+      <p>
+        <a href="{{ url_for('admin', token=token) }}">&larr; All sessions</a>
+        &nbsp;·&nbsp; Condition: <code>{{ session['condition_label'] }}</code>
+        &nbsp;·&nbsp; Created: {{ session['created_at'] }}
+      </p>
+    </header>
+    <table>
+      <thead>
+        <tr><th>#</th><th>ts_server</th><th>ts_client</th><th>kind</th><th>payload</th></tr>
+      </thead>
+      <tbody>
+      {% for e in events %}
+        <tr>
+          <td>{{ e['id'] }}</td>
+          <td>{{ e['ts_server'] }}</td>
+          <td>{{ e['ts_client'] }}</td>
+          <td><code>{{ e['kind'] }}</code></td>
+          <td><code class="payload">{{ e['payload'] }}</code></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

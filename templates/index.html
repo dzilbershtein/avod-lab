@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AVOD-Lab</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Top nav, shown only on browse/player -->
+  <header id="topnav" class="hidden">
+    <div class="brand">AVOD-Lab</div>
+    <button id="back-to-browse" type="button" class="hidden">&larr; Browse</button>
+  </header>
+
+  <!-- View 1 — consent / intro -->
+  <section id="intro" class="card centered">
+    <h1 id="study-title"></h1>
+    <p id="intro-text"></p>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px;">
+      By clicking Begin you confirm you are aged 18 or over and consent to take part.
+    </p>
+    <button id="begin-btn" type="button">Begin</button>
+  </section>
+
+  <!-- View 2 — pre-exposure survey -->
+  <section id="pre-survey" class="hidden">
+    <div class="survey-wrap card centered">
+      <div id="pre-survey-body"></div>
+      <div class="survey-footer">
+        <button id="pre-back" type="button" class="hidden">&larr; Back</button>
+        <span id="pre-progress" class="survey-progress"></span>
+        <button id="pre-next" type="button">Next &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- View 3 — browse -->
+  <section id="browse" class="hidden">
+    <div id="hero" class="hero"></div>
+    <div id="rows"></div>
+  </section>
+
+  <!-- View 4 — player -->
+  <section id="stage" class="hidden">
+    <div id="now-watching" class="now-watching"></div>
+    <div id="player-wrap">
+      <video id="content" playsinline preload="auto"></video>
+
+      <video id="ad-video" playsinline preload="auto" class="hidden"></video>
+      <img id="ad-overlay" class="hidden" alt="">
+
+      <div id="ad-controls" class="hidden">
+        <div id="ad-countdown"></div>
+        <button id="ad-skip" type="button" class="hidden">Skip ad</button>
+      </div>
+
+      <div id="banner" class="hidden"></div>
+
+      <!-- A4 user-initiated CTA -->
+      <button id="ad-prompt" type="button" class="hidden"></button>
+    </div>
+
+    <div class="player-actions">
+      <button id="play-pause" type="button">Play</button>
+      <span id="time-readout">0:00 / 0:00</span>
+    </div>
+  </section>
+
+  <!-- View 5 — post-exposure survey -->
+  <section id="post-survey" class="hidden">
+    <div class="survey-wrap card centered">
+      <div id="post-survey-body"></div>
+      <div class="survey-footer">
+        <button id="post-back" type="button" class="hidden">&larr; Back</button>
+        <span id="post-progress" class="survey-progress"></span>
+        <button id="post-next" type="button">Next &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- View 6 — debriefing / done -->
+  <section id="done" class="card centered hidden">
+    <h2>Thank you for taking part</h2>
+    <p>
+      This study is investigating how people experience advertising in
+      ad-supported streaming services. We were particularly interested in
+      how the <strong>timing and format</strong> of ads affects your viewing
+      experience.
+    </p>
+    <p>
+      The video clip and ad creative used in this study were selected
+      solely for research purposes. Any targeting explanation shown
+      alongside the ad was <strong>simulated</strong> and does not reflect
+      any actual data collected about you.
+    </p>
+    <p>
+      Your responses are stored anonymously and will only be used for
+      academic research. You may withdraw your data by contacting the
+      research team within four weeks of completing the study.
+    </p>
+    <p style="font-size:13px;color:var(--muted);">
+      If you arrived here from Prolific, please use the completion link below.
+    </p>
+    <p id="prolific-link" style="display:none;">
+      <!-- Populated by app.js if cfg.prolific_completion_url is set -->
+    </p>
+    <button id="done-back" type="button">Back to catalogue</button>
+  </section>
+
+  <script>
+    window.__EXPERIMENT_CONFIG__ = {{ config_json | safe }};
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  <script src="{{ url_for('static', filename='survey.js') }}"></script>
+  <script src="{{ url_for('static', filename='browse.js') }}"></script>
+  <script src="{{ url_for('static', filename='player.js') }}"></script>
+</body>
+</html>

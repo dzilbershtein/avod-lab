@@ -1,0 +1,500 @@
+{
+  "condition_label": "phase2b-default",
+  "study_title": "AVOD-Lab",
+  "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one or two short ads, just like a real streaming service. Please keep this tab focused.",
+
+  "_notes": {
+    "video_sources": "All titles use publicly available CDNs. video_url is the primary; fallback_urls is tried in order if the primary fails. Sources: Google sample-videos bucket, Internet Archive (public-domain feature films), test-videos.co.uk (short H.264 demos), MDN shared-assets (CC0).",
+    "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s."
+  },
+
+  "catalog": {
+    "hero": "local_demo",
+    "titles": {
+      "local_demo": {
+        "id": "local_demo",
+        "title": "AVOD-Lab Demo (Local)",
+        "tagline": "A bundled 30-second clip that always works — no internet required. Try this first if you are testing the setup.",
+        "genre": "Demo",
+        "year": 2026,
+        "duration_sec": 30,
+        "color": "#1a2a3a",
+        "poster": "",
+        "video_url": "/static/content/sample_demo.mp4",
+        "fallback_urls": [],
+        "license": "generated_locally"
+      },
+      "big_buck_bunny": {
+        "id": "big_buck_bunny",
+        "title": "Big Buck Bunny",
+        "tagline": "A peaceful giant rabbit takes on three rodent bullies.",
+        "genre": "Animation",
+        "year": 2008,
+        "duration_sec": 596,
+        "color": "#3a5f7d",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        "fallback_urls": [
+          "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_30MB.mp4"
+        ]
+      },
+      "elephant_dream": {
+        "id": "elephant_dream",
+        "title": "Elephant's Dream",
+        "tagline": "Two characters navigate a strange mechanical world.",
+        "genre": "Animation",
+        "year": 2006,
+        "duration_sec": 653,
+        "color": "#2c2c54",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        "fallback_urls": []
+      },
+      "sintel": {
+        "id": "sintel",
+        "title": "Sintel",
+        "tagline": "A lonely young woman searches for her lost dragon.",
+        "genre": "Animation",
+        "year": 2010,
+        "duration_sec": 888,
+        "color": "#6b3f3a",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        "fallback_urls": [
+          "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_30MB.mp4"
+        ]
+      },
+      "tears_of_steel": {
+        "id": "tears_of_steel",
+        "title": "Tears of Steel",
+        "tagline": "A team of soldiers fights to save the world from rogue robots.",
+        "genre": "Sci-Fi",
+        "year": 2012,
+        "duration_sec": 734,
+        "color": "#1f3a5f",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        "fallback_urls": []
+      },
+      "for_bigger_blazes": {
+        "id": "for_bigger_blazes",
+        "title": "For Bigger Blazes",
+        "tagline": "A short demo of Chromecast in action.",
+        "genre": "Promo",
+        "year": 2014,
+        "duration_sec": 15,
+        "color": "#a83232",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "fallback_urls": []
+      },
+      "for_bigger_escapes": {
+        "id": "for_bigger_escapes",
+        "title": "For Bigger Escapes",
+        "tagline": "An escape worth streaming.",
+        "genre": "Promo",
+        "year": 2014,
+        "duration_sec": 15,
+        "color": "#3a7d5f",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "fallback_urls": []
+      },
+      "for_bigger_fun": {
+        "id": "for_bigger_fun",
+        "title": "For Bigger Fun",
+        "tagline": "Family fun, in 15 seconds.",
+        "genre": "Promo",
+        "year": 2014,
+        "duration_sec": 60,
+        "color": "#7d6f3a",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        "fallback_urls": []
+      },
+      "for_bigger_joyrides": {
+        "id": "for_bigger_joyrides",
+        "title": "For Bigger Joyrides",
+        "tagline": "Open-road moments worth chasing.",
+        "genre": "Promo",
+        "year": 2014,
+        "duration_sec": 15,
+        "color": "#3a6f7d",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "fallback_urls": []
+      },
+      "for_bigger_meltdowns": {
+        "id": "for_bigger_meltdowns",
+        "title": "For Bigger Meltdowns",
+        "tagline": "A short, sweet, hot one.",
+        "genre": "Promo",
+        "year": 2014,
+        "duration_sec": 15,
+        "color": "#a85932",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        "fallback_urls": []
+      },
+      "subaru_outback": {
+        "id": "subaru_outback",
+        "title": "Subaru Outback: On Street And Dirt",
+        "tagline": "Road test through every kind of terrain.",
+        "genre": "Documentary",
+        "year": 2014,
+        "duration_sec": 596,
+        "color": "#3a4d2c",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+        "fallback_urls": []
+      },
+      "volkswagen_gti": {
+        "id": "volkswagen_gti",
+        "title": "Volkswagen GTI Review",
+        "tagline": "A hot hatch, reviewed honestly.",
+        "genre": "Documentary",
+        "year": 2014,
+        "duration_sec": 596,
+        "color": "#2c4d6b",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+        "fallback_urls": []
+      },
+      "we_are_going_on_bullrun": {
+        "id": "we_are_going_on_bullrun",
+        "title": "We Are Going On Bullrun",
+        "tagline": "Inside a coast-to-coast supercar rally.",
+        "genre": "Action",
+        "year": 2014,
+        "duration_sec": 47,
+        "color": "#6b2c2c",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+        "fallback_urls": []
+      },
+      "what_car_can_you_get": {
+        "id": "what_car_can_you_get",
+        "title": "What Car Can You Get For A Grand?",
+        "tagline": "A budget challenge with surprising results.",
+        "genre": "Comedy",
+        "year": 2014,
+        "duration_sec": 596,
+        "color": "#7d3a6b",
+        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
+        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+        "fallback_urls": []
+      },
+
+      "plan_9": {
+        "id": "plan_9",
+        "title": "Plan 9 from Outer Space",
+        "tagline": "Aliens implement Plan 9 — resurrecting the Earth's dead — to stop humanity. The cult classic that earned a Golden Turkey.",
+        "genre": "Sci-Fi · B&W",
+        "year": 1959,
+        "duration_sec": 4700,
+        "color": "#1f1f29",
+        "poster": "https://archive.org/services/img/plan-9-from-outer-space",
+        "video_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
+        "fallback_urls": [],
+        "license": "CC0 / public domain"
+      },
+      "night_of_living_dead": {
+        "id": "night_of_living_dead",
+        "title": "Night of the Living Dead",
+        "tagline": "Romero's foundational zombie film. Seven strangers barricade a farmhouse against the reanimated dead.",
+        "genre": "Horror",
+        "year": 1968,
+        "duration_sec": 5810,
+        "color": "#2a1a1a",
+        "poster": "https://archive.org/services/img/night-of-the-living-dead_1968",
+        "video_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
+        "fallback_urls": [],
+        "license": "Public Domain Mark 1.0"
+      },
+      "mdn_flower": {
+        "id": "mdn_flower",
+        "title": "Flower",
+        "tagline": "A short, hypnotic time-lapse of a flower blooming.",
+        "genre": "Nature · Short",
+        "year": 2020,
+        "duration_sec": 30,
+        "color": "#3a6b3a",
+        "poster": "",
+        "video_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4",
+        "fallback_urls": [
+          "https://developer.mozilla.org/shared-assets/videos/flower.webm"
+        ],
+        "license": "CC0 (Mozilla shared-assets)"
+      },
+      "tv_jellyfish": {
+        "id": "tv_jellyfish",
+        "title": "Jellyfish",
+        "tagline": "Slow-motion jellyfish drifting through a tank — a colour-test reference clip.",
+        "genre": "Nature · Short",
+        "year": 2019,
+        "duration_sec": 30,
+        "color": "#2a4a6b",
+        "poster": "https://test-videos.co.uk/user/pages/images/jellyfish-3-mbps-hd-h264.jpg",
+        "video_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4",
+        "fallback_urls": [
+          "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_10MB.mp4"
+        ],
+        "license": "test-videos.co.uk public test asset"
+      },
+      "tv_bbb_demo": {
+        "id": "tv_bbb_demo",
+        "title": "Big Buck Bunny (1080p demo)",
+        "tagline": "A 30-second 1080p H.264 sample from the test-videos.co.uk reference set.",
+        "genre": "Animation · Short",
+        "year": 2019,
+        "duration_sec": 30,
+        "color": "#7d5f3a",
+        "poster": "https://test-videos.co.uk/user/pages/images/big_buck_bunny.jpg",
+        "video_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4",
+        "fallback_urls": [
+          "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_10MB.mp4"
+        ],
+        "license": "test-videos.co.uk public test asset"
+      },
+      "tv_sintel_demo": {
+        "id": "tv_sintel_demo",
+        "title": "Sintel (1080p demo)",
+        "tagline": "A 30-second 1080p H.264 sample of the Blender open movie Sintel.",
+        "genre": "Animation · Short",
+        "year": 2019,
+        "duration_sec": 30,
+        "color": "#6b4d3a",
+        "poster": "",
+        "video_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4",
+        "fallback_urls": [
+          "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_10MB.mp4"
+        ],
+        "license": "test-videos.co.uk public test asset"
+      }
+    },
+
+    "rows": [
+      {
+        "name": "Trending Now",
+        "title_ids": ["local_demo", "plan_9", "tears_of_steel", "night_of_living_dead", "sintel", "big_buck_bunny", "we_are_going_on_bullrun", "what_car_can_you_get"]
+      },
+      {
+        "name": "Classic Public-Domain Cinema",
+        "title_ids": ["plan_9", "night_of_living_dead"]
+      },
+      {
+        "name": "Action & Adventure",
+        "title_ids": ["we_are_going_on_bullrun", "subaru_outback", "for_bigger_joyrides", "for_bigger_escapes", "for_bigger_blazes"]
+      },
+      {
+        "name": "Animation",
+        "title_ids": ["big_buck_bunny", "elephant_dream", "sintel", "tv_bbb_demo", "tv_sintel_demo"]
+      },
+      {
+        "name": "Quick Watch (Under 5 Minutes)",
+        "title_ids": ["mdn_flower", "tv_jellyfish", "tv_bbb_demo", "tv_sintel_demo", "for_bigger_blazes", "for_bigger_escapes", "for_bigger_fun", "for_bigger_joyrides", "for_bigger_meltdowns", "we_are_going_on_bullrun"]
+      },
+      {
+        "name": "Documentaries",
+        "title_ids": ["volkswagen_gti", "subaru_outback", "what_car_can_you_get"]
+      },
+      {
+        "name": "Nature & Stock",
+        "title_ids": ["mdn_flower", "tv_jellyfish"]
+      }
+    ]
+  },
+
+  "_conditions_notes": "Each session is assigned one of five ad conditions (A0–A4) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0–1.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 30-second spec is enforced regardless of the underlying asset length.",
+
+  "condition_assignment_mode": "balanced",
+  "active_condition": "A0",
+  "random_pool": ["A0", "A1", "A2", "A3", "A4"],
+  "random_pool_exp2": ["B0", "B1", "B2", "B3", "B4", "B5"],
+
+  "conditions": {
+    "A0": {
+      "label": "Post-roll (control)",
+      "description": "A 30-second non-skippable ad plays after the clip ends, without interrupting playback. Baseline for both interruption-cost and agency-benefit comparisons.",
+      "ads": [
+        {
+          "placement": "postroll",
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null
+        }
+      ]
+    },
+    "A1": {
+      "label": "Forced pre-roll",
+      "description": "A 30-second non-skippable ad plays before the video begins. Playback is blocked until the ad completes. Goal interruption is shallow — the viewer has not yet initiated the content-consumption goal.",
+      "ads": [
+        {
+          "placement": "preroll",
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null
+        }
+      ]
+    },
+    "A2": {
+      "label": "Forced mid-roll",
+      "description": "A 30-second non-skippable ad interrupts playback at the midpoint of the clip. Goal interruption is deep — the viewer's ongoing narrative comprehension is halted at peak engagement.",
+      "ads": [
+        {
+          "placement": "midroll",
+          "start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null
+        }
+      ]
+    },
+    "A3": {
+      "label": "Non-interruptive overlay",
+      "description": "A semi-transparent banner occupies the lower-third of the frame for 30 seconds during playback; the clip continues uninterrupted. Presence is confirmed by a post-exposure item; non-noticers form a pre-registered subgroup.",
+      "ads": [
+        {
+          "placement": "overlay",
+          "start_at_frac": 0.2,
+          "start_at_cap_sec": 120,
+          "duration_sec": 30,
+          "image_url": "/static/posters/overlay_sponsored.png",
+          "click_url": "https://example.com/overlay",
+          "banner": {
+            "show": true,
+            "text": "Sponsored — tap for more.",
+            "show_at_ad_sec": 0,
+            "hide_at_ad_sec": 30
+          }
+        }
+      ]
+    },
+    "A4": {
+      "label": "User-initiated",
+      "description": "Content plays normally; a persistent button visible from the start lets the viewer voluntarily watch a 30-second ad at any point. No bonus or reward is offered. The ad plays only if the viewer clicks. Non-clickers are retained for stated-preference analysis.",
+      "ads": [
+        {
+          "placement": "user_initiated",
+          "prompt_text": "Watch an ad",
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null
+        }
+      ]
+    },
+
+    "_exp2_notes": "Experiment 2 — 3×2 between-subjects (Explanation type E0/E1/E2 × Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Conditions B0–B5 replace the ad library reference with the same creative used in Exp 1; update library_ref to your actual 30-second consumer-electronics creative before running the main study. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
+
+    "B0": {
+      "label": "Exp2: No explanation, Mid-roll",
+      "description": "Forced mid-roll, no ad explanation (E0×P1). Control cell for Experiment 2.",
+      "ads": [
+        {
+          "placement": "midroll",
+          "start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": { "show": false }
+        }
+      ]
+    },
+    "B1": {
+      "label": "Exp2: Content-based explanation, Mid-roll",
+      "description": "Forced mid-roll with content-based explanation (E1×P1). Banner reads 'Why this ad? This ad was selected based on what you watch on this platform.'",
+      "ads": [
+        {
+          "placement": "midroll",
+          "start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": {
+            "show": true,
+            "text": "Why this ad? This ad was selected based on what you watch on this platform.",
+            "show_at_ad_sec": 0,
+            "hide_at_ad_sec": 30
+          }
+        }
+      ]
+    },
+    "B2": {
+      "label": "Exp2: Data-based explanation, Mid-roll",
+      "description": "Forced mid-roll with data-based explanation (E2×P1). Banner reads 'Why this ad? This ad was selected based on your browsing history and demographic profile.'",
+      "ads": [
+        {
+          "placement": "midroll",
+          "start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": {
+            "show": true,
+            "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",
+            "show_at_ad_sec": 0,
+            "hide_at_ad_sec": 30
+          }
+        }
+      ]
+    },
+    "B3": {
+      "label": "Exp2: No explanation, User-initiated",
+      "description": "User-initiated placement, no ad explanation (E0×P2). Prompt appears at midpoint.",
+      "ads": [
+        {
+          "placement": "user_initiated",
+          "prompt_text": "Watch a 30s ad to unlock a bonus clip",
+          "reward_text": "Bonus clip unlocked after this ad.",
+          "prompt_start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": { "show": false }
+        }
+      ]
+    },
+    "B4": {
+      "label": "Exp2: Content-based explanation, User-initiated",
+      "description": "User-initiated placement with content-based explanation (E1×P2). Explanation banner shown during the ad if viewer clicks.",
+      "ads": [
+        {
+          "placement": "user_initiated",
+          "prompt_text": "Watch a 30s ad to unlock a bonus clip",
+          "reward_text": "Bonus clip unlocked after this ad.",
+          "prompt_start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": {
+            "show": true,
+            "text": "Why this ad? This ad was selected based on what you watch on this platform.",
+            "show_at_ad_sec": 0,
+            "hide_at_ad_sec": 30
+          }
+        }
+      ]
+    },
+    "B5": {
+      "label": "Exp2: Data-based explanation, User-initiated",
+      "description": "User-initiated placement with data-based explanation (E2×P2). Explanation banner shown during the ad if viewer clicks.",
+      "ads": [
+        {
+          "placement": "user_initiated",
+          "prompt_text": "Watch a 30s ad to unlock a bonus clip",
+          "reward_text": "Bonus clip unlocked after this ad.",
+          "prompt_start_at_frac": 0.5,
+          "library_ref": "auto_bullrun_promo",
+          "duration_target_sec": 30,
+          "skippable_after_sec": null,
+          "banner": {
+            "show": true,
+            "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",
+            "show_at_ad_sec": 0,
+            "hide_at_ad_sec": 30
+          }
+        }
+      ]
+    }
+  }
+}

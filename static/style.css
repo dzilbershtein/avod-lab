@@ -1,0 +1,641 @@
+/* ============================ tokens ============================ */
+:root {
+  --bg: #0a0a0c;
+  --panel: #16161b;
+  --text: #ececef;
+  --muted: #9b9ba1;
+  --accent: #e50914;       /* Netflix-red */
+  --accent-soft: #f25b62;
+  --tile-w: 220px;
+  --tile-h: 124px;
+  --banner: rgba(0, 0, 0, 0.7);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2px; }
+
+.hidden { display: none !important; }
+.centered { max-width: 720px; margin: 80px auto; padding: 32px; }
+
+/* ============================ top nav ============================ */
+#topnav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: linear-gradient(to bottom, rgba(10,10,12,0.95) 60%, rgba(10,10,12,0));
+  backdrop-filter: blur(6px);
+}
+.brand {
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+#back-to-browse {
+  color: var(--text);
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+#back-to-browse:hover { background: rgba(255,255,255,0.06); }
+
+/* ============================ intro ============================ */
+#intro {
+  background: var(--panel);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+#intro h1 { margin-top: 0; font-size: 28px; }
+#intro p { color: var(--muted); line-height: 1.55; }
+#begin-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+#begin-btn:hover { background: var(--accent-soft); }
+
+/* ============================ browse ============================ */
+#browse { padding-bottom: 80px; }
+
+.hero {
+  position: relative;
+  margin: 0 0 32px;
+  height: 50vh;
+  min-height: 360px;
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+}
+.hero-shade {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,12,1) 0%, rgba(10,10,12,0.4) 60%, rgba(10,10,12,0.1) 100%),
+              linear-gradient(to right, rgba(10,10,12,0.85) 0%, rgba(10,10,12,0.2) 60%);
+}
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  padding: 60px 32px;
+}
+.hero-meta {
+  color: var(--accent-soft);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.hero-title {
+  font-size: 44px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  line-height: 1.05;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+.hero-tagline {
+  color: #d0d0d4;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 540px;
+}
+.hero-play {
+  background: #fff;
+  color: #000;
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 6px;
+}
+.hero-play:hover { background: rgba(255,255,255,0.85); }
+
+/* rows */
+.row { margin-bottom: 28px; }
+.row-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  padding: 0 32px;
+}
+.row-scroll {
+  position: relative;
+  padding: 0 32px;
+}
+.row-track {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+.row-track::-webkit-scrollbar { display: none; }
+
+.row-nav {
+  position: absolute;
+  top: 0; bottom: 8px;
+  width: 32px;
+  background: rgba(10,10,12,0.7);
+  color: #fff;
+  font-size: 18px;
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.row-nav--left { left: 0; }
+.row-nav--right { right: 0; }
+.row-scroll:hover .row-nav { opacity: 1; }
+
+/* tiles */
+.tile {
+  flex: 0 0 var(--tile-w);
+  height: var(--tile-h);
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  scroll-snap-align: start;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+.tile:hover {
+  transform: scale(1.06);
+  z-index: 4;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+}
+.tile-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tile-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0) 100%);
+}
+.tile-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.tile-meta {
+  font-size: 11px;
+  color: #c8c8cc;
+  margin-top: 2px;
+}
+
+/* ============================ player ============================ */
+#stage {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 32px 40px;
+}
+.now-watching {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin: 10px 0 16px;
+}
+.now-watching-label {
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.now-watching strong {
+  font-size: 18px;
+  font-weight: 700;
+}
+.now-watching-meta { color: var(--muted); font-size: 13px; }
+
+#player-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+#content, #ad-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* A3 — semi-transparent lower-third overlay. The image sits inside this
+   strip; if no image is supplied the banner alone fulfils the spec. */
+#ad-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 33%;            /* lower third of the frame */
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* A4 — persistent user-initiated prompt. Unobtrusive: top-left corner,
+   muted background, only visible while content is playing in A4. */
+#ad-prompt {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  z-index: 3;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+#ad-prompt:hover {
+  background: rgba(229, 9, 20, 0.85);
+  transform: translateY(-1px);
+}
+#ad-prompt::before {
+  content: "+ ";
+  font-size: 13px;
+  margin-right: 2px;
+}
+
+#ad-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  z-index: 2;
+}
+#ad-countdown {
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+#ad-skip {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.9);
+  color: #000;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+#banner {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  background: var(--banner);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  max-width: 80%;
+  text-align: center;
+  z-index: 3; /* must be above #ad-overlay (z-index 2) so A3 banner text is visible */
+}
+
+#player-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  z-index: 5;
+  pointer-events: none;
+}
+#player-status[data-kind="error"] {
+  background: rgba(180, 30, 30, 0.7);
+  font-weight: 600;
+}
+
+.player-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+}
+#play-pause {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+#play-pause:hover { background: rgba(255,255,255,0.16); }
+#time-readout { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ============================ done ============================ */
+#done {
+  background: var(--panel);
+  border-radius: 12px;
+  text-align: center;
+}
+#done-back {
+  margin-top: 16px;
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+#done-back:hover { background: var(--accent-soft); }
+
+/* ============================ survey ============================ */
+
+/* Container — matches .centered width/padding but allows taller content. */
+.survey-wrap {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 32px 36px 24px;
+  background: var(--panel);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+
+.survey-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.survey-intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 24px;
+  white-space: pre-line;
+}
+.survey-group-label {
+  margin: 24px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.survey-error {
+  background: rgba(200, 40, 40, 0.2);
+  border: 1px solid rgba(200, 40, 40, 0.5);
+  color: #f88;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ── Survey item ── */
+.survey-item {
+  margin: 20px 0;
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+.survey-item.missing {
+  border-color: rgba(200, 40, 40, 0.55);
+  background: rgba(200, 40, 40, 0.07);
+}
+.survey-item-label {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.attn-check { color: #f0d060; font-style: italic; }
+
+/* ── 7-point / 5-point Likert ── */
+.likert-radios {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.likert-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  flex: 1;
+}
+.likert-cell input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.likert-val {
+  font-size: 11px;
+  color: var(--muted);
+}
+.likert-anchors {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* ── Semantic differential ── */
+.semdiff-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.semdiff-pole {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 90px;
+}
+.semdiff-left  { text-align: right; }
+.semdiff-right { text-align: left; }
+.semdiff-radios {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  flex: 1;
+}
+.semdiff-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  flex: 1;
+}
+.semdiff-cell input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.semdiff-val {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ── Radio (categorical) ── */
+.radio-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.radio-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ── Number input ── */
+.number-input {
+  display: block;
+  margin-top: 8px;
+  background: #1e1e24;
+  border: 1px solid #3a3a42;
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 120px;
+}
+.number-input:focus { outline: 2px solid var(--accent-soft); border-color: transparent; }
+
+/* ── Ranking ── */
+.rank-list { display: flex; flex-direction: column; gap: 6px; }
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1e1e24;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.rank-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rank-label { flex: 1; font-size: 13px; line-height: 1.4; }
+.rank-btn {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  border: 0;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.rank-btn:hover:not(:disabled)  { background: rgba(255,255,255,0.14); }
+.rank-btn:disabled { opacity: 0.25; cursor: default; }
+
+/* ── Survey navigation footer ── */
+.survey-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #2a2a31;
+}
+.survey-progress {
+  font-size: 13px;
+  color: var(--muted);
+}
+.survey-footer button {
+  background: var(--accent);
+  color: #fff;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+.survey-footer button:hover { background: var(--accent-soft); }
+#pre-back, #post-back {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+#pre-back:hover, #post-back:hover { background: rgba(255,255,255,0.14); }
+
+/* ============================ admin ============================ */
+.admin { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
+.admin-header h1 { margin: 0 0 4px; }
+.admin a { color: var(--accent-soft); }
+.admin table { width: 100%; border-collapse: collapse; }
+.admin th, .admin td { padding: 8px 10px; border-bottom: 1px solid #2a2a31; text-align: left; vertical-align: top; }
+.admin th { font-size: 13px; color: var(--muted); font-weight: 600; }
+.admin td.ua { color: var(--muted); font-size: 12px; }
+.admin code { font-family: SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+.admin code.payload { display: block; max-width: 600px; word-wrap: break-word; white-space: pre-wrap; color: var(--muted); }

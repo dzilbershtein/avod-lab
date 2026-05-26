@@ -1,0 +1,170 @@
+{
+  "_notes": {
+    "taxonomy_source": "Categories mirror the Pitts Ads dataset (Hussain et al., CVPR 2017) and the AdsQA benchmark (arXiv 2509.08621). We use four categories — kept deliberately small so the experiment has at least 3 ads per category and the factor 'ad category' is analytically tractable (e.g., as a within-subjects factor, or to control category effects in a personalisation × placement design).",
+    "url_status": "All `video_url` values are either verified public-domain clips on the Internet Archive (clips marked source=archive_org) or synthesised by the generator script at scripts/generate_ads.py (source=synthetic).",
+    "how_to_use_in_ads_slots": "Each entry in experiment.json's `ads` array can either inline the legacy fields (url, placement, etc.) or set `library_ref` to one of the ids below; the player resolves library_ref before scheduling. See app.py::resolve_ad()."
+  },
+  "categories": [
+    {
+      "id": "food_beverage",
+      "label": "Food & Beverage",
+      "description": "Snacks, drinks, restaurants. Typical mainstream advertising target."
+    },
+    {
+      "id": "automotive",
+      "label": "Automotive",
+      "description": "Cars, trucks, accessories. High-involvement, high-budget category."
+    },
+    {
+      "id": "electronics_tech",
+      "label": "Electronics & Tech",
+      "description": "Consumer electronics, software, streaming devices."
+    },
+    {
+      "id": "public_service",
+      "label": "Public Service",
+      "description": "Non-commercial PSAs. Useful as a non-product-promotion contrast."
+    }
+  ],
+  "ads": [
+    {
+      "id": "fb_coke_1954",
+      "category": "food_beverage",
+      "title": "Coca-Cola (1954)",
+      "duration_sec": 56,
+      "source": "archive_org",
+      "license": "public_domain",
+      "video_url": "https://archive.org/download/Coke_Commercial/Coke_Commercial_512kb.mp4",
+      "fallback_urls": ["/static/ads/fb_synth_freshpress.mp4"],
+      "click_url": "https://www.coca-cola.com",
+      "default_banner": "You're seeing this beverage ad because it matches the category of the show."
+    },
+    {
+      "id": "fb_synth_freshpress",
+      "category": "food_beverage",
+      "title": "FreshPress Juice — Synthetic",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/fb_synth_freshpress.mp4",
+      "click_url": "https://example.com/freshpress",
+      "default_banner": "Because you watch lifestyle content, we picked this for you."
+    },
+    {
+      "id": "fb_synth_pizzania",
+      "category": "food_beverage",
+      "title": "Pizzania — Synthetic",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/fb_synth_pizzania.mp4",
+      "click_url": "https://example.com/pizzania",
+      "default_banner": "Because viewers in your area enjoy this category."
+    },
+
+    {
+      "id": "auto_bullrun_promo",
+      "category": "automotive",
+      "title": "Bullrun supercar rally promo",
+      "duration_sec": 47,
+      "source": "archive_org",
+      "license": "google_sample_bucket",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+      "fallback_urls": ["/static/ads/auto_synth_velora.mp4"],
+      "click_url": "https://example.com/bullrun",
+      "default_banner": "Because you watch action content, we picked this for you."
+    },
+    {
+      "id": "auto_synth_velora",
+      "category": "automotive",
+      "title": "Velora EV — Synthetic",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/auto_synth_velora.mp4",
+      "click_url": "https://example.com/velora",
+      "default_banner": "Recommended because you watch automotive features."
+    },
+    {
+      "id": "auto_synth_routely",
+      "category": "automotive",
+      "title": "Routely Roadside — Synthetic",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/auto_synth_routely.mp4",
+      "click_url": "https://example.com/routely",
+      "default_banner": "Because you watch driving content."
+    },
+
+    {
+      "id": "tech_blazes",
+      "category": "electronics_tech",
+      "title": "Chromecast — Bigger Blazes",
+      "duration_sec": 15,
+      "source": "archive_org",
+      "license": "google_sample_bucket",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "fallback_urls": ["/static/ads/tech_synth_pixela.mp4"],
+      "click_url": "https://example.com/chromecast",
+      "default_banner": "You're seeing this ad because it matches the category of the show."
+    },
+    {
+      "id": "tech_escapes",
+      "category": "electronics_tech",
+      "title": "Chromecast — Bigger Escapes",
+      "duration_sec": 15,
+      "source": "archive_org",
+      "license": "google_sample_bucket",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "fallback_urls": ["/static/ads/tech_synth_pixela.mp4"],
+      "click_url": "https://example.com/chromecast2",
+      "default_banner": "Because you stream a lot of video, we picked this for you."
+    },
+    {
+      "id": "tech_synth_pixela",
+      "category": "electronics_tech",
+      "title": "Pixela Earbuds — Synthetic",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/tech_synth_pixela.mp4",
+      "click_url": "https://example.com/pixela",
+      "default_banner": "Recommended because of your viewing on this device."
+    },
+
+    {
+      "id": "psa_synth_screenbreak",
+      "category": "public_service",
+      "title": "Take a Screen Break — Synthetic PSA",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/psa_synth_screenbreak.mp4",
+      "click_url": "",
+      "default_banner": "A short reminder from AVOD-Lab."
+    },
+    {
+      "id": "psa_synth_recycle",
+      "category": "public_service",
+      "title": "Recycle Right — Synthetic PSA",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/psa_synth_recycle.mp4",
+      "click_url": "",
+      "default_banner": "A public-interest message."
+    },
+    {
+      "id": "psa_synth_hydrate",
+      "category": "public_service",
+      "title": "Stay Hydrated — Synthetic PSA",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/psa_synth_hydrate.mp4",
+      "click_url": "",
+      "default_banner": "A public-interest message."
+    }
+  ]
+}
