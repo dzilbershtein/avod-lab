@@ -2,7 +2,7 @@
 """
 generate_ads.py — render synthetic 30-second ad MP4s via Pillow + ffmpeg.
 
-Four ads, structured as 3-scene TV commercials (1280×720, 30 s, 15 fps):
+Four ads, structured as 3-scene TV commercials (1280×720, 30 s, 20 fps):
 
   Relevant to entertainment content:
     ad_relevant_screentime  — SCREENTIME streaming service
@@ -12,10 +12,14 @@ Four ads, structured as 3-scene TV commercials (1280×720, 30 s, 15 fps):
     ad_irrelevant_crunchpop — CRUNCHPOP breakfast cereal
     ad_irrelevant_homesafe  — HOMESAFE home insurance
 
-Visual language per ad:
-  Scene 1  0–8 s    product icon appears with glow / animation
-  Scene 2  8–22 s   brand name (slides up + fades in), tagline
-  Scene 3  22–30 s  CTA bar rises, brand name stays
+Visual features per ad:
+  SCREENTIME  — floating content tiles, TV scan-line sweep, shimmer on brand text,
+                pulse rings, star particles
+  ARCADEMAX   — RGB cycling border, pixel burst explosion, score counter 0→9999,
+                glitch text effect, energy streaks, pulsing glow
+  CRUNCHPOP   — spinning sunburst, bouncing cereal puffs (parabolic physics),
+                milk splash rings, brand bounce-in with overshoot ease
+  HOMESAFE    — falling rain, sonar pulse rings, shield animation, orbiting sparks
 
 Run:
     pip install Pillow
@@ -29,555 +33,583 @@ import os
 import random
 import shutil
 import subprocess
-import sys
 import tempfile
-from pathlib import Path
 
-try:
-    from PIL import Image, ImageDraw, ImageFilter, ImageFont
-except ImportError:
-    print("Pillow not found.  Run:  pip install Pillow")
-    raise SystemExit(1)
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-BASE = Path(__file__).resolve().parent.parent
-OUT  = BASE / "static" / "ads"
+W, H = 1280, 720
+FPS = 20
+DURATION = 30
+TOTAL_FRAMES = FPS * DURATION
+OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "static", "ads")
 
-W, H      = 1280, 720
-DURATION  = 30
-FPS       = 15
 
-# ──────────────────────────────────────────────── fonts
-_FONT_PATHS_BOLD = [
-    ("/System/Library/Fonts/HelveticaNeue.ttc", 1),   # Bold index
-    ("/System/Library/Fonts/Helvetica.ttc",     1),
-    ("/Library/Fonts/Arial Bold.ttf",           0),
-    ("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", 0),
-]
-_FONT_PATHS_REG = [
-    ("/System/Library/Fonts/HelveticaNeue.ttc", 0),
-    ("/System/Library/Fonts/Helvetica.ttc",     0),
-    ("/Library/Fonts/Arial.ttf",                0),
-    ("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 0),
-]
+# ---------------------------------------------------------------------------
+# Utilities
+# ---------------------------------------------------------------------------
 
-def _load(size: int, bold: bool) -> ImageFont.FreeTypeFont:
-    paths = _FONT_PATHS_BOLD if bold else _FONT_PATHS_REG
-    for path, index in paths:
-        if os.path.exists(path):
-            try:
-                return ImageFont.truetype(path, size, index=index)
-            except Exception:
-                continue
-    return ImageFont.load_default()
+def clamp(v, lo=0, hi=255):
+    return max(lo, min(hi, int(v)))
 
-F_BRAND   = _load(112, bold=True)
-F_TAGLINE = _load(44,  bold=False)
-F_CTA     = _load(30,  bold=True)
-F_BADGE   = _load(20,  bold=True)
 
-# ──────────────────────────────────────────────── helpers
-def rgb(h: str) -> tuple[int, int, int]:
-    h = h.lstrip("#")
-    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+def lerp(a, b, t):
+    return a + (b - a) * t
 
-def lerp_color(a, b, t):
-    return tuple(int(a[i] * (1-t) + b[i] * t) for i in range(3))
 
 def ease_out(t):
-    return 1 - (1 - min(t, 1.0)) ** 2
+    t = min(max(t, 0.0), 1.0)
+    return 1 - (1 - t) ** 3
+
 
 def ease_in_out(t):
-    t = min(t, 1.0)
+    t = min(max(t, 0.0), 1.0)
     return t * t * (3 - 2 * t)
 
-def centered_x(draw, text, font) -> int:
-    bb = font.getbbox(text)
-    return (W - (bb[2] - bb[0])) // 2
 
-def draw_text_shadow(draw, text, font, x, y, fill, shadow_alpha=90):
-    """Draw text with a drop shadow underneath."""
-    off = 3
-    shadow_col = (0, 0, 0, shadow_alpha)
-    draw.text((x + off, y + off), text, font=font, fill=shadow_col)
-    draw.text((x, y), text, font=font, fill=fill)
-
-def draw_centered_text(draw, text, font, y, fill, shadow=True, alpha=1.0):
-    x = centered_x(draw, text, font)
-    fa = tuple(list(fill[:3]) + [int(255 * alpha)])
-    if shadow and alpha > 0.05:
-        sa = int(90 * alpha)
-        draw.text((x + 3, y + 3), text, font=font, fill=(0, 0, 0, sa))
-    draw.text((x, y), text, font=font, fill=fa)
-
-def gradient_bg(img_array, draw, top_col, bot_col):
-    """Fill img with a vertical gradient from top_col to bot_col."""
-    for y in range(H):
-        t = y / (H - 1)
-        c = lerp_color(top_col, bot_col, t)
-        draw.line([(0, y), (W, y)], fill=c)
-
-def composite_overlay(base: Image.Image, layer: Image.Image) -> Image.Image:
-    base_rgba = base.convert("RGBA")
-    return Image.alpha_composite(base_rgba, layer).convert("RGB")
-
-def make_layer() -> tuple[Image.Image, ImageDraw.Draw]:
-    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    return img, ImageDraw.Draw(img)
-
-# ──────────────────────────────────────────────── icon drawers
-def draw_tv_icon(draw, cx, cy, size, accent, alpha):
-    a = int(alpha * 255)
-    if a <= 0:
-        return
-    c = (*accent, a)
-    dim = int(alpha * 30)
-    # TV body
-    tw, th = size, int(size * 0.62)
-    r = 12
-    draw.rounded_rectangle([cx-tw//2, cy-th//2, cx+tw//2, cy+th//2],
-                             radius=r, outline=c, width=4)
-    # Screen inner
-    m = 18
-    draw.rounded_rectangle([cx-tw//2+m, cy-th//2+m, cx+tw//2-m, cy+th//2-m],
-                             radius=6, fill=(*accent, int(alpha * 40)), outline=c, width=2)
-    # Stand
-    sy = cy + th // 2
-    draw.line([(cx, sy), (cx, sy + 30)], fill=c, width=5)
-    draw.line([(cx - 40, sy + 30), (cx + 40, sy + 30)], fill=c, width=5)
-    # Play triangle inside screen
-    ps = int(size * 0.13)
-    pts = [(cx - ps//2, cy - ps), (cx + ps, cy), (cx - ps//2, cy + ps)]
-    draw.polygon(pts, fill=c)
-    # Glow rings (pulsing via alpha)
-    for ring, pulse_phase in [(size * 0.7, 0.0), (size * 0.9, 0.3)]:
-        ring_a = int(alpha * max(0, 70 * math.sin(math.pi * 2 * pulse_phase + 0.5)))
-        draw.ellipse([cx - ring, cy - ring * 0.62,
-                      cx + ring, cy + ring * 0.62],
-                     outline=(*accent, ring_a), width=2)
+def ease_back(t):
+    """Cubic ease-out with overshoot (settle back)."""
+    t = min(max(t, 0.0), 1.0)
+    c = 1.70158
+    return 1 + (c + 1) * (t - 1) ** 3 + c * (t - 1) ** 2
 
 
-def draw_controller_icon(draw, cx, cy, size, accent, alpha):
-    a = int(alpha * 255)
-    if a <= 0:
-        return
-    c = (*accent, a)
-    # Body
-    w, h = size, int(size * 0.52)
-    r = int(size * 0.25)
-    draw.rounded_rectangle([cx-w//2, cy-h//2, cx+w//2, cy+h//2],
-                             radius=r, outline=c, width=4)
-    # Left grip
-    draw.rounded_rectangle([cx-w//2-15, cy, cx-w//4, cy+h],
-                             radius=15, outline=c, width=4)
-    # Right grip
-    draw.rounded_rectangle([cx+w//4, cy, cx+w//2+15, cy+h],
-                             radius=15, outline=c, width=4)
-    # D-pad (left side) — cross
-    dp = int(size * 0.07)
-    dx = cx - int(size * 0.3)
-    dy = cy
-    draw.rectangle([dx - dp//2, dy - dp*2, dx + dp//2, dy + dp*2], fill=c)
-    draw.rectangle([dx - dp*2, dy - dp//2, dx + dp*2, dy + dp//2], fill=c)
-    # Face buttons (right side) — 4 circles
-    bx, by, br = cx + int(size * 0.27), cy, int(size * 0.05)
-    offsets = [(0, -int(size*0.12)), (int(size*0.12), 0),
-               (0, int(size*0.12)), (-int(size*0.12), 0)]
-    for ox, oy in offsets:
-        draw.ellipse([bx+ox-br, by+oy-br, bx+ox+br, by+oy+br],
-                     fill=(*accent, int(alpha*180)), outline=c, width=2)
-    # Analog sticks
-    for sx in [cx - int(size*0.1), cx + int(size*0.1)]:
-        sr = int(size * 0.07)
-        draw.ellipse([sx-sr, cy+h//2-sr, sx+sr, cy+h//2+sr],
-                     outline=c, width=3)
+def hsv_to_rgb(h, s, v):
+    h = h % 1.0
+    i = int(h * 6)
+    f = h * 6 - i
+    p = v * (1 - s)
+    q = v * (1 - f * s)
+    _t = v * (1 - (1 - f) * s)
+    r, g, b = [(v, _t, p), (q, v, p), (p, v, _t), (p, q, v), (_t, p, v), (v, p, q)][i % 6]
+    return clamp(r * 255), clamp(g * 255), clamp(b * 255)
 
 
-def draw_cereal_icon(draw, cx, cy, size, accent, alpha, t_anim):
-    a = int(alpha * 255)
-    if a <= 0:
-        return
-    c = (*accent, a)
-    # Sunburst rays
-    num_rays = 16
-    for i in range(num_rays):
-        angle = math.radians(360 * i / num_rays + t_anim * 30)
-        r_in  = size * 0.42
-        r_out = size * 0.62 + (0.08 * size * math.sin(t_anim * 3 + i))
-        x1 = cx + int(r_in  * math.cos(angle))
-        y1 = cy + int(r_in  * math.sin(angle))
-        x2 = cx + int(r_out * math.cos(angle))
-        y2 = cy + int(r_out * math.sin(angle))
-        draw.line([(x1, y1), (x2, y2)], fill=c, width=5)
-    # Bowl (ellipse)
-    bw, bh = int(size * 0.72), int(size * 0.44)
-    draw.ellipse([cx-bw//2, cy-bh//4, cx+bw//2, cy+bh], outline=c, width=5)
-    # Rim (top arc — just the top half of a slightly larger ellipse)
-    draw.arc([cx-bw//2-4, cy-bh//4-4, cx+bw//2+4, cy+bh+4],
-             start=200, end=340, fill=c, width=5)
-    # Spoon
-    spoon_x = cx + int(size * 0.47)
-    draw.line([(spoon_x, cy - int(size*0.1)), (spoon_x, cy + int(size*0.38))],
-              fill=c, width=6)
-    draw.ellipse([spoon_x-12, cy - int(size*0.1)-18,
-                  spoon_x+12, cy - int(size*0.1)+4], fill=c)
-    # Some "puffs" floating above bowl
-    for i, (ox, oy) in enumerate([(-40, -30), (0, -40), (40, -30)]):
-        pr = int(10 + 3 * math.sin(t_anim * 2 + i))
-        draw.ellipse([cx+ox-pr, cy+oy-pr, cx+ox+pr, cy+oy+pr],
-                     fill=(*accent, int(alpha * 160)))
+def try_font(size):
+    for name in [
+        "/System/Library/Fonts/Helvetica.ttc",
+        "/System/Library/Fonts/Arial.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    ]:
+        if os.path.exists(name):
+            try:
+                return ImageFont.truetype(name, size)
+            except Exception:
+                pass
+    return ImageFont.load_default()
 
 
-def draw_house_shield(draw, cx, cy, size, accent, alpha, t_anim):
-    a = int(alpha * 255)
-    if a <= 0:
-        return
-    c = (*accent, a)
-    # House outline — walls
-    hw, hh = int(size * 0.5), int(size * 0.4)
-    wall_y = cy + int(size * 0.02)
-    draw.rectangle([cx-hw//2, wall_y, cx+hw//2, wall_y+hh],
-                   outline=c, width=4)
-    # Roof triangle
-    draw.polygon([(cx-hw//2-15, wall_y),
-                  (cx, wall_y - int(size*0.38)),
-                  (cx+hw//2+15, wall_y)],
-                 outline=c, width=4, fill=(0, 0, 0, 0))
-    # Door
-    dw, dh = int(hw * 0.28), int(hh * 0.5)
-    draw.rectangle([cx-dw//2, wall_y+hh-dh, cx+dw//2, wall_y+hh],
-                   outline=c, width=3)
-    # Shield around house — expands in during scene 1
-    shield_scale = ease_out(min(1.0, t_anim / 4.0))
-    sw = int((hw + 80) * shield_scale)
-    sh = int((hh + int(size*0.38) + 50) * shield_scale)
-    shield_top = cy - int(size * 0.38) - 30
-    # Shield shape: top rectangle + bottom triangle
-    sx0, sx1 = cx - sw, cx + sw
-    sy0, sy1 = shield_top - 20, shield_top + sh
-    draw.line([(sx0, sy0), (sx1, sy0), (sx1, sy1), (cx, sy1+int(sh*0.3)), (sx0, sy1), (sx0, sy0)],
-              fill=(*accent, int(alpha * 100)), width=3)
-    # Tick / checkmark in shield bottom
-    ck_y = sy1 + int(sh * 0.12)
-    tk = int(size * 0.06)
-    draw.line([(cx - tk, ck_y), (cx, ck_y + tk), (cx + tk*2, ck_y - tk)],
-              fill=c, width=4)
+def text_center(draw, text, cx, cy, font, fill):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    tw = bbox[2] - bbox[0]
+    th = bbox[3] - bbox[1]
+    draw.text((cx - tw // 2, cy - th // 2), text, font=font, fill=fill)
 
 
-# ──────────────────────────────────────────────── scene renderers
-def scene1_screentime(t, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    # Icon
-    icon_alpha = ease_out(min(t / 2.0, 1.0))
-    layer, ld = make_layer()
-    draw_tv_icon(ld, W//2, H//2 - 20, 260, acc, icon_alpha)
-    return composite_overlay(img, layer)
-
-def scene2_screentime(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    # Subtle TV icon (faded) in background
-    layer, ld = make_layer()
-    draw_tv_icon(ld, W//2, H//2 - 40, 260, acc, 0.08)
-    img = composite_overlay(img, layer)
-    draw = ImageDraw.Draw(img.convert("RGBA")).im  # reinit draw
-    img_rgba = img.convert("RGBA")
-    draw2 = ImageDraw.Draw(img_rgba)
-    # Accent top bar
-    draw2.rectangle([0, 0, W, 5], fill=(*acc, 255))
-    # Brand name slides up
-    brand_a = ease_out(min(t / 2.0, 1.0))
-    brand_offset = int(30 * (1 - brand_a))
-    by = H//2 - 75 + brand_offset
-    draw_centered_text(draw2, ad["brand"], F_BRAND, by, rgb("FFFFFF"), alpha=brand_a)
-    # Tagline
-    tag_a = ease_out(max(0.0, (t - 2.0) / 1.5))
-    ty = H//2 + 60
-    draw_centered_text(draw2, ad["tagline"], F_TAGLINE, ty, rgb("CCDDEE"), alpha=tag_a)
-    # Category badge
-    badge_a = ease_in_out(max(0.0, (t - 1.0) / 1.5))
-    draw2.rounded_rectangle([30, 20, 230, 52], radius=16,
-                              fill=(*acc, int(badge_a * 50)),
-                              outline=(*acc, int(badge_a * 200)), width=2)
-    draw2.text((50, 27), "STREAMING", font=F_BADGE,
-               fill=(*acc, int(badge_a * 255)))
-    return img_rgba.convert("RGB")
-
-def scene3_screentime(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = scene2_screentime(8.0, ad, acc, bg_top, bg_bot)  # hold scene 2 fully revealed
-    draw = ImageDraw.Draw(img.convert("RGBA"))
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    # CTA bar slides up
-    bar_h = 80
-    bar_a = ease_out(min(t / 2.5, 1.0))
-    bar_y = H - int(bar_h * bar_a)
-    d.rectangle([0, bar_y, W, H], fill=(*acc, int(bar_a * 230)))
-    text_a = ease_out(max(0.0, (t - 0.5) / 2.0))
-    cta_y = bar_y + (H - bar_y - 30) // 2
-    cx2 = centered_x(d, ad["cta"], F_CTA)
-    d.text((cx2, cta_y), ad["cta"], font=F_CTA,
-           fill=(*rgb(ad["cta_fg"]), int(text_a * 255)))
-    return img_rgba.convert("RGB")
+def gradient_bg(colors, w=W, h=H):
+    img = Image.new("RGBA", (w, h))
+    px = img.load()
+    n = len(colors) - 1
+    for y in range(h):
+        t = y / (h - 1)
+        seg = min(int(t * n), n - 1)
+        lt = t * n - seg
+        c0 = colors[seg]
+        c1 = colors[seg + 1]
+        r = clamp(lerp(c0[0], c1[0], lt))
+        g = clamp(lerp(c0[1], c1[1], lt))
+        b = clamp(lerp(c0[2], c1[2], lt))
+        for x in range(w):
+            px[x, y] = (r, g, b, 255)
+    return img
 
 
-def scene1_arcademax(t, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    icon_alpha = ease_out(min(t / 2.0, 1.0))
-    # Pulsing glow circles
-    for r_mult, a_mult in [(1.2, 0.08), (1.0, 0.12)]:
-        glow_r = int(160 * r_mult * (0.97 + 0.03 * math.sin(t * 3)))
-        layer, ld = make_layer()
-        ld.ellipse([W//2-glow_r, H//2-glow_r, W//2+glow_r, H//2+glow_r],
-                   fill=(*acc, int(icon_alpha * a_mult * 255)))
-        img = composite_overlay(img, layer)
-    layer2, ld2 = make_layer()
-    draw_controller_icon(ld2, W//2, H//2 - 10, 280, acc, icon_alpha)
-    return composite_overlay(img, layer2)
-
-def scene2_arcademax(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    d.rectangle([0, 0, W, 5], fill=(*acc, 255))
-    # Brand — slight glow by drawing it twice with offset at low alpha
-    brand_a = ease_out(min(t / 2.0, 1.0))
-    brand_offset = int(25 * (1 - brand_a))
-    by = H//2 - 75 + brand_offset
-    # glow pass
-    for gx_off in [-2, 2, 0]:
-        gx = centered_x(d, ad["brand"], F_BRAND) + gx_off
-        d.text((gx, by), ad["brand"], font=F_BRAND,
-               fill=(*acc, int(brand_a * 80)))
-    draw_centered_text(d, ad["brand"], F_BRAND, by, rgb("FFFFFF"), alpha=brand_a)
-    tag_a = ease_out(max(0.0, (t - 2.0) / 1.5))
-    draw_centered_text(d, ad["tagline"], F_TAGLINE, H//2 + 60, rgb("CCBBDD"), alpha=tag_a)
-    badge_a = ease_in_out(max(0.0, (t - 1.0) / 1.5))
-    d.rounded_rectangle([30, 20, 210, 52], radius=16,
-                          fill=(*acc, int(badge_a * 50)),
-                          outline=(*acc, int(badge_a * 200)), width=2)
-    d.text((50, 27), "GAMING", font=F_BADGE,
-           fill=(*acc, int(badge_a * 255)))
-    return img_rgba.convert("RGB")
-
-def scene3_arcademax(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = scene2_arcademax(8.0, ad, acc, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    bar_h, bar_a = 80, ease_out(min(t / 2.5, 1.0))
-    bar_y = H - int(bar_h * bar_a)
-    d.rectangle([0, bar_y, W, H], fill=(*acc, int(bar_a * 230)))
-    text_a = ease_out(max(0.0, (t - 0.5) / 2.0))
-    cta_y = bar_y + (H - bar_y - 30) // 2
-    cx2 = centered_x(d, ad["cta"], F_CTA)
-    d.text((cx2, cta_y), ad["cta"], font=F_CTA,
-           fill=(*rgb(ad["cta_fg"]), int(text_a * 255)))
-    return img_rgba.convert("RGB")
+def scene_flash(base, intensity=0.85):
+    """White flash overlay for scene cuts."""
+    overlay = Image.new("RGBA", base.size, (255, 255, 255, int(255 * intensity)))
+    return Image.alpha_composite(base, overlay)
 
 
-def scene1_crunchpop(t, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    icon_alpha = ease_out(min(t / 2.0, 1.0))
-    layer, ld = make_layer()
-    draw_cereal_icon(ld, W//2, H//2 - 10, 260, acc, icon_alpha, t)
-    return composite_overlay(img, layer)
-
-def scene2_crunchpop(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    d.rectangle([0, 0, W, 5], fill=(*acc, 255))
-    brand_a = ease_out(min(t / 2.0, 1.0))
-    brand_offset = int(25 * (1 - brand_a))
-    draw_centered_text(d, ad["brand"], F_BRAND, H//2 - 75 + brand_offset,
-                       rgb("FFFFFF"), alpha=brand_a)
-    tag_a = ease_out(max(0.0, (t - 2.0) / 1.5))
-    draw_centered_text(d, ad["tagline"], F_TAGLINE, H//2 + 60, rgb("FFE0B0"), alpha=tag_a)
-    badge_a = ease_in_out(max(0.0, (t - 1.0) / 1.5))
-    d.rounded_rectangle([30, 20, 260, 52], radius=16,
-                          fill=(*acc, int(badge_a * 50)),
-                          outline=(*acc, int(badge_a * 200)), width=2)
-    d.text((50, 27), "FOOD & DRINK", font=F_BADGE,
-           fill=(*acc, int(badge_a * 255)))
-    return img_rgba.convert("RGB")
-
-def scene3_crunchpop(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = scene2_crunchpop(8.0, ad, acc, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    bar_h, bar_a = 80, ease_out(min(t / 2.5, 1.0))
-    bar_y = H - int(bar_h * bar_a)
-    d.rectangle([0, bar_y, W, H], fill=(*acc, int(bar_a * 230)))
-    text_a = ease_out(max(0.0, (t - 0.5) / 2.0))
-    cta_y = bar_y + (H - bar_y - 30) // 2
-    cx2 = centered_x(d, ad["cta"], F_CTA)
-    d.text((cx2, cta_y), ad["cta"], font=F_CTA,
-           fill=(*rgb(ad["cta_fg"]), int(text_a * 255)))
-    return img_rgba.convert("RGB")
+def particles(draw, t, acc, count=35, seed=0, vy=-55, drift=25, r_range=(2, 7), a_range=(0.3, 0.85)):
+    rng = random.Random(seed)
+    for _ in range(count):
+        x0 = rng.uniform(0, W)
+        y0 = rng.uniform(0, H)
+        spd = rng.uniform(0.6, 1.4)
+        pha = rng.uniform(0, 2 * math.pi)
+        r = rng.randint(*r_range)
+        al = rng.uniform(*a_range)
+        x = (x0 + drift * math.sin(t * 1.2 + pha)) % W
+        y = (y0 + vy * spd * t) % H
+        draw.ellipse([x - r, y - r, x + r, y + r], fill=(*acc, int(al * 255)))
 
 
-def scene1_homesafe(t, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    icon_alpha = ease_out(min(t / 2.5, 1.0))
-    layer, ld = make_layer()
-    draw_house_shield(ld, W//2, H//2 - 10, 260, acc, icon_alpha, t)
-    return composite_overlay(img, layer)
-
-def scene2_homesafe(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = Image.new("RGB", (W, H))
-    draw = ImageDraw.Draw(img)
-    gradient_bg(img, draw, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    d.rectangle([0, 0, W, 5], fill=(*acc, 255))
-    brand_a = ease_out(min(t / 2.0, 1.0))
-    brand_offset = int(25 * (1 - brand_a))
-    draw_centered_text(d, ad["brand"], F_BRAND, H//2 - 75 + brand_offset,
-                       rgb("FFFFFF"), alpha=brand_a)
-    tag_a = ease_out(max(0.0, (t - 2.0) / 1.5))
-    draw_centered_text(d, ad["tagline"], F_TAGLINE, H//2 + 60, rgb("C8E6C0"), alpha=tag_a)
-    badge_a = ease_in_out(max(0.0, (t - 1.0) / 1.5))
-    d.rounded_rectangle([30, 20, 230, 52], radius=16,
-                          fill=(*acc, int(badge_a * 50)),
-                          outline=(*acc, int(badge_a * 200)), width=2)
-    d.text((50, 27), "INSURANCE", font=F_BADGE,
-           fill=(*acc, int(badge_a * 255)))
-    return img_rgba.convert("RGB")
-
-def scene3_homesafe(t, ad, acc, bg_top, bg_bot) -> Image.Image:
-    img = scene2_homesafe(8.0, ad, acc, bg_top, bg_bot)
-    img_rgba = img.convert("RGBA")
-    d = ImageDraw.Draw(img_rgba)
-    bar_h, bar_a = 80, ease_out(min(t / 2.5, 1.0))
-    bar_y = H - int(bar_h * bar_a)
-    d.rectangle([0, bar_y, W, H], fill=(*acc, int(bar_a * 230)))
-    text_a = ease_out(max(0.0, (t - 0.5) / 2.0))
-    cta_y = bar_y + (H - bar_y - 30) // 2
-    cx2 = centered_x(d, ad["cta"], F_CTA)
-    d.text((cx2, cta_y), ad["cta"], font=F_CTA,
-           fill=(*rgb(ad["cta_fg"]), int(text_a * 255)))
-    return img_rgba.convert("RGB")
+def pulse_rings(draw, cx, cy, t, acc, period=1.6, n=3, max_r=220):
+    for k in range(n):
+        phase = ((t + k * period / n) % period) / period
+        r = int(max_r * phase)
+        a = int(255 * (1 - phase) * 0.55)
+        if a > 0:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(*acc, a), width=2)
 
 
-# ──────────────────────────────────────────────── ad specs
+def render_and_encode(frames_fn, ad_id):
+    tmp = tempfile.mkdtemp(prefix=f"ad_{ad_id}_")
+    try:
+        print(f"  rendering {TOTAL_FRAMES} frames …")
+        for fi in range(TOTAL_FRAMES):
+            t = fi / FPS
+            img = frames_fn(fi, t)
+            img.convert("RGB").save(os.path.join(tmp, f"f{fi:04d}.png"))
+        out_path = os.path.join(OUT_DIR, f"{ad_id}.mp4")
+        cmd = [
+            "ffmpeg", "-y",
+            "-framerate", str(FPS),
+            "-i", os.path.join(tmp, "f%04d.png"),
+            "-c:v", "libx264",
+            "-pix_fmt", "yuv420p",
+            "-crf", "22",
+            "-movflags", "+faststart",
+            out_path,
+        ]
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"  → {out_path}")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+# ---------------------------------------------------------------------------
+# SCREENTIME — streaming service  (blues/purples)
+# ---------------------------------------------------------------------------
+
+def screentime_frame(fi, t):
+    acc = (80, 160, 255)
+    bg = gradient_bg([(5, 10, 40), (20, 30, 80), (5, 10, 40)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    # Scene boundaries
+    if t < 0.15:
+        flash_alpha = int(255 * (1 - t / 0.15))
+        fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+        bg = Image.alpha_composite(bg, fl)
+
+    # Scene 1 (0–10s): floating content tiles + pulse rings
+    if t < 10:
+        pulse_rings(draw, W // 2, H // 2, t, acc)
+        particles(draw, t, acc, count=40, seed=1, vy=-40, drift=30)
+        tile_positions = [(200, 200), (640, 150), (1050, 220), (320, 420), (900, 380)]
+        tile_sizes = [(220, 130), (200, 120), (180, 110), (200, 115), (210, 120)]
+        for i, ((tx, ty), (tw, th)) in enumerate(zip(tile_positions, tile_sizes)):
+            float_y = ty + int(12 * math.sin(t * 1.1 + i * 1.3))
+            alpha = clamp(ease_out(t / 2.0 - i * 0.15) * 200)
+            tile = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+            td = ImageDraw.Draw(tile)
+            td.rounded_rectangle([0, 0, tw - 1, th - 1], radius=12,
+                                  fill=(20, 40, 100, alpha), outline=(*acc, alpha // 2), width=2)
+            ov.alpha_composite(tile, (tx - tw // 2, float_y - th // 2))
+
+    # Scene 2 (10–22s): brand name + tagline + scan-line sweep
+    elif t < 22:
+        pulse_rings(draw, W // 2, H // 2, t, acc)
+        particles(draw, t, acc, count=25, seed=2, vy=-35)
+        # scan-line sweep
+        sweep_x = int(((t - 10) / 12.0) * W * 1.8 - W * 0.4)
+        for sx in range(max(0, sweep_x - 60), min(W, sweep_x)):
+            a = int(40 * (1 - abs(sx - sweep_x) / 60))
+            draw.line([(sx, 0), (sx, H)], fill=(200, 220, 255, a))
+        # shimmer on brand text (done via alpha pulse)
+        fn_large = try_font(120)
+        fn_med = try_font(52)
+        slide = ease_out(min((t - 10) / 1.5, 1.0))
+        by = int(lerp(H, H // 2 - 60, slide))
+        shimmer_a = clamp(200 + 55 * math.sin(t * 4))
+        text_center(draw, "SCREENTIME", W // 2, by, fn_large, (*acc, shimmer_a))
+        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 220)
+        text_center(draw, "Stream Everything.", W // 2, by + 90, fn_med, (200, 220, 255, tag_a))
+
+    # Scene 3 (22–30s): CTA
+    else:
+        particles(draw, t, acc, count=20, seed=3, vy=-30)
+        if t < 22.15:
+            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+        fn_large = try_font(120)
+        fn_med = try_font(52)
+        fn_cta = try_font(44)
+        text_center(draw, "SCREENTIME", W // 2, H // 2 - 80, fn_large, (*acc, 230))
+        text_center(draw, "Stream Everything.", W // 2, H // 2 + 10, fn_med, (200, 220, 255, 200))
+        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 240)
+        cta_h = 70
+        cta_y = H - 110
+        draw.rounded_rectangle([W // 2 - 200, cta_y, W // 2 + 200, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "TRY FREE", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# ARCADEMAX — gaming platform  (dark/neon green-yellow)
+# ---------------------------------------------------------------------------
+
+def arcademax_frame(fi, t):
+    acc = (50, 255, 120)
+    bg = gradient_bg([(5, 5, 20), (10, 20, 10), (5, 5, 20)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    # RGB cycling border
+    hue = (t * 0.12) % 1.0
+    br, bg_c, bb = hsv_to_rgb(hue, 1.0, 1.0)
+    border_w = 8
+    for bw in range(border_w):
+        a = clamp(200 - bw * 18)
+        draw.rectangle([bw, bw, W - 1 - bw, H - 1 - bw], outline=(br, bg_c, bb, a))
+
+    # Scene 1 (0–10s): pixel burst + score counter
+    if t < 10:
+        if t < 0.15:
+            flash_alpha = int(255 * (1 - t / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        # Pixel burst from center
+        burst_rng = random.Random(42)
+        n_pixels = int(min(t / 10 * 300 + 40, 300))
+        for _ in range(n_pixels):
+            angle = burst_rng.uniform(0, 2 * math.pi)
+            speed = burst_rng.uniform(20, 260)
+            px = W // 2 + int(math.cos(angle) * speed * t * 0.8)
+            py = H // 2 + int(math.sin(angle) * speed * t * 0.8)
+            sz = burst_rng.randint(2, 8)
+            col_h = burst_rng.uniform(0, 1)
+            pr, pg, pb = hsv_to_rgb(col_h, 1.0, 1.0)
+            a = clamp((1 - t / 10) * 255)
+            if 0 <= px < W and 0 <= py < H:
+                draw.rectangle([px, py, px + sz, py + sz], fill=(pr, pg, pb, a))
+
+        # Score counter
+        score = int(ease_out(min(t / 8, 1.0)) * 9999)
+        fn_score = try_font(90)
+        text_center(draw, f"{score:04d}", W // 2, H // 2 + 80, fn_score, (*acc, 220))
+        fn_pts = try_font(36)
+        text_center(draw, "POINTS", W // 2, H // 2 + 160, fn_pts, (200, 255, 200, 180))
+
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.4, max_r=260)
+
+    # Scene 2 (10–22s): brand name with glitch effect + energy streaks
+    elif t < 22:
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.4, max_r=260)
+        particles(draw, t, acc, count=30, seed=10, vy=-50, drift=20)
+
+        # Energy streaks
+        streak_rng = random.Random(99)
+        for _ in range(8):
+            sx = streak_rng.randint(0, W)
+            sy = streak_rng.randint(0, H)
+            ex = sx + streak_rng.randint(-200, 200)
+            ey = sy + streak_rng.randint(-100, 100)
+            phase = (t * 2.3 + streak_rng.random() * 6) % 2
+            a = clamp(int((1 - abs(phase - 1)) * 180))
+            draw.line([(sx, sy), (ex, ey)], fill=(*acc, a), width=2)
+
+        fn_large = try_font(130)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 10) / 1.2, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+
+        # Glitch layers: R and B offset slightly
+        glitch = 0.06 < ((t * 7) % 1.0) < 0.12
+        off = 6 if glitch else 0
+        text_center(draw, "ARCADEMAX", W // 2 - off, by, fn_large, (255, 50, 50, 60 if glitch else 0))
+        text_center(draw, "ARCADEMAX", W // 2 + off, by, fn_large, (50, 50, 255, 60 if glitch else 0))
+        text_center(draw, "ARCADEMAX", W // 2, by, fn_large, (*acc, 240))
+        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 220)
+        text_center(draw, "LEVEL UP YOUR GAME", W // 2, by + 100, fn_med, (180, 255, 180, tag_a))
+
+    # Scene 3 (22–30s): CTA + pulsing glow
+    else:
+        if t < 22.15:
+            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        particles(draw, t, acc, count=20, seed=11, vy=-45)
+        pulse_rings(draw, W // 2, H - 100, t, acc, period=1.2, max_r=150)
+
+        fn_large = try_font(130)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        glow_a = clamp(180 + 75 * math.sin(t * 5))
+        text_center(draw, "ARCADEMAX", W // 2, H // 2 - 90, fn_large, (*acc, glow_a))
+        text_center(draw, "LEVEL UP YOUR GAME", W // 2, H // 2 + 10, fn_med, (180, 255, 180, 200))
+        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_h = 72
+        cta_y = H - 120
+        draw.rounded_rectangle([W // 2 - 210, cta_y, W // 2 + 210, cta_y + cta_h],
+                                radius=36, fill=(*acc, cta_a))
+        text_center(draw, "PLAY FREE", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# CRUNCHPOP — breakfast cereal  (warm orange/yellow)
+# ---------------------------------------------------------------------------
+
+def crunchpop_frame(fi, t):
+    acc = (255, 180, 30)
+    bg = gradient_bg([(255, 120, 10), (255, 200, 50), (255, 120, 10)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    # Scene 1 (0–10s): spinning sunburst + bouncing puffs
+    if t < 10:
+        if t < 0.15:
+            flash_alpha = int(255 * (1 - t / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        # Spinning sunburst
+        n_rays = 24
+        for i in range(n_rays):
+            angle = 2 * math.pi * i / n_rays + t * 1.5
+            r_inner = 80
+            r_outer = 280 + 20 * math.sin(t * 3 + i)
+            x0 = W // 2 + int(math.cos(angle) * r_inner)
+            y0 = H // 2 + int(math.sin(angle) * r_inner)
+            x1 = W // 2 + int(math.cos(angle) * r_outer)
+            y1 = H // 2 + int(math.sin(angle) * r_outer)
+            a = clamp(80 + 30 * math.sin(i + t * 2))
+            draw.line([(x0, y0), (x1, y1)], fill=(255, 255, 255, a), width=3)
+
+        # Bouncing cereal puffs (parabolic physics)
+        puff_rng = random.Random(77)
+        for i in range(12):
+            x0 = puff_rng.uniform(100, W - 100)
+            vy0 = puff_rng.uniform(-300, -150)
+            delay = puff_rng.uniform(0, 6)
+            local_t = max(0, t - delay)
+            if local_t > 0:
+                g = 400
+                x = x0 + puff_rng.uniform(-20, 20) * local_t
+                y = H - 80 + vy0 * local_t + 0.5 * g * local_t ** 2
+                # bounce
+                bounce_floor = H - 80
+                while y > bounce_floor and local_t > 0:
+                    local_t *= 0.6
+                    y = H - 80 + vy0 * local_t + 0.5 * g * local_t ** 2
+                sz = puff_rng.randint(18, 38)
+                a = clamp(200 - local_t * 20)
+                if 0 <= x <= W and -50 <= y <= H + 50:
+                    draw.ellipse([x - sz, y - sz, x + sz, y + sz],
+                                 fill=(255, 220, 100, a), outline=(200, 100, 0, a), width=3)
+
+        # Milk splash rings
+        splash_rng = random.Random(55)
+        for i in range(3):
+            cx = splash_rng.randint(200, W - 200)
+            cy = H - 60
+            phase = (t * 0.8 + i * 0.6) % 1.8
+            r = int(phase * 120)
+            a = clamp(int((1 - phase / 1.8) * 180))
+            if a > 0:
+                draw.ellipse([cx - r, cy - r // 3, cx + r, cy + r // 3],
+                             outline=(255, 255, 255, a), width=3)
+
+    # Scene 2 (10–22s): brand name bounce-in + tagline
+    elif t < 22:
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        # Continued sunburst (slower)
+        for i in range(16):
+            angle = 2 * math.pi * i / 16 + t * 0.6
+            r_outer = 320
+            x0 = W // 2 + int(math.cos(angle) * 60)
+            y0 = H // 2 + int(math.sin(angle) * 60)
+            x1 = W // 2 + int(math.cos(angle) * r_outer)
+            y1 = H // 2 + int(math.sin(angle) * r_outer)
+            draw.line([(x0, y0), (x1, y1)], fill=(255, 255, 255, 50), width=2)
+
+        fn_large = try_font(130)
+        fn_med = try_font(54)
+        bounce_t = min((t - 10) / 1.0, 1.0)
+        by = int(lerp(H + 100, H // 2 - 70, ease_back(bounce_t)))
+        text_center(draw, "CRUNCHPOP", W // 2, by, fn_large, (60, 20, 0, 240))
+        tag_a = clamp(ease_out(min((t - 11.5) / 1.0, 1.0)) * 230)
+        text_center(draw, "The Morning Crunch!", W // 2, by + 100, fn_med, (80, 30, 0, tag_a))
+
+        particles(draw, t, acc, count=20, seed=7, vy=-30, r_range=(3, 9))
+
+    # Scene 3 (22–30s): CTA
+    else:
+        if t < 22.15:
+            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        fn_large = try_font(130)
+        fn_med = try_font(54)
+        fn_cta = try_font(46)
+        text_center(draw, "CRUNCHPOP", W // 2, H // 2 - 80, fn_large, (60, 20, 0, 240))
+        text_center(draw, "The Morning Crunch!", W // 2, H // 2 + 20, fn_med, (80, 30, 0, 220))
+        particles(draw, t, acc, count=15, seed=8, vy=-25)
+        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_h = 72
+        cta_y = H - 120
+        draw.rounded_rectangle([W // 2 - 210, cta_y, W // 2 + 210, cta_y + cta_h],
+                                radius=36, fill=(60, 20, 0, cta_a))
+        text_center(draw, "FIND IN STORES", W // 2, cta_y + cta_h // 2, fn_cta, (255, 220, 50, cta_a))
+
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# HOMESAFE — home insurance  (deep blue/teal)
+# ---------------------------------------------------------------------------
+
+def _ctrl(d, cx, cy, c):
+    w2, h2 = 70, 50
+    d.rounded_rectangle([cx - w2, cy - h2, cx + w2, cy + h2], radius=12, outline=c, width=4)
+    d.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], outline=c, width=4)
+    for side in [-1, 1]:
+        gx0 = min(cx + side * w2 // 4, cx + side * (w2 // 2 + 15))
+        gx1 = max(cx + side * w2 // 4, cx + side * (w2 // 2 + 15))
+        d.rounded_rectangle([gx0, cy - h2 + 8, gx1, cy + h2 - 8], radius=15, outline=c, width=4)
+
+
+def homesafe_frame(fi, t):
+    acc = (60, 200, 220)
+    bg = gradient_bg([(5, 20, 50), (10, 60, 80), (5, 20, 50)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    # Scene 1 (0–10s): falling rain + sonar pulse rings
+    if t < 10:
+        if t < 0.15:
+            flash_alpha = int(255 * (1 - t / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        # Falling rain (angled lines)
+        rain_rng = random.Random(33)
+        for _ in range(80):
+            rx = rain_rng.uniform(0, W + 200)
+            ry = rain_rng.uniform(0, H)
+            spd = rain_rng.uniform(0.8, 1.4)
+            length = rain_rng.randint(20, 50)
+            x = (rx - t * 120 * spd) % (W + 200)
+            y = (ry + t * 350 * spd) % H
+            a = rain_rng.randint(60, 140)
+            draw.line([(x, y), (x - length * 0.3, y + length)], fill=(*acc, a), width=1)
+
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=2.0, n=4, max_r=280)
+
+        # Shield forming (arc progress)
+        shield_prog = ease_in_out(min(t / 8.0, 1.0))
+        shield_r = 160
+        start_a = -90
+        end_a = start_a + int(360 * shield_prog)
+        draw.arc([W // 2 - shield_r, H // 2 - shield_r, W // 2 + shield_r, H // 2 + shield_r],
+                 start=start_a, end=end_a, fill=(*acc, 200), width=8)
+        # Shield "tick" glow
+        if shield_prog > 0.98:
+            draw.ellipse([W // 2 - 8, H // 2 - 8, W // 2 + 8, H // 2 + 8],
+                         fill=(*acc, 255))
+
+    # Scene 2 (10–22s): brand name + tagline + orbiting sparks
+    elif t < 22:
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=2.0, n=3, max_r=260)
+
+        # Orbiting sparks
+        for i in range(8):
+            angle = 2 * math.pi * i / 8 + t * 1.3
+            orbit_r = 200 + 30 * math.sin(t * 0.8 + i)
+            sx = W // 2 + int(math.cos(angle) * orbit_r)
+            sy = H // 2 + int(math.sin(angle) * orbit_r)
+            a = clamp(150 + 80 * math.sin(t * 2 + i))
+            draw.ellipse([sx - 5, sy - 5, sx + 5, sy + 5], fill=(*acc, a))
+
+        # Continued rain (lighter)
+        rain_rng = random.Random(33)
+        for _ in range(30):
+            rx = rain_rng.uniform(0, W + 200)
+            ry = rain_rng.uniform(0, H)
+            spd = rain_rng.uniform(0.8, 1.4)
+            length = rain_rng.randint(15, 35)
+            x = (rx - t * 120 * spd) % (W + 200)
+            y = (ry + t * 350 * spd) % H
+            draw.line([(x, y), (x - length * 0.3, y + length)], fill=(*acc, 50), width=1)
+
+        fn_large = try_font(130)
+        fn_med = try_font(52)
+        slide = ease_out(min((t - 10) / 1.3, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        text_center(draw, "HOMESAFE", W // 2, by, fn_large, (200, 240, 255, 235))
+        tag_a = clamp(ease_out(min((t - 11.5) / 1.0, 1.0)) * 220)
+        text_center(draw, "Protect What Matters.", W // 2, by + 95, fn_med, (*acc, tag_a))
+
+    # Scene 3 (22–30s): CTA
+    else:
+        if t < 22.15:
+            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
+            bg = Image.alpha_composite(bg, fl)
+
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=2.0, n=2, max_r=240)
+        # Orbiting sparks
+        for i in range(6):
+            angle = 2 * math.pi * i / 6 + t * 1.3
+            orbit_r = 220
+            sx = W // 2 + int(math.cos(angle) * orbit_r)
+            sy = H // 2 + int(math.sin(angle) * orbit_r)
+            a = clamp(120 + 80 * math.sin(t * 2 + i))
+            draw.ellipse([sx - 5, sy - 5, sx + 5, sy + 5], fill=(*acc, a))
+
+        fn_large = try_font(130)
+        fn_med = try_font(52)
+        fn_cta = try_font(46)
+        text_center(draw, "HOMESAFE", W // 2, H // 2 - 80, fn_large, (200, 240, 255, 235))
+        text_center(draw, "Protect What Matters.", W // 2, H // 2 + 10, fn_med, (*acc, 210))
+        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_h = 72
+        cta_y = H - 120
+        draw.rounded_rectangle([W // 2 - 220, cta_y, W // 2 + 220, cta_y + cta_h],
+                                radius=36, fill=(*acc, cta_a))
+        text_center(draw, "GET A QUOTE", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
 ADS = [
-    {
-        "id":      "ad_relevant_screentime",
-        "brand":   "SCREENTIME",
-        "tagline": "Every story worth watching.",
-        "cta":     "screentime.tv  —  free for 30 days",
-        "bg_top":  "0A0F1F",
-        "bg_bot":  "152D4B",
-        "accent":  "4FC3F7",
-        "cta_fg":  "0A0F1F",
-        "scenes":  [scene1_screentime, scene2_screentime, scene3_screentime],
-    },
-    {
-        "id":      "ad_relevant_arcademax",
-        "brand":   "ARCADEMAX",
-        "tagline": "Your next adventure starts here.",
-        "cta":     "arcademax.io  —  play free",
-        "bg_top":  "08040F",
-        "bg_bot":  "1A0A2E",
-        "accent":  "E040FB",
-        "cta_fg":  "FFFFFF",
-        "scenes":  [scene1_arcademax, scene2_arcademax, scene3_arcademax],
-    },
-    {
-        "id":      "ad_irrelevant_crunchpop",
-        "brand":   "CRUNCHPOP",
-        "tagline": "The crunch that starts your day.",
-        "cta":     "New flavours in stores now",
-        "bg_top":  "CC3700",
-        "bg_bot":  "6B1200",
-        "accent":  "FFD740",
-        "cta_fg":  "7B1E00",
-        "scenes":  [scene1_crunchpop, scene2_crunchpop, scene3_crunchpop],
-    },
-    {
-        "id":      "ad_irrelevant_homesafe",
-        "brand":   "HOMESAFE",
-        "tagline": "Protect what matters most.",
-        "cta":     "homesafe.com/quote  —  2 minutes",
-        "bg_top":  "071510",
-        "bg_bot":  "142820",
-        "accent":  "A8D5A2",
-        "cta_fg":  "071510",
-        "scenes":  [scene1_homesafe, scene2_homesafe, scene3_homesafe],
-    },
+    ("ad_relevant_screentime", screentime_frame),
+    ("ad_relevant_arcademax", arcademax_frame),
+    ("ad_irrelevant_crunchpop", crunchpop_frame),
+    ("ad_irrelevant_homesafe", homesafe_frame),
 ]
 
-SCENE_CUTS = [8.0, 22.0, 30.0]   # scene 1 ends at 8s, scene 2 ends at 22s
-
-
-def render_frame(t: float, ad: dict) -> Image.Image:
-    acc     = rgb(ad["accent"])
-    bg_top  = rgb(ad["bg_top"])
-    bg_bot  = rgb(ad["bg_bot"])
-    s1, s2, s3 = ad["scenes"]
-
-    if t < SCENE_CUTS[0]:
-        return s1(t, acc, bg_top, bg_bot)
-    elif t < SCENE_CUTS[1]:
-        return s2(t - SCENE_CUTS[0], ad, acc, bg_top, bg_bot)
-    else:
-        return s3(t - SCENE_CUTS[1], ad, acc, bg_top, bg_bot)
-
-
-def render_ad(ad: dict, out_path: Path) -> None:
-    frames_dir = Path(tempfile.mkdtemp())
-    total = DURATION * FPS
-
-    print(f"  {ad['id']}:  rendering {total} frames … ", end="", flush=True)
-    for n in range(total):
-        t = n / FPS
-        frame = render_frame(t, ad)
-        frame.save(frames_dir / f"f{n:04d}.png")
-    print("encoding … ", end="", flush=True)
-
-    cmd = [
-        "ffmpeg", "-y", "-loglevel", "error",
-        "-framerate", str(FPS),
-        "-i", str(frames_dir / "f%04d.png"),
-        "-f", "lavfi", "-i", "anullsrc=cl=stereo:r=48000",
-        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "veryfast",
-        "-c:a", "aac", "-b:a", "96k",
-        "-shortest", "-t", str(DURATION),
-        "-movflags", "+faststart",
-        str(out_path),
-    ]
-    res = subprocess.run(cmd, capture_output=True, text=True)
-    shutil.rmtree(frames_dir)
-
-    if res.returncode != 0:
-        print("FAIL")
-        print(res.stderr, file=sys.stderr)
-        raise SystemExit(1)
-    print("ok")
-
-
-def main() -> None:
-    if not shutil.which("ffmpeg"):
-        print("ffmpeg not found on PATH.")
-        raise SystemExit(1)
-    OUT.mkdir(parents=True, exist_ok=True)
-    print(f"Generating {len(ADS)} ads → {OUT}\n")
-    for ad in ADS:
-        render_ad(ad, OUT / f"{ad['id']}.mp4")
-    print(f"\nDone.")
-
-
 if __name__ == "__main__":
-    main()
+    os.makedirs(OUT_DIR, exist_ok=True)
+    for ad_id, fn in ADS:
+        print(f"\n=== {ad_id} ===")
+        render_and_encode(fn, ad_id)
+    print("\nDone.")

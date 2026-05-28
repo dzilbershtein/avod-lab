@@ -10,6 +10,9 @@ env/
 data/events.sqlite
 data/*.sqlite
 
+# Generated synthetic ad videos — regenerate with scripts/generate_ads.py
+static/ads/*.mp4
+
 # OS
 .DS_Store
 
