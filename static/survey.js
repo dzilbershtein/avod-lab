@@ -103,7 +103,7 @@
       { id: "pref_preroll",    label: "An ad plays before the video starts (no skip option)" },
       { id: "pref_midroll",    label: "An ad interrupts the video at the midpoint (no skip option)" },
       { id: "pref_overlay",    label: "A banner ad appears over the video while it continues playing" },
-      { id: "pref_initiated",  label: "You choose to watch an ad in exchange for bonus content" },
+      { id: "pref_initiated",  label: "You can choose to watch an ad at any point during the video" },
     ]);
 
     return [
