@@ -273,6 +273,80 @@
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "A message from our sponsors."
+    },
+
+    {
+      "id": "ad_relevant_neonflix",
+      "category": "electronics_tech",
+      "title": "NEONFLIX — movie streaming (synthetic, relevant, backup)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_relevant_neonflix.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "You're seeing this ad because you enjoy watching films online."
+    },
+    {
+      "id": "ad_relevant_pixelquest",
+      "category": "electronics_tech",
+      "title": "PIXELQUEST — adventure gaming (synthetic, relevant, backup)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_relevant_pixelquest.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch adventure content, we picked this for you."
+    },
+    {
+      "id": "ad_irrelevant_freshmint",
+      "category": "food_beverage",
+      "title": "FRESHMINT — oral care (synthetic, irrelevant, backup)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_irrelevant_freshmint.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "A message from our sponsors."
+    },
+    {
+      "id": "ad_irrelevant_buildright",
+      "category": "public_service",
+      "title": "BUILDRIGHT — power tools (synthetic, irrelevant)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_irrelevant_buildright.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "A message from our sponsors."
+    },
+
+    {
+      "id": "ad_auto_drivepro",
+      "category": "automotive",
+      "title": "DRIVEPRO — GPS navigation app (synthetic)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_auto_drivepro.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch driving content, we picked this for you."
+    },
+    {
+      "id": "ad_auto_speedlane",
+      "category": "automotive",
+      "title": "SPEEDLANE — electric vehicle brand (synthetic)",
+      "duration_sec": 30,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_auto_speedlane.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Recommended based on the automotive content you watch."
     }
   ]
 }

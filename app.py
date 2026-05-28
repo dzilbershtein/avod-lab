@@ -168,19 +168,8 @@ def _load_ad_library() -> dict:
     return {"categories": [], "ads": []}
 
 
-def _resolve_ad(slot: dict, library: dict) -> dict:
-    """If `slot` carries library_ref, merge the library entry into it.
-
-    Slot-level fields (placement, start_at_sec, banner, …) override the
-    library entry, so an experimenter can pick an ad clip from the library
-    and still tweak placement-specific behaviour.
-    """
-    ref = slot.get("library_ref")
-    if not ref:
-        return slot
-    lib_entry = next((a for a in library.get("ads", []) if a["id"] == ref), None)
-    if lib_entry is None:
-        return slot  # silently ignore — admin will see the missing event in logs
+def _merge_lib_entry(lib_entry: dict, slot: dict) -> dict:
+    """Merge a single ad-library entry with slot-level overrides."""
     merged = {
         "id": lib_entry["id"],
         "url": lib_entry.get("video_url"),
@@ -197,8 +186,46 @@ def _resolve_ad(slot: dict, library: dict) -> dict:
             "show_at_ad_sec": 0,
             "hide_at_ad_sec": lib_entry.get("duration_sec", 12),
         }
-    merged.update({k: v for k, v in slot.items() if k != "library_ref"})
+    merged.update(
+        {k: v for k, v in slot.items() if k not in ("library_ref", "library_refs")}
+    )
     return merged
+
+
+def _resolve_ad(slot: dict, library: dict) -> dict:
+    """If `slot` carries library_ref or library_refs, merge library entries.
+
+    library_refs (list): resolves the full pool, shuffles it randomly so
+        different participants see a different ordering, and stores it as
+        `ad_pool`. The client player cycles through the pool across
+        successive title plays so each video gets a fresh ad from the
+        correct relevance category. The primary `url` / `id` is taken from
+        the first entry after shuffling (backwards-compatible fallback).
+
+    library_ref (str): original single-entry path — behaviour unchanged.
+
+    Slot-level fields (placement, start_at_sec, banner, …) override every
+    library entry so per-placement tweaks still work.
+    """
+    ads_index = {a["id"]: a for a in library.get("ads", [])}
+
+    refs = slot.get("library_refs")
+    if refs and isinstance(refs, list):
+        pool = [_merge_lib_entry(ads_index[r], slot) for r in refs if r in ads_index]
+        if not pool:
+            return slot
+        random.shuffle(pool)
+        primary = pool[0].copy()
+        primary["ad_pool"] = pool
+        return primary
+
+    ref = slot.get("library_ref")
+    if not ref:
+        return slot
+    lib_entry = ads_index.get(ref)
+    if lib_entry is None:
+        return slot  # silently ignore — admin will see the missing event in logs
+    return _merge_lib_entry(lib_entry, slot)
 
 
 # --------------------------------------------------------------------------- #
