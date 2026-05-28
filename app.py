@@ -94,6 +94,17 @@ def load_config(
         if not base_label.endswith(f"-{chosen}"):
             cfg["condition_label"] = f"{base_label}-{chosen}"
         cfg["ads"] = [_resolve_ad(slot, library) for slot in cond_def.get("ads", [])]
+
+        # Resolve ad_relevance arm if any ad slot uses "balanced" or "random".
+        # Stored in cfg so the client player can use it without re-rolling.
+        uses_dynamic_relevance = any(
+            slot.get("ad_relevance") in ("balanced", "random")
+            for slot in cond_def.get("ads", [])
+        )
+        if uses_dynamic_relevance:
+            arm, arm_source = _pick_ad_relevance(chosen, db=db)
+            cfg["resolved_ad_relevance"] = arm
+            cfg["resolved_ad_relevance_source"] = arm_source
     else:
         cfg["ads"] = [_resolve_ad(slot, library) for slot in cfg.get("ads", [])]
     return cfg
@@ -137,6 +148,34 @@ def _pick_condition(
         return fixed, "fixed"
     # Last-resort fallback — first declared condition.
     return next(iter(conditions)), "fixed"
+
+
+def _pick_ad_relevance(
+    condition: str,
+    db: sqlite3.Connection | None,
+) -> tuple[str, str]:
+    """Return (arm, source) where arm is 'relevant' or 'irrelevant'.
+
+    Uses balanced minimisation within each placement condition so that
+    the (condition × relevance) cell counts stay as equal as possible
+    across the study.  Falls back to simple random when the DB is not
+    available (e.g. the preview GET / request before session start).
+    """
+    if db is None:
+        return random.choice(["relevant", "irrelevant"]), "random"
+    counts: dict[str, int] = {"relevant": 0, "irrelevant": 0}
+    rows = db.execute(
+        "SELECT ad_relevance_arm, COUNT(*) AS n FROM sessions "
+        "WHERE condition = ? AND ad_relevance_arm IN ('relevant', 'irrelevant') "
+        "GROUP BY ad_relevance_arm",
+        (condition,),
+    ).fetchall()
+    for row in rows:
+        if row["ad_relevance_arm"] in counts:
+            counts[row["ad_relevance_arm"]] = row["n"]
+    min_n = min(counts.values())
+    candidates = [k for k, v in counts.items() if v == min_n]
+    return random.choice(candidates), "balanced"
 
 
 def _count_condition_assignments(pool: list, db: sqlite3.Connection) -> dict:
@@ -256,13 +295,14 @@ def init_db() -> None:
     conn.executescript(
         """
         CREATE TABLE IF NOT EXISTS sessions (
-            id               TEXT PRIMARY KEY,
-            created_at       TEXT NOT NULL,
-            user_agent       TEXT,
-            condition_label  TEXT,
-            condition        TEXT,
-            condition_source TEXT,
-            config_snapshot  TEXT NOT NULL
+            id                   TEXT PRIMARY KEY,
+            created_at           TEXT NOT NULL,
+            user_agent           TEXT,
+            condition_label      TEXT,
+            condition            TEXT,
+            condition_source     TEXT,
+            ad_relevance_arm     TEXT,
+            config_snapshot      TEXT NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS events (
@@ -285,7 +325,9 @@ def init_db() -> None:
     for migration in [
         "ALTER TABLE sessions ADD COLUMN condition TEXT",
         "ALTER TABLE sessions ADD COLUMN condition_source TEXT",
+        "ALTER TABLE sessions ADD COLUMN ad_relevance_arm TEXT",
         "CREATE INDEX IF NOT EXISTS idx_sessions_cond ON sessions(condition)",
+        "CREATE INDEX IF NOT EXISTS idx_sessions_rel  ON sessions(condition, ad_relevance_arm)",
     ]:
         try:
             conn.execute(migration)
@@ -324,15 +366,17 @@ def start_session():
     sid = secrets.token_urlsafe(16)
     db.execute(
         "INSERT INTO sessions "
-        "(id, created_at, user_agent, condition_label, condition, condition_source, config_snapshot) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "(id, created_at, user_agent, condition_label, condition, condition_source, "
+        " ad_relevance_arm, config_snapshot) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         (
             sid,
             datetime.now(timezone.utc).isoformat(timespec="seconds"),
             request.headers.get("User-Agent", "")[:512],
             cfg.get("condition_label", "phase1-default"),
-            cfg.get("active_condition_resolved"),   # clean code, e.g. "A2"
-            cfg.get("active_condition_source"),     # "balanced"|"random"|"fixed"|"override"
+            cfg.get("active_condition_resolved"),       # clean code, e.g. "A2"
+            cfg.get("active_condition_source"),         # "balanced"|"random"|"fixed"|"override"
+            cfg.get("resolved_ad_relevance"),           # "relevant"|"irrelevant"|None
             json.dumps(cfg, separators=(",", ":")),
         ),
     )

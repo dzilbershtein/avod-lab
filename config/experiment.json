@@ -339,7 +339,7 @@
       "ads": [
         {
           "placement": "postroll",
-          "ad_relevance": "relevant",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -351,7 +351,7 @@
       "ads": [
         {
           "placement": "preroll",
-          "ad_relevance": "relevant",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -364,7 +364,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "ad_relevance": "irrelevant",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -397,7 +397,7 @@
         {
           "placement": "user_initiated",
           "prompt_text": "Watch an ad",
-          "ad_relevance": "irrelevant",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }

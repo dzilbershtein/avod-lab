@@ -51,6 +51,10 @@
 
   // state
   let sessionVideoCount = 0; // incremented each time a title is opened; drives ad_pool rotation
+  // Locked in on first ad resolution for the session so all videos in one
+  // session see the same relevance arm. null = not yet determined.
+  let sessionAdRelevance = null;
+
   let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
   let preroll = null;
   let postroll = null;     // A0 control: plays after content ends, before "done" view
@@ -66,16 +70,33 @@
   let activeTitle = null;
 
   // Resolve an ad slot that carries ad_relevance by picking from the library.
-  // relevant → pick a synthetic ad whose category matches the title's relevant_ad_category
-  // irrelevant → pick a synthetic ad whose category does NOT match
+  // relevant   → ad category matches the title's relevant_ad_category
+  // irrelevant → ad category does NOT match
+  // balanced   → server assigned via balanced minimisation; read from
+  //              cfg.resolved_ad_relevance (set in /api/session/start response).
+  //              Falls back to a client-side coin flip locked for the session
+  //              if the server value is not yet available (page-load preview).
   // Cycles through the filtered pool using sessionVideoCount so each new
   // title play gets a different ad from the same relevance category.
   function resolveAdByRelevance(slot, title) {
     if (!slot || !slot.ad_relevance) return slot;
+    let relevance = slot.ad_relevance;
+    if (relevance === "balanced" || relevance === "random") {
+      const serverArm = window.experiment.cfg.resolved_ad_relevance;
+      if (serverArm) {
+        relevance = serverArm;
+      } else {
+        // Fallback before session start response arrives: lock in random.
+        if (sessionAdRelevance === null) {
+          sessionAdRelevance = Math.random() < 0.5 ? "relevant" : "irrelevant";
+        }
+        relevance = sessionAdRelevance;
+      }
+    }
     const lib = ((window.experiment.cfg._ad_library || {}).ads || []);
     const titleCat = (title && title.relevant_ad_category) || null;
     const synthetic = lib.filter((a) => a.source === "synthetic");
-    let pool = slot.ad_relevance === "relevant"
+    let pool = relevance === "relevant"
       ? synthetic.filter((a) => a.category === titleCat)
       : synthetic.filter((a) => a.category !== titleCat);
     if (pool.length === 0) pool = synthetic; // fallback: any synthetic ad
@@ -89,6 +110,7 @@
       category: entry.category,
       source: entry.source,
       ad_relevance: slot.ad_relevance,
+      effective_relevance: relevance,  // logged in ad_start payload
     };
     // Slot-level fields (placement, timing, banner, duration_target_sec, etc.) override.
     // If the slot has no banner but the library entry has a default_banner, apply it.
@@ -455,6 +477,7 @@
       placement: ad.placement,
       category: ad.category || null,
       source: ad.source || null,
+      effective_relevance: ad.effective_relevance || null,
       duration_target_sec: adDurationCap,
       title_id: titleId(),
       t_content: content.currentTime,
