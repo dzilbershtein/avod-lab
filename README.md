@@ -32,7 +32,7 @@ Append `?cond=<code>` to any participant URL to override the balanced assignment
 | A1   | Forced pre-roll          | `/?cond=A1`                | Ad before clip; shallow interruption|
 | A2   | Forced mid-roll          | `/?cond=A2`                | Ad at midpoint; deep interruption   |
 | A3   | Non-interruptive overlay | `/?cond=A3`                | Banner over lower-third; no pause   |
-| A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback; no bonus offered |
+| A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback|
 
 ### Experiment 2 — condition URLs
 
