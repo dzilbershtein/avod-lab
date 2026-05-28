@@ -319,7 +319,7 @@
       "ads": [
         {
           "placement": "postroll",
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -331,7 +331,7 @@
       "ads": [
         {
           "placement": "preroll",
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_arcademax",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -344,7 +344,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_irrelevant_crunchpop",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -377,7 +377,7 @@
         {
           "placement": "user_initiated",
           "prompt_text": "Watch an ad",
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_irrelevant_homesafe",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -393,7 +393,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": { "show": false }
@@ -407,7 +407,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -426,7 +426,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -447,7 +447,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": { "show": false }
@@ -463,7 +463,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -484,7 +484,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "library_ref": "ad_relevant_screentime",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
