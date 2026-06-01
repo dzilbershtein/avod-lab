@@ -97,15 +97,6 @@
   // ── Post-survey pages (condition-aware) ─────────────────────────────────────
 
   function buildPostPages(condition) {
-    // Shuffle stated-preference options to avoid order effects.
-    const prefOptions = shuffle([
-      { id: "pref_postroll",   label: "An ad plays automatically after the video ends (no interruption to viewing)" },
-      { id: "pref_preroll",    label: "An ad plays before the video starts (no skip option)" },
-      { id: "pref_midroll",    label: "An ad interrupts the video at the midpoint (no skip option)" },
-      { id: "pref_overlay",    label: "A banner ad appears over the video while it continues playing" },
-      { id: "pref_initiated",  label: "You can choose to watch an ad at any point during the video" },
-    ]);
-
     return [
       {
         id: "intrusiveness",
@@ -165,24 +156,11 @@
         intro: null,
         items: buildManipItems(condition),
       },
-      {
-        id: "preferences",
-        title: "Ad format preferences",
-        intro: "Different streaming services use different ad formats. Please rank the five formats below from most preferred (1 = most preferred) to least preferred (5 = least preferred) by using the ▲ ▼ buttons.",
-        items: [
-          { id: "pref_rank", type: "ranking", options: prefOptions },
-        ],
-      },
     ];
   }
 
   function buildManipItems(condition) {
     const items = [];
-    if (condition === "A3") {
-      items.push(RDO("manip_overlay_noticed",
-        "During the video, did you notice any image or banner displayed on top of the video while it was playing?",
-        ["Yes", "No", "I am not sure"]));
-    }
     if (condition === "A4") {
       items.push(L5("manip_control",
         "To what extent did you feel in control of when you watched the ad?"));
@@ -196,15 +174,6 @@
         ["Yes", "No", "Not sure"])
     );
     return items;
-  }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
   }
 
   // ── Renderer ────────────────────────────────────────────────────────────────
@@ -324,48 +293,6 @@
       return wrap;
     }
 
-    if (item.type === "ranking") {
-      // Ordered list of options — the viewer reorders using ▲▼ buttons.
-      // responses[item.id] is stored as an array of option IDs in ranked order.
-      const ordered = responses[item.id]
-        ? item.options.slice().sort(
-            (a, b) => responses[item.id].indexOf(a.id) - responses[item.id].indexOf(b.id))
-        : item.options.slice();
-      if (!responses[item.id]) responses[item.id] = ordered.map(o => o.id);
-
-      const list = el("div", "rank-list");
-      function redrawList() {
-        list.innerHTML = "";
-        ordered.forEach((opt, idx) => {
-          const row    = el("div", "rank-row");
-          const badge  = el("span", "rank-badge", String(idx + 1));
-          const label  = el("span", "rank-label", opt.label);
-          const btnUp  = el("button", "rank-btn");
-          const btnDn  = el("button", "rank-btn");
-          btnUp.type = btnDn.type = "button";
-          btnUp.textContent = "▲";
-          btnDn.textContent = "▼";
-          btnUp.disabled = idx === 0;
-          btnDn.disabled = idx === ordered.length - 1;
-          btnUp.onclick = () => {
-            ordered.splice(idx - 1, 0, ordered.splice(idx, 1)[0]);
-            responses[item.id] = ordered.map(o => o.id);
-            redrawList();
-          };
-          btnDn.onclick = () => {
-            ordered.splice(idx + 1, 0, ordered.splice(idx, 1)[0]);
-            responses[item.id] = ordered.map(o => o.id);
-            redrawList();
-          };
-          row.append(badge, label, btnUp, btnDn);
-          list.appendChild(row);
-        });
-      }
-      redrawList();
-      wrap.appendChild(list);
-      return wrap;
-    }
-
     return wrap;
   }
 
@@ -373,7 +300,6 @@
 
   function collectPage(container, page, responses) {
     for (const item of page.items) {
-      if (item.type === "ranking") continue; // maintained by onclick handlers
       if (item.type === "number") {
         const inp = container.querySelector(`#${item.id}`);
         if (inp && inp.value !== "") responses[item.id] = parseInt(inp.value, 10);
@@ -392,7 +318,6 @@
   function validatePage(container, page, responses) {
     const missing = [];
     for (const item of page.items) {
-      if (item.type === "ranking") continue;
       if (responses[item.id] == null) {
         missing.push(item.id);
         container.querySelector(`.survey-item[data-id="${item.id}"]`)
