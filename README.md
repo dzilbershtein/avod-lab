@@ -34,7 +34,7 @@ Experiment 1 is a **5 × 2 between-subjects design**: five ad placement conditio
 | A1   | Forced pre-roll          | `/?cond=A1`                | Ad before clip; shallow interruption|
 | A2   | Forced mid-roll          | `/?cond=A2`                | Ad at midpoint; deep interruption   |
 | A3   | Non-interruptive overlay | `/?cond=A3`                | Banner over lower-third; no pause   |
-| A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback; no bonus offered |
+| A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback|
 
 **Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using the same balanced-minimisation logic used for placement. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the genre of the specific video the participant chose:
 
