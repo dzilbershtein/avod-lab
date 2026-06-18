@@ -58,7 +58,7 @@
   let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
   let preroll = null;
   let postroll = null;     // A0 control: plays after content ends, before "done" view
-  let userInitiated = null; // A4: clickable prompt; ad plays only on click
+  let userInitiated = null; // A3: clickable prompt; ad plays only on click
   let userInitiatedFired = false;
   let userInitiatedPromptShown = false;   // true once prompt is actually visible
   let userInitiatedPromptStartSec = null; // resolved from prompt_start_at_frac
@@ -167,7 +167,7 @@
           reason: reason || "manual",
         });
       }
-      // A4/B-series: if the prompt was shown but the viewer never clicked, log a decline.
+      // A3/B-series: if the prompt was shown but the viewer never clicked, log a decline.
       // This flags participants for the exclusion criteria in the pre-registered protocol.
       if (userInitiated && userInitiatedPromptShown && !userInitiatedFired) {
         Session.log("ad_prompt_declined", {
@@ -400,7 +400,7 @@
     }
   }
 
-  // ------------------------------------------------------ user-initiated (A4 / Exp-2 B-series)
+  // ------------------------------------------------------ user-initiated (A3 / Exp-2 B-series)
   function setupUserInitiatedPrompt(ad) {
     if (!adPrompt) return;
     if (!ad) {

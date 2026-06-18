@@ -33,7 +33,7 @@ Experiment 1 is a **5 × 2 between-subjects design**: five ad placement conditio
 | A0   | Post-roll (control)      | `/?cond=A0`                | Ad after clip; baseline             |
 | A1   | Forced pre-roll          | `/?cond=A1`                | Ad before clip; shallow interruption|
 | A2   | Forced mid-roll          | `/?cond=A2`                | Ad at midpoint; deep interruption   |
-| A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback|
+| A3   | User-initiated           | `/?cond=A3`                | Persistent "Watch an ad" button available throughout playback|
 
 **Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using the same balanced-minimisation logic used for placement. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the genre of the specific video the participant chose:
 
@@ -80,10 +80,10 @@ kill %1
 
 ### 2. Per-condition smoke test
 
-Run the following checklist for **each of A0–A4**. Open the URL in a fresh private/incognito window each time so you get a clean session.
+Run the following checklist for **each of A0–A3**. Open the URL in a fresh private/incognito window each time so you get a clean session.
 
 ```
-http://localhost:8000/?cond=A0   (repeat for A1, A2, A4)
+http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 ```
 
 **Step-by-step checklist**
@@ -100,20 +100,20 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A4)
 | 8 | *(A0)* Watch clip to end | 30-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
 | 8 | *(A1)* Click Play | 30-second pre-roll plays first; countdown visible; ad ends; content begins |
 | 8 | *(A2)* Watch to midpoint | Content pauses; 30-second mid-roll plays; content resumes |
-| 8 | *(A4)* Start clip | "Watch an ad" button is visible immediately in the top-left of the player; click it at any point → ad plays; button disappears after click |
+| 8 | *(A3)* Start clip | "Watch an ad" button is visible immediately in the top-left of the player; click it at any point → ad plays; button disappears after click |
 | 9 | Ad completes → post-survey appears | Page counter shows "1 / 5" |
 | 10 | Complete **Intrusiveness** page | 7 × 7-point items |
 | 11 | Complete **Irritation** page | 5 × 7-point items |
 | 12 | Complete **Attitudes** page | Satisfaction + 3 ad-attitude + 3 platform-attitude semantic differentials |
 | 13 | Complete **Purchase / skip** page | 3 PI items + skip item + attention check (select "Somewhat agree" = 5) |
-| 14 | Complete **Manipulation checks** page | A4: control item; all: ad-seen + prior-exposure |
+| 14 | Complete **Manipulation checks** page | A3: control item; all: ad-seen + prior-exposure |
 | 15 | Click **Submit** | Debriefing screen appears |
 | 17 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
 
-### 3. Decline path — A4 only
+### 3. Decline path — A3 only
 
 ```
-http://localhost:8000/?cond=A4
+http://localhost:8000/?cond=A3
 ```
 
 1. Complete pre-survey and start the video.
@@ -134,7 +134,7 @@ Participants who fail both checks should be flagged for exclusion per the pre-re
 
 ### 5. Cell balance check
 
-After running each of A0–A4 at least once:
+After running each of A0–A3 at least once:
 
 ```
 http://localhost:8000/admin?token=dev-admin-token
@@ -167,9 +167,9 @@ Events logged per session:
 | `content_play` / `content_pause` / `content_seek` | Playback events |
 | `content_ended` | Main clip finished |
 | `ad_start` / `ad_end` | Ad playback — payload includes `ad_id`, `category`, `effective_relevance` |
-| `ad_prompt_shown` | A4 prompt appeared |
-| `ad_prompt_clicked` | A4 prompt clicked |
-| `ad_prompt_declined` | A4 prompt shown but never clicked |
+| `ad_prompt_shown` | A3 prompt appeared |
+| `ad_prompt_clicked` | A3 prompt clicked |
+| `ad_prompt_declined` | A3 prompt shown but never clicked |
 | `ad_schedule_resolved` | Mid-roll/overlay timing computed |
 | `banner_shown` / `banner_hidden` / `banner_click` | Explanation/sponsor banner |
 | `page_unload` | Browser tab closed / navigated away |
@@ -266,7 +266,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 | Item ID | Conditions | Type | Question |
 |---------|------------|------|----------|
-| `manip_control` | A4 only | Likert-5 | To what extent did you feel in control of when you watched the ad? |
+| `manip_control` | A3 only | Likert-5 | To what extent did you feel in control of when you watched the ad? |
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
 
@@ -280,7 +280,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 // Switch between experiments:
 "condition_assignment_mode": "balanced",   // balanced | random | fixed
 "active_condition": "A0",                  // used only when mode = "fixed"
-"random_pool": ["A0","A1","A2","A4"], // Experiment 1
+"random_pool": ["A0","A1","A2","A3"], // Experiment 1
 // "random_pool": ["B0","B1","B2","B3","B4","B5"],  // switch to Experiment 2
 ```
 
@@ -319,7 +319,7 @@ Add `"prolific_completion_url": "https://app.prolific.com/submissions/complete?c
 avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── config/
-│   ├── experiment.json         Conditions A0–A4, B0–B5; catalogue; ad_relevance per slot
+│   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
 │   └── ad_library.json         Ad creative metadata; 4 categories; 10 synthetic ads
 ├── data/events.sqlite          Created on first run
 ├── static/

@@ -23,7 +23,7 @@
  *   Ad / platform attitude: 3-item semantic differentials
  *   Purchase intention    : 3 items
  *   Skip intention        : 1 item
- *   Perceived control     : 5-point item, A4 manipulation check only
+ *   Perceived control     : 5-point item, A3 manipulation check only
  */
 
 (() => {
@@ -161,7 +161,7 @@
 
   function buildManipItems(condition) {
     const items = [];
-    if (condition === "A4") {
+    if (condition === "A3") {
       items.push(L5("manip_control",
         "To what extent did you feel in control of when you watched the ad?"));
     }
