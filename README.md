@@ -101,16 +101,14 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3, A4)
 | 8 | *(A0)* Watch clip to end | 30-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
 | 8 | *(A1)* Click Play | 30-second pre-roll plays first; countdown visible; ad ends; content begins |
 | 8 | *(A2)* Watch to midpoint | Content pauses; 30-second mid-roll plays; content resumes |
-| 8 | *(A3)* Watch clip | Overlay image appears in lower-third; content continues uninterrupted; banner text visible |
 | 8 | *(A4)* Start clip | "Watch an ad" button is visible immediately in the top-left of the player; click it at any point → ad plays; button disappears after click |
-| 9 | Ad completes → post-survey appears | Page counter shows "1 / 6" |
+| 9 | Ad completes → post-survey appears | Page counter shows "1 / 5" |
 | 10 | Complete **Intrusiveness** page | 7 × 7-point items |
 | 11 | Complete **Irritation** page | 5 × 7-point items |
 | 12 | Complete **Attitudes** page | Satisfaction + 3 ad-attitude + 3 platform-attitude semantic differentials |
 | 13 | Complete **Purchase / skip** page | 3 PI items + skip item + attention check (select "Somewhat agree" = 5) |
-| 14 | Complete **Manipulation checks** page | A3: overlay-noticing item; A4: control item; all: ad-seen + prior-exposure |
-| 15 | Complete **Preferences** page | Rank 5 formats with ▲▼; each rank badge updates in real time |
-| 16 | Click **Submit** | Debriefing screen appears |
+| 14 | Complete **Manipulation checks** page | A4: control item; all: ad-seen + prior-exposure |
+| 15 | Click **Submit** | Debriefing screen appears |
 | 17 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
 
 ### 3. Decline path — A4 only
@@ -189,7 +187,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 | Item ID | Question | Type |
 |---------|----------|------|
-| `age` | Your age (years) | Number |
+| `age` | Your age group | Radio (18–24 / 25–34 / 35–44 / 45–54 / 55 or older) |
 | `gender` | Gender | Radio (4 options) |
 | `vod_freq` | How often do you watch ad-supported streaming? | Radio (5 options) |
 
@@ -217,7 +215,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 ---
 
-### Post-exposure battery (6 pages)
+### Post-exposure battery (5 pages)
 
 **Page 1 — Intrusiveness**
 *(Li et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
@@ -269,22 +267,9 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 | Item ID | Conditions | Type | Question |
 |---------|------------|------|----------|
-| `manip_overlay_noticed` | A3 only | Radio | During the video, did you notice any image or banner displayed on top of the video? |
 | `manip_control` | A4 only | Likert-5 | To what extent did you feel in control of when you watched the ad? |
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
-
-**Page 6 — Stated preference ranking**
-
-Five ad format descriptions presented in randomised order. Participants rank from most (1) to least (5) preferred using ▲▼ buttons. Stored as `pref_rank` = array of IDs in ranked order.
-
-| Option ID | Description |
-|-----------|-------------|
-| `pref_postroll`  | An ad plays automatically after the video ends (no interruption to viewing) |
-| `pref_preroll`   | An ad plays before the video starts (no skip option) |
-| `pref_midroll`   | An ad interrupts the video at the midpoint (no skip option) |
-| `pref_overlay`   | A banner ad appears over the video while it continues playing |
-| `pref_initiated` | You can choose to watch an ad at any point during the video |
 
 ---
 
