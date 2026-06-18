@@ -34,7 +34,6 @@
   const L7  = (id, label, extra = {}) => ({ id, type: "likert7", label, ...extra });
   const L5  = (id, label)             => ({ id, type: "likert5", label });
   const RDO = (id, label, options)    => ({ id, type: "radio",   label, options });
-  const NUM = (id, label, min, max)   => ({ id, type: "number",  label, min, max });
   const SD  = (id, left, right, grp)  => ({ id, type: "semdiff", left, right, _group: grp || null });
   const ATT = (id, correct)           => L7(id,
     `Attention check — please select "${LABELS7[correct - 1]}" (${correct}) to confirm you are reading carefully.`,
@@ -53,11 +52,12 @@
       title: "Background questions",
       intro: "Please answer a few short questions before you start. Your answers are kept confidential and used only for research purposes.",
       items: [
-        NUM("age",    "Your age (years)", 18, 99),
+        RDO("age", "Your age group",
+          ["18–24", "25–34", "35–44", "45–54", "55 or older"]),
         RDO("gender", "Gender",
           ["Male", "Female", "Non-binary / third gender", "Prefer not to say"]),
         RDO("vod_freq",
-          "How often do you watch ad-supported streaming video (e.g. YouTube with ads, Tubi, Peacock Free, ITVX)?",
+          "How often do you watch ad-supported streaming video (e.g. YouTube with ads, Netflix, Prime Video, etc.)?",
           ["Daily", "Several times a week", "Weekly", "Less than weekly",
            "Never or almost never"]),
       ],
@@ -277,22 +277,6 @@
       return wrap;
     }
 
-    if (item.type === "number") {
-      const lbl = el("label", "survey-item-label", item.label);
-      lbl.htmlFor = item.id;
-      const inp = document.createElement("input");
-      inp.type    = "number";
-      inp.id      = item.id;
-      inp.name    = item.id;
-      inp.min     = item.min;
-      inp.max     = item.max;
-      inp.className = "number-input";
-      if (responses[item.id] != null) inp.value = responses[item.id];
-      wrap.appendChild(lbl);
-      wrap.appendChild(inp);
-      return wrap;
-    }
-
     return wrap;
   }
 
@@ -300,11 +284,6 @@
 
   function collectPage(container, page, responses) {
     for (const item of page.items) {
-      if (item.type === "number") {
-        const inp = container.querySelector(`#${item.id}`);
-        if (inp && inp.value !== "") responses[item.id] = parseInt(inp.value, 10);
-        continue;
-      }
       const checked = container.querySelector(`input[name="${item.id}"]:checked`);
       if (checked) {
         responses[item.id] = (item.type === "semdiff" ||
