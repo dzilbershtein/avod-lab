@@ -33,7 +33,6 @@ Experiment 1 is a **5 × 2 between-subjects design**: five ad placement conditio
 | A0   | Post-roll (control)      | `/?cond=A0`                | Ad after clip; baseline             |
 | A1   | Forced pre-roll          | `/?cond=A1`                | Ad before clip; shallow interruption|
 | A2   | Forced mid-roll          | `/?cond=A2`                | Ad at midpoint; deep interruption   |
-| A3   | Non-interruptive overlay | `/?cond=A3`                | Banner over lower-third; no pause   |
 | A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback|
 
 **Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using the same balanced-minimisation logic used for placement. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the genre of the specific video the participant chose:
@@ -84,7 +83,7 @@ kill %1
 Run the following checklist for **each of A0–A4**. Open the URL in a fresh private/incognito window each time so you get a clean session.
 
 ```
-http://localhost:8000/?cond=A0   (repeat for A1, A2, A3, A4)
+http://localhost:8000/?cond=A0   (repeat for A1, A2, A4)
 ```
 
 **Step-by-step checklist**
@@ -281,7 +280,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 // Switch between experiments:
 "condition_assignment_mode": "balanced",   // balanced | random | fixed
 "active_condition": "A0",                  // used only when mode = "fixed"
-"random_pool": ["A0","A1","A2","A3","A4"], // Experiment 1
+"random_pool": ["A0","A1","A2","A4"], // Experiment 1
 // "random_pool": ["B0","B1","B2","B3","B4","B5"],  // switch to Experiment 2
 ```
 
