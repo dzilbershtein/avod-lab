@@ -34,7 +34,6 @@
   const L7  = (id, label, extra = {}) => ({ id, type: "likert7", label, ...extra });
   const L5  = (id, label)             => ({ id, type: "likert5", label });
   const RDO = (id, label, options)    => ({ id, type: "radio",   label, options });
-  const NUM = (id, label, min, max)   => ({ id, type: "number",  label, min, max });
   const SD  = (id, left, right, grp)  => ({ id, type: "semdiff", left, right, _group: grp || null });
   const ATT = (id, correct)           => L7(id,
     `Attention check — please select "${LABELS7[correct - 1]}" (${correct}) to confirm you are reading carefully.`,
@@ -53,11 +52,12 @@
       title: "Background questions",
       intro: "Please answer a few short questions before you start. Your answers are kept confidential and used only for research purposes.",
       items: [
-        NUM("age",    "Your age (years)", 18, 99),
+        RDO("age", "Your age group",
+          ["18–24", "25–34", "35–44", "45–54", "55 or older"]),
         RDO("gender", "Gender",
           ["Male", "Female", "Non-binary / third gender", "Prefer not to say"]),
         RDO("vod_freq",
-          "How often do you watch ad-supported streaming video (e.g. YouTube with ads, Tubi, Peacock Free, ITVX)?",
+          "How often do you watch ad-supported streaming video (e.g. YouTube with ads, Netflix, Prime Video, etc.)?",
           ["Daily", "Several times a week", "Weekly", "Less than weekly",
            "Never or almost never"]),
       ],
@@ -97,15 +97,6 @@
   // ── Post-survey pages (condition-aware) ─────────────────────────────────────
 
   function buildPostPages(condition) {
-    // Shuffle stated-preference options to avoid order effects.
-    const prefOptions = shuffle([
-      { id: "pref_postroll",   label: "An ad plays automatically after the video ends (no interruption to viewing)" },
-      { id: "pref_preroll",    label: "An ad plays before the video starts (no skip option)" },
-      { id: "pref_midroll",    label: "An ad interrupts the video at the midpoint (no skip option)" },
-      { id: "pref_overlay",    label: "A banner ad appears over the video while it continues playing" },
-      { id: "pref_initiated",  label: "You can choose to watch an ad at any point during the video" },
-    ]);
-
     return [
       {
         id: "intrusiveness",
@@ -165,24 +156,11 @@
         intro: null,
         items: buildManipItems(condition),
       },
-      {
-        id: "preferences",
-        title: "Ad format preferences",
-        intro: "Different streaming services use different ad formats. Please rank the five formats below from most preferred (1 = most preferred) to least preferred (5 = least preferred) by using the ▲ ▼ buttons.",
-        items: [
-          { id: "pref_rank", type: "ranking", options: prefOptions },
-        ],
-      },
     ];
   }
 
   function buildManipItems(condition) {
     const items = [];
-    if (condition === "A3") {
-      items.push(RDO("manip_overlay_noticed",
-        "During the video, did you notice any image or banner displayed on top of the video while it was playing?",
-        ["Yes", "No", "I am not sure"]));
-    }
     if (condition === "A4") {
       items.push(L5("manip_control",
         "To what extent did you feel in control of when you watched the ad?"));
@@ -196,15 +174,6 @@
         ["Yes", "No", "Not sure"])
     );
     return items;
-  }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
   }
 
   // ── Renderer ────────────────────────────────────────────────────────────────
@@ -308,64 +277,6 @@
       return wrap;
     }
 
-    if (item.type === "number") {
-      const lbl = el("label", "survey-item-label", item.label);
-      lbl.htmlFor = item.id;
-      const inp = document.createElement("input");
-      inp.type    = "number";
-      inp.id      = item.id;
-      inp.name    = item.id;
-      inp.min     = item.min;
-      inp.max     = item.max;
-      inp.className = "number-input";
-      if (responses[item.id] != null) inp.value = responses[item.id];
-      wrap.appendChild(lbl);
-      wrap.appendChild(inp);
-      return wrap;
-    }
-
-    if (item.type === "ranking") {
-      // Ordered list of options — the viewer reorders using ▲▼ buttons.
-      // responses[item.id] is stored as an array of option IDs in ranked order.
-      const ordered = responses[item.id]
-        ? item.options.slice().sort(
-            (a, b) => responses[item.id].indexOf(a.id) - responses[item.id].indexOf(b.id))
-        : item.options.slice();
-      if (!responses[item.id]) responses[item.id] = ordered.map(o => o.id);
-
-      const list = el("div", "rank-list");
-      function redrawList() {
-        list.innerHTML = "";
-        ordered.forEach((opt, idx) => {
-          const row    = el("div", "rank-row");
-          const badge  = el("span", "rank-badge", String(idx + 1));
-          const label  = el("span", "rank-label", opt.label);
-          const btnUp  = el("button", "rank-btn");
-          const btnDn  = el("button", "rank-btn");
-          btnUp.type = btnDn.type = "button";
-          btnUp.textContent = "▲";
-          btnDn.textContent = "▼";
-          btnUp.disabled = idx === 0;
-          btnDn.disabled = idx === ordered.length - 1;
-          btnUp.onclick = () => {
-            ordered.splice(idx - 1, 0, ordered.splice(idx, 1)[0]);
-            responses[item.id] = ordered.map(o => o.id);
-            redrawList();
-          };
-          btnDn.onclick = () => {
-            ordered.splice(idx + 1, 0, ordered.splice(idx, 1)[0]);
-            responses[item.id] = ordered.map(o => o.id);
-            redrawList();
-          };
-          row.append(badge, label, btnUp, btnDn);
-          list.appendChild(row);
-        });
-      }
-      redrawList();
-      wrap.appendChild(list);
-      return wrap;
-    }
-
     return wrap;
   }
 
@@ -373,12 +284,6 @@
 
   function collectPage(container, page, responses) {
     for (const item of page.items) {
-      if (item.type === "ranking") continue; // maintained by onclick handlers
-      if (item.type === "number") {
-        const inp = container.querySelector(`#${item.id}`);
-        if (inp && inp.value !== "") responses[item.id] = parseInt(inp.value, 10);
-        continue;
-      }
       const checked = container.querySelector(`input[name="${item.id}"]:checked`);
       if (checked) {
         responses[item.id] = (item.type === "semdiff" ||
@@ -392,7 +297,6 @@
   function validatePage(container, page, responses) {
     const missing = [];
     for (const item of page.items) {
-      if (item.type === "ranking") continue;
       if (responses[item.id] == null) {
         missing.push(item.id);
         container.querySelector(`.survey-item[data-id="${item.id}"]`)

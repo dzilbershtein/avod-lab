@@ -1,6 +1,6 @@
 # AVOD-Lab
 
-Browser-based AVOD stimulus platform for Experiment 1 (ad placement × user control) and Experiment 2 (ad explanation × placement). Runs as a Flask app; logs every behavioural and survey event to SQLite.
+Browser-based AVOD stimulus platform for Experiment 1 (ad placement × ad relevance) and Experiment 2 (ad explanation × placement). Runs as a Flask app; logs every behavioural and survey event to SQLite.
 
 ---
 
@@ -26,6 +26,8 @@ Append `?cond=<code>` to any participant URL to override the balanced assignment
 
 ### Experiment 1 — condition URLs
 
+Experiment 1 is a **5 × 2 between-subjects design**: five ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
+
 | Code | Label                    | URL                        | Design note                         |
 |------|--------------------------|----------------------------|-------------------------------------|
 | A0   | Post-roll (control)      | `/?cond=A0`                | Ad after clip; baseline             |
@@ -34,7 +36,23 @@ Append `?cond=<code>` to any participant URL to override the balanced assignment
 | A3   | Non-interruptive overlay | `/?cond=A3`                | Banner over lower-third; no pause   |
 | A4   | User-initiated           | `/?cond=A4`                | Persistent "Watch an ad" button available throughout playback; no bonus offered |
 
+**Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using the same balanced-minimisation logic used for placement. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the genre of the specific video the participant chose:
+
+| Content genre | Relevant ads | Irrelevant ads |
+|---|---|---|
+| Animation, Sci-Fi, Horror, Promo | SCREENTIME, ARCADEMAX, NEONFLIX, PIXELQUEST | CRUNCHPOP, FRESHMINT, HOMESAFE, BUILDRIGHT |
+| Automotive / driving | DRIVEPRO, SPEEDLANE | SCREENTIME, ARCADEMAX, CRUNCHPOP, FRESHMINT |
+| Nature / lifestyle | CRUNCHPOP, FRESHMINT | SCREENTIME, ARCADEMAX, DRIVEPRO, SPEEDLANE |
+
+Synthetic ad MP4s are not tracked in git. Regenerate them with:
+
+```bash
+python scripts/generate_ads.py   # requires Pillow + ffmpeg; writes to static/ads/
+```
+
 ### Experiment 2 — condition URLs
+
+Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placement. Ad relevance is fixed to *relevant* in all B conditions so that the explanation banners ("This ad was selected based on what you watch…") are truthful.
 
 | Code | Label                                       | URL           |
 |------|---------------------------------------------|---------------|
@@ -127,6 +145,8 @@ http://localhost:8000/admin?token=dev-admin-token
 
 The **Experiment 1 — cell balance** panel should show one session per condition and balanced percentages. The "Source" badge on each session should read **balanced** (or **override** if you used `?cond=`).
 
+To verify ad relevance assignment, check the CSV export: the `ad_start` event for each session should have `"effective_relevance": "relevant"` or `"effective_relevance": "irrelevant"` in the `payload` column. Across sessions in the same condition the counts should be roughly equal.
+
 ### 6. CSV export and event schema
 
 ```
@@ -134,6 +154,8 @@ http://localhost:8000/admin/export.csv?token=dev-admin-token
 ```
 
 Key columns: `session_id`, `condition` (e.g. `A2`), `condition_label`, `ts_server`, `ts_client`, `kind`, `payload` (JSON).
+
+The `sessions` table also has an `ad_relevance_arm` column (`"relevant"` or `"irrelevant"`) that records the balanced assignment for Experiment 1.
 
 Events logged per session:
 
@@ -147,7 +169,7 @@ Events logged per session:
 | `watch_start` / `watch_end` | Player opens / closes |
 | `content_play` / `content_pause` / `content_seek` | Playback events |
 | `content_ended` | Main clip finished |
-| `ad_start` / `ad_end` | Ad playback |
+| `ad_start` / `ad_end` | Ad playback — payload includes `ad_id`, `category`, `effective_relevance` |
 | `ad_prompt_shown` | A4 prompt appeared |
 | `ad_prompt_clicked` | A4 prompt clicked |
 | `ad_prompt_declined` | A4 prompt shown but never clicked |
@@ -278,7 +300,17 @@ Five ad format descriptions presented in randomised order. Participants rank fro
 // "random_pool": ["B0","B1","B2","B3","B4","B5"],  // switch to Experiment 2
 ```
 
-To swap the ad creative, add an entry to `config/ad_library.json` and update `library_ref` in the relevant condition's ad slot.
+### Ad relevance per condition
+
+Each ad slot in a condition carries an `ad_relevance` field:
+
+| Value | Behaviour |
+|---|---|
+| `"balanced"` | Server assigns "relevant" or "irrelevant" using balanced minimisation within that condition (Exp 1) |
+| `"relevant"` | Always show an ad matching the video's genre (Exp 2 / B conditions) |
+| `"irrelevant"` | Always show an ad that does not match the video's genre |
+
+The video genre → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four taxonomy IDs (`electronics_tech`, `automotive`, `food_beverage`, `public_service`). Synthetic ads must also exist as MP4 files in `static/ads/` (run `python scripts/generate_ads.py` to regenerate).
 
 ---
 
@@ -303,19 +335,20 @@ Add `"prolific_completion_url": "https://app.prolific.com/submissions/complete?c
 avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── config/
-│   ├── experiment.json         Conditions A0–A4, B0–B5; catalogue; assignment mode
-│   └── ad_library.json         Ad creative metadata; 4 categories
+│   ├── experiment.json         Conditions A0–A4, B0–B5; catalogue; ad_relevance per slot
+│   └── ad_library.json         Ad creative metadata; 4 categories; 10 synthetic ads
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
 │   ├── survey.js               Pre- and post-exposure questionnaire (Exp 1)
 │   ├── browse.js               Catalogue / hero rendering
-│   ├── player.js               Video + ad scheduler + event logging
+│   ├── player.js               Video + ad scheduler + category-matched ad selection
+│   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads.py)
 │   └── style.css               Dark-theme UI + survey form styles
 ├── templates/
 │   ├── index.html              Participant page (intro → surveys → browse → player)
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    └── generate_ads.py         Renders synthetic ad MP4s via ffmpeg
+    └── generate_ads.py         Renders 10 synthetic ad MP4s via Pillow + ffmpeg
 ```

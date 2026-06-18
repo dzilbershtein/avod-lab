@@ -22,7 +22,8 @@
         "poster": "",
         "video_url": "/static/content/sample_demo.mp4",
         "fallback_urls": [],
-        "license": "generated_locally"
+        "license": "generated_locally",
+        "relevant_ad_category": "electronics_tech"
       },
       "big_buck_bunny": {
         "id": "big_buck_bunny",
@@ -32,6 +33,7 @@
         "year": 2008,
         "duration_sec": 596,
         "color": "#3a5f7d",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         "fallback_urls": [
@@ -46,6 +48,7 @@
         "year": 2006,
         "duration_sec": 653,
         "color": "#2c2c54",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
         "fallback_urls": []
@@ -58,6 +61,7 @@
         "year": 2010,
         "duration_sec": 888,
         "color": "#6b3f3a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
         "fallback_urls": [
@@ -72,6 +76,7 @@
         "year": 2012,
         "duration_sec": 734,
         "color": "#1f3a5f",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
         "fallback_urls": []
@@ -84,6 +89,7 @@
         "year": 2014,
         "duration_sec": 15,
         "color": "#a83232",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
         "fallback_urls": []
@@ -96,6 +102,7 @@
         "year": 2014,
         "duration_sec": 15,
         "color": "#3a7d5f",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
         "fallback_urls": []
@@ -108,6 +115,7 @@
         "year": 2014,
         "duration_sec": 60,
         "color": "#7d6f3a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
         "fallback_urls": []
@@ -120,6 +128,7 @@
         "year": 2014,
         "duration_sec": 15,
         "color": "#3a6f7d",
+        "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
         "fallback_urls": []
@@ -132,6 +141,7 @@
         "year": 2014,
         "duration_sec": 15,
         "color": "#a85932",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
         "fallback_urls": []
@@ -144,6 +154,7 @@
         "year": 2014,
         "duration_sec": 596,
         "color": "#3a4d2c",
+        "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
         "fallback_urls": []
@@ -156,6 +167,7 @@
         "year": 2014,
         "duration_sec": 596,
         "color": "#2c4d6b",
+        "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
         "fallback_urls": []
@@ -168,6 +180,7 @@
         "year": 2014,
         "duration_sec": 47,
         "color": "#6b2c2c",
+        "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
         "fallback_urls": []
@@ -180,6 +193,7 @@
         "year": 2014,
         "duration_sec": 596,
         "color": "#7d3a6b",
+        "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
         "fallback_urls": []
@@ -193,6 +207,7 @@
         "year": 1959,
         "duration_sec": 4700,
         "color": "#1f1f29",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://archive.org/services/img/plan-9-from-outer-space",
         "video_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
         "fallback_urls": [],
@@ -206,6 +221,7 @@
         "year": 1968,
         "duration_sec": 5810,
         "color": "#2a1a1a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://archive.org/services/img/night-of-the-living-dead_1968",
         "video_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
         "fallback_urls": [],
@@ -219,6 +235,7 @@
         "year": 2020,
         "duration_sec": 30,
         "color": "#3a6b3a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "",
         "video_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4",
         "fallback_urls": [
@@ -234,6 +251,7 @@
         "year": 2019,
         "duration_sec": 30,
         "color": "#2a4a6b",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://test-videos.co.uk/user/pages/images/jellyfish-3-mbps-hd-h264.jpg",
         "video_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4",
         "fallback_urls": [
@@ -249,6 +267,7 @@
         "year": 2019,
         "duration_sec": 30,
         "color": "#7d5f3a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "https://test-videos.co.uk/user/pages/images/big_buck_bunny.jpg",
         "video_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4",
         "fallback_urls": [
@@ -264,12 +283,62 @@
         "year": 2019,
         "duration_sec": 30,
         "color": "#6b4d3a",
+        "relevant_ad_category": "electronics_tech",
         "poster": "",
         "video_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4",
         "fallback_urls": [
           "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_10MB.mp4"
         ],
         "license": "test-videos.co.uk public test asset"
+      },
+
+      "date_with_your_family": {
+        "id": "date_with_your_family",
+        "title": "A Date with Your Family",
+        "tagline": "A 1950 etiquette short following an American family through their evening meal — roles, table manners, and pleasant dinner conversation. Narrated by Hugh Beaumont.",
+        "genre": "Educational · Short",
+        "year": 1950,
+        "duration_sec": 600,
+        "color": "#5a3e28",
+        "relevant_ad_category": "food_beverage",
+        "poster": "https://archive.org/services/img/DateWith1950",
+        "video_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4",
+        "fallback_urls": [
+          "https://archive.org/download/DateWith1950/DateWith1950_512kb.mp4"
+        ],
+        "license": "Public Domain (Prelinger Archives)"
+      },
+      "foundation_foods": {
+        "id": "foundation_foods",
+        "title": "Foundation Foods",
+        "tagline": "A 1951 Avis Films nutrition short teaching children the seven food groups through the Brown family's daily meals.",
+        "genre": "Educational · Short",
+        "year": 1951,
+        "duration_sec": 660,
+        "color": "#3a5c2c",
+        "relevant_ad_category": "food_beverage",
+        "poster": "https://archive.org/services/img/Foundati1951",
+        "video_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4",
+        "fallback_urls": [
+          "https://archive.org/download/Foundati1951/Foundati1951_512kb.mp4"
+        ],
+        "license": "Public Domain (Prelinger Archives)"
+      },
+      "uncle_jim_dairy": {
+        "id": "uncle_jim_dairy",
+        "title": "Uncle Jim's Dairy Farm",
+        "tagline": "A 1963 National Dairy Council film in which city children visit their uncle's farm and discover how milk gets from cow to table.",
+        "genre": "Educational · Short",
+        "year": 1963,
+        "duration_sec": 729,
+        "color": "#4a6b3a",
+        "relevant_ad_category": "food_beverage",
+        "poster": "https://archive.org/services/img/UncleJim1963",
+        "video_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4",
+        "fallback_urls": [
+          "https://archive.org/download/UncleJim1963/UncleJim1963_512kb.mp4"
+        ],
+        "license": "Public Domain (Prelinger Archives)"
       }
     },
 
@@ -301,6 +370,10 @@
       {
         "name": "Nature & Stock",
         "title_ids": ["mdn_flower", "tv_jellyfish"]
+      },
+      {
+        "name": "Food & Cooking",
+        "title_ids": ["date_with_your_family", "foundation_foods", "uncle_jim_dairy"]
       }
     ]
   },
@@ -309,7 +382,7 @@
 
   "condition_assignment_mode": "balanced",
   "active_condition": "A0",
-  "random_pool": ["A0", "A1", "A2", "A3", "A4"],
+  "random_pool": ["A0", "A1", "A2", "A4"],
   "random_pool_exp2": ["B0", "B1", "B2", "B3", "B4", "B5"],
 
   "conditions": {
@@ -319,7 +392,7 @@
       "ads": [
         {
           "placement": "postroll",
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -331,7 +404,7 @@
       "ads": [
         {
           "placement": "preroll",
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -344,29 +417,9 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
-        }
-      ]
-    },
-    "A3": {
-      "label": "Non-interruptive overlay",
-      "description": "A semi-transparent banner occupies the lower-third of the frame for 30 seconds during playback; the clip continues uninterrupted. Presence is confirmed by a post-exposure item; non-noticers form a pre-registered subgroup.",
-      "ads": [
-        {
-          "placement": "overlay",
-          "start_at_frac": 0.2,
-          "start_at_cap_sec": 120,
-          "duration_sec": 30,
-          "image_url": "/static/posters/overlay_sponsored.png",
-          "click_url": "https://example.com/overlay",
-          "banner": {
-            "show": true,
-            "text": "Sponsored — tap for more.",
-            "show_at_ad_sec": 0,
-            "hide_at_ad_sec": 30
-          }
         }
       ]
     },
@@ -377,7 +430,7 @@
         {
           "placement": "user_initiated",
           "prompt_text": "Watch an ad",
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "balanced",
           "duration_target_sec": 30,
           "skippable_after_sec": null
         }
@@ -393,7 +446,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": { "show": false }
@@ -407,7 +460,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -426,7 +479,7 @@
         {
           "placement": "midroll",
           "start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -447,7 +500,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": { "show": false }
@@ -463,7 +516,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {
@@ -484,7 +537,7 @@
           "prompt_text": "Watch a 30s ad to unlock a bonus clip",
           "reward_text": "Bonus clip unlocked after this ad.",
           "prompt_start_at_frac": 0.5,
-          "library_ref": "auto_bullrun_promo",
+          "ad_relevance": "relevant",
           "duration_target_sec": 30,
           "skippable_after_sec": null,
           "banner": {

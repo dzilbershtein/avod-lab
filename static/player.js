@@ -50,6 +50,11 @@
   }
 
   // state
+  let sessionVideoCount = 0; // incremented each time a title is opened; drives ad_pool rotation
+  // Locked in on first ad resolution for the session so all videos in one
+  // session see the same relevance arm. null = not yet determined.
+  let sessionAdRelevance = null;
+
   let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
   let preroll = null;
   let postroll = null;     // A0 control: plays after content ends, before "done" view
@@ -64,12 +69,83 @@
   let listenersAttached = false;
   let activeTitle = null;
 
+  // Resolve an ad slot that carries ad_relevance by picking from the library.
+  // relevant   → ad category matches the title's relevant_ad_category
+  // irrelevant → ad category does NOT match
+  // balanced   → server assigned via balanced minimisation; read from
+  //              cfg.resolved_ad_relevance (set in /api/session/start response).
+  //              Falls back to a client-side coin flip locked for the session
+  //              if the server value is not yet available (page-load preview).
+  // Cycles through the filtered pool using sessionVideoCount so each new
+  // title play gets a different ad from the same relevance category.
+  function resolveAdByRelevance(slot, title) {
+    if (!slot || !slot.ad_relevance) return slot;
+    let relevance = slot.ad_relevance;
+    if (relevance === "balanced" || relevance === "random") {
+      const serverArm = window.experiment.cfg.resolved_ad_relevance;
+      if (serverArm) {
+        relevance = serverArm;
+      } else {
+        // Fallback before session start response arrives: lock in random.
+        if (sessionAdRelevance === null) {
+          sessionAdRelevance = Math.random() < 0.5 ? "relevant" : "irrelevant";
+        }
+        relevance = sessionAdRelevance;
+      }
+    }
+    const lib = ((window.experiment.cfg._ad_library || {}).ads || []);
+    const titleCat = (title && title.relevant_ad_category) || null;
+    const synthetic = lib.filter((a) => a.source === "synthetic");
+    let pool = relevance === "relevant"
+      ? synthetic.filter((a) => a.category === titleCat)
+      : synthetic.filter((a) => a.category !== titleCat);
+    if (pool.length === 0) pool = synthetic; // fallback: any synthetic ad
+    const entry = pool[sessionVideoCount % pool.length];
+    const resolved = {
+      id: entry.id,
+      url: entry.video_url,
+      fallback_urls: entry.fallback_urls || [],
+      duration_sec: entry.duration_sec,
+      click_url: entry.click_url || "",
+      category: entry.category,
+      source: entry.source,
+      ad_relevance: slot.ad_relevance,
+      effective_relevance: relevance,  // logged in ad_start payload
+    };
+    // Slot-level fields (placement, timing, banner, duration_target_sec, etc.) override.
+    // If the slot has no banner but the library entry has a default_banner, apply it.
+    if (!slot.banner && entry.default_banner) {
+      resolved.banner = {
+        show: true,
+        text: entry.default_banner,
+        show_at_ad_sec: 0,
+        hide_at_ad_sec: entry.duration_sec || 12,
+      };
+    }
+    return Object.assign(resolved, { placement: slot.placement },
+      Object.fromEntries(
+        Object.entries(slot).filter(([k]) => k !== "ad_relevance")
+      )
+    );
+  }
+
+  // If an ad slot carries an ad_pool (from library_refs), cycle through it
+  // using sessionVideoCount so each new title play gets the next unused ad.
+  function pickFromPool(ad) {
+    if (!ad) return ad;
+    const pool = ad.ad_pool;
+    if (!Array.isArray(pool) || pool.length === 0) return ad;
+    const chosen = pool[sessionVideoCount % pool.length];
+    return Object.assign({}, ad, chosen, { placement: ad.placement, ad_pool: pool });
+  }
+
   const Player = {
     openTitle(titleId) {
       const { cfg, Session, show } = window.experiment;
       const title = cfg.catalog.titles[titleId];
       if (!title) return;
       activeTitle = title;
+      sessionVideoCount++;
       Session.log("watch_start", { title_id: title.id });
       nowWatching.innerHTML = `
         <span class="now-watching-label">Now watching</span>
@@ -130,14 +206,19 @@
     content.classList.remove("hidden");
 
     // Bucket placements into their respective trigger paths.
+    // Resolve ad_relevance slots (category-matched to this title) and any
+    // ad_pool cycling so each new title play gets the next ad in the pool.
     const ads = cfg.ads || [];
-    preroll = ads.find((a) => a.placement === "preroll") || null;
-    postroll = ads.find((a) => a.placement === "postroll") || null;
-    userInitiated = ads.find((a) => a.placement === "user_initiated") || null;
+    const resolveSlot = (slot) => slot
+      ? pickFromPool(resolveAdByRelevance(slot, title))
+      : null;
+    preroll = resolveSlot(ads.find((a) => a.placement === "preroll") || null);
+    postroll = resolveSlot(ads.find((a) => a.placement === "postroll") || null);
+    userInitiated = resolveSlot(ads.find((a) => a.placement === "user_initiated") || null);
     userInitiatedFired = false;
     queue = ads
       .filter((a) => a.placement === "midroll" || a.placement === "overlay")
-      .map((a) => ({ ...a, fired: false }));
+      .map((a) => ({ ...resolveSlot(a), fired: false }));
     resolveQueueTimings(); // best-effort before metadata — re-runs after.
     setupUserInitiatedPrompt(userInitiated);
 
@@ -396,6 +477,7 @@
       placement: ad.placement,
       category: ad.category || null,
       source: ad.source || null,
+      effective_relevance: ad.effective_relevance || null,
       duration_target_sec: adDurationCap,
       title_id: titleId(),
       t_content: content.currentTime,
