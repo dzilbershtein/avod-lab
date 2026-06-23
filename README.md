@@ -26,7 +26,7 @@ Append `?cond=<code>` to any participant URL to override the balanced assignment
 
 ### Experiment 1 — condition URLs
 
-Experiment 1 is a **5 × 2 between-subjects design**: five ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
+Experiment 1 is a **4 × 2 between-subjects design**: five ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
 
 | Code | Label                    | URL                        | Design note                         |
 |------|--------------------------|----------------------------|-------------------------------------|
