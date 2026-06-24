@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-generate_ads.py — render synthetic 30-second ad MP4s via Pillow + ffmpeg.
+generate_ads.py — render synthetic 15-second ad MP4s via Pillow + ffmpeg.
 
-Four ads, structured as 3-scene TV commercials (1280×720, 30 s, 20 fps):
+Four ads, structured as 3-scene TV commercials (1280×720, 15 s, 20 fps):
 
   Relevant to entertainment content:
     ad_relevant_screentime  — SCREENTIME streaming service
@@ -39,7 +39,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1280, 720
 FPS = 20
-DURATION = 30
+DURATION = 15
 TOTAL_FRAMES = FPS * DURATION
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "static", "ads")
 
@@ -195,7 +195,7 @@ def screentime_frame(fi, t):
         bg = Image.alpha_composite(bg, fl)
 
     # Scene 1 (0–10s): floating content tiles + pulse rings
-    if t < 10:
+    if t < 5:
         pulse_rings(draw, W // 2, H // 2, t, acc)
         particles(draw, t, acc, count=40, seed=1, vy=-40, drift=30)
         tile_positions = [(200, 200), (640, 150), (1050, 220), (320, 420), (900, 380)]
@@ -210,29 +210,29 @@ def screentime_frame(fi, t):
             ov.alpha_composite(tile, (tx - tw // 2, float_y - th // 2))
 
     # Scene 2 (10–22s): brand name + tagline + scan-line sweep
-    elif t < 22:
+    elif t < 10:
         pulse_rings(draw, W // 2, H // 2, t, acc)
         particles(draw, t, acc, count=25, seed=2, vy=-35)
         # scan-line sweep
-        sweep_x = int(((t - 10) / 12.0) * W * 1.8 - W * 0.4)
+        sweep_x = int(((t - 5) / 5.0) * W * 1.8 - W * 0.4)
         for sx in range(max(0, sweep_x - 60), min(W, sweep_x)):
             a = int(40 * (1 - abs(sx - sweep_x) / 60))
             draw.line([(sx, 0), (sx, H)], fill=(200, 220, 255, a))
         # shimmer on brand text (done via alpha pulse)
         fn_large = try_font(120)
         fn_med = try_font(52)
-        slide = ease_out(min((t - 10) / 1.5, 1.0))
+        slide = ease_out(min((t - 5) / 0.75, 1.0))
         by = int(lerp(H, H // 2 - 60, slide))
         shimmer_a = clamp(200 + 55 * math.sin(t * 4))
         text_center(draw, "SCREENTIME", W // 2, by, fn_large, (*acc, shimmer_a))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 220)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 220)
         text_center(draw, "Stream Everything.", W // 2, by + 90, fn_med, (200, 220, 255, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
         particles(draw, t, acc, count=20, seed=3, vy=-30)
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
         fn_large = try_font(120)
@@ -240,7 +240,7 @@ def screentime_frame(fi, t):
         fn_cta = try_font(44)
         text_center(draw, "SCREENTIME", W // 2, H // 2 - 80, fn_large, (*acc, 230))
         text_center(draw, "Stream Everything.", W // 2, H // 2 + 10, fn_med, (200, 220, 255, 200))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 240)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 240)
         cta_h = 70
         cta_y = H - 110
         draw.rounded_rectangle([W // 2 - 200, cta_y, W // 2 + 200, cta_y + cta_h],
@@ -269,7 +269,7 @@ def arcademax_frame(fi, t):
         draw.rectangle([bw, bw, W - 1 - bw, H - 1 - bw], outline=(br, bg_c, bb, a))
 
     # Scene 1 (0–10s): pixel burst + score counter
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -277,7 +277,7 @@ def arcademax_frame(fi, t):
 
         # Pixel burst from center
         burst_rng = random.Random(42)
-        n_pixels = int(min(t / 10 * 300 + 40, 300))
+        n_pixels = int(min(t / 5 * 300 + 40, 300))
         for _ in range(n_pixels):
             angle = burst_rng.uniform(0, 2 * math.pi)
             speed = burst_rng.uniform(20, 260)
@@ -286,12 +286,12 @@ def arcademax_frame(fi, t):
             sz = burst_rng.randint(2, 8)
             col_h = burst_rng.uniform(0, 1)
             pr, pg, pb = hsv_to_rgb(col_h, 1.0, 1.0)
-            a = clamp((1 - t / 10) * 255)
+            a = clamp((1 - t / 5) * 255)
             if 0 <= px < W and 0 <= py < H:
                 draw.rectangle([px, py, px + sz, py + sz], fill=(pr, pg, pb, a))
 
         # Score counter
-        score = int(ease_out(min(t / 8, 1.0)) * 9999)
+        score = int(ease_out(min(t / 4, 1.0)) * 9999)
         fn_score = try_font(90)
         text_center(draw, f"{score:04d}", W // 2, H // 2 + 80, fn_score, (*acc, 220))
         fn_pts = try_font(36)
@@ -300,9 +300,9 @@ def arcademax_frame(fi, t):
         pulse_rings(draw, W // 2, H // 2, t, acc, period=1.4, max_r=260)
 
     # Scene 2 (10–22s): brand name with glitch effect + energy streaks
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -322,7 +322,7 @@ def arcademax_frame(fi, t):
 
         fn_large = try_font(130)
         fn_med = try_font(50)
-        slide = ease_out(min((t - 10) / 1.2, 1.0))
+        slide = ease_out(min((t - 5) / 0.6, 1.0))
         by = int(lerp(H + 80, H // 2 - 70, slide))
 
         # Glitch layers: R and B offset slightly
@@ -331,13 +331,13 @@ def arcademax_frame(fi, t):
         text_center(draw, "ARCADEMAX", W // 2 - off, by, fn_large, (255, 50, 50, 60 if glitch else 0))
         text_center(draw, "ARCADEMAX", W // 2 + off, by, fn_large, (50, 50, 255, 60 if glitch else 0))
         text_center(draw, "ARCADEMAX", W // 2, by, fn_large, (*acc, 240))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 220)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 220)
         text_center(draw, "LEVEL UP YOUR GAME", W // 2, by + 100, fn_med, (180, 255, 180, tag_a))
 
     # Scene 3 (22–30s): CTA + pulsing glow
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -350,7 +350,7 @@ def arcademax_frame(fi, t):
         glow_a = clamp(180 + 75 * math.sin(t * 5))
         text_center(draw, "ARCADEMAX", W // 2, H // 2 - 90, fn_large, (*acc, glow_a))
         text_center(draw, "LEVEL UP YOUR GAME", W // 2, H // 2 + 10, fn_med, (180, 255, 180, 200))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 72
         cta_y = H - 120
         draw.rounded_rectangle([W // 2 - 210, cta_y, W // 2 + 210, cta_y + cta_h],
@@ -371,7 +371,7 @@ def crunchpop_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): spinning sunburst + bouncing puffs
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -425,9 +425,9 @@ def crunchpop_frame(fi, t):
                              outline=(255, 255, 255, a), width=3)
 
     # Scene 2 (10–22s): brand name bounce-in + tagline
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -443,18 +443,18 @@ def crunchpop_frame(fi, t):
 
         fn_large = try_font(130)
         fn_med = try_font(54)
-        bounce_t = min((t - 10) / 1.0, 1.0)
+        bounce_t = min((t - 5) / 0.5, 1.0)
         by = int(lerp(H + 100, H // 2 - 70, ease_back(bounce_t)))
         text_center(draw, "CRUNCHPOP", W // 2, by, fn_large, (60, 20, 0, 240))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.0, 1.0)) * 230)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.5, 1.0)) * 230)
         text_center(draw, "The Morning Crunch!", W // 2, by + 100, fn_med, (80, 30, 0, tag_a))
 
         particles(draw, t, acc, count=20, seed=7, vy=-30, r_range=(3, 9))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -464,7 +464,7 @@ def crunchpop_frame(fi, t):
         text_center(draw, "CRUNCHPOP", W // 2, H // 2 - 80, fn_large, (60, 20, 0, 240))
         text_center(draw, "The Morning Crunch!", W // 2, H // 2 + 20, fn_med, (80, 30, 0, 220))
         particles(draw, t, acc, count=15, seed=8, vy=-25)
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 72
         cta_y = H - 120
         draw.rounded_rectangle([W // 2 - 210, cta_y, W // 2 + 210, cta_y + cta_h],
@@ -495,7 +495,7 @@ def homesafe_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): falling rain + sonar pulse rings
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -516,7 +516,7 @@ def homesafe_frame(fi, t):
         pulse_rings(draw, W // 2, H // 2, t, acc, period=2.0, n=4, max_r=280)
 
         # Shield forming (arc progress)
-        shield_prog = ease_in_out(min(t / 8.0, 1.0))
+        shield_prog = ease_in_out(min(t / 4.0, 1.0))
         shield_r = 160
         start_a = -90
         end_a = start_a + int(360 * shield_prog)
@@ -528,9 +528,9 @@ def homesafe_frame(fi, t):
                          fill=(*acc, 255))
 
     # Scene 2 (10–22s): brand name + tagline + orbiting sparks
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -558,16 +558,16 @@ def homesafe_frame(fi, t):
 
         fn_large = try_font(130)
         fn_med = try_font(52)
-        slide = ease_out(min((t - 10) / 1.3, 1.0))
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
         by = int(lerp(H + 80, H // 2 - 70, slide))
         text_center(draw, "HOMESAFE", W // 2, by, fn_large, (200, 240, 255, 235))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.0, 1.0)) * 220)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.5, 1.0)) * 220)
         text_center(draw, "Protect What Matters.", W // 2, by + 95, fn_med, (*acc, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -586,7 +586,7 @@ def homesafe_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "HOMESAFE", W // 2, H // 2 - 80, fn_large, (200, 240, 255, 235))
         text_center(draw, "Protect What Matters.", W // 2, H // 2 + 10, fn_med, (*acc, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 72
         cta_y = H - 120
         draw.rounded_rectangle([W // 2 - 220, cta_y, W // 2 + 220, cta_y + cta_h],
@@ -611,7 +611,7 @@ def neonflix_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): spinning film reel + film-grain flicker + curtain reveal
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -640,7 +640,7 @@ def neonflix_frame(fi, t):
             draw.ellipse([hx - 6, hy - 6, hx + 6, hy + 6], fill=(0, 0, 0, 220))
 
         # Curtain reveal (red drapes opening from centre)
-        prog = ease_out(min(t / 8.0, 1.0))
+        prog = ease_out(min(t / 4.0, 1.0))
         curtain_w = int((1 - prog) * W // 2)
         if curtain_w > 0:
             draw.rectangle([0, 0, curtain_w, H], fill=(60, 5, 10, 220))
@@ -655,9 +655,9 @@ def neonflix_frame(fi, t):
             draw.point((gx, gy), fill=(255, 255, 255, ga))
 
     # Scene 2 (10–22s): brand name + tagline + vertical scan + particles
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -665,18 +665,18 @@ def neonflix_frame(fi, t):
         pulse_rings(draw, W // 2, H // 2, t, acc, period=1.8, max_r=240)
 
         # Vertical light scan
-        scan_x = int(((t - 10) / 12.0) * W * 1.8 - W * 0.4)
+        scan_x = int(((t - 5) / 5.0) * W * 1.8 - W * 0.4)
         for sx in range(max(0, scan_x - 50), min(W, scan_x)):
             a = int(35 * (1 - abs(sx - scan_x) / 50))
             draw.line([(sx, 0), (sx, H)], fill=(255, 180, 180, a))
 
         fn_large = try_font(120)
         fn_med = try_font(50)
-        slide = ease_out(min((t - 10) / 1.5, 1.0))
+        slide = ease_out(min((t - 5) / 0.75, 1.0))
         by = int(lerp(H, H // 2 - 60, slide))
         glow_a = clamp(210 + 45 * math.sin(t * 3.5))
         text_center(draw, "NEONFLIX", W // 2, by, fn_large, (*acc, glow_a))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 210)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
         text_center(draw, "Cinema Without Limits.", W // 2, by + 90, fn_med, (255, 180, 190, tag_a))
 
         # Film grain (lighter in scene 2)
@@ -689,8 +689,8 @@ def neonflix_frame(fi, t):
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -700,7 +700,7 @@ def neonflix_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "NEONFLIX", W // 2, H // 2 - 80, fn_large, (*acc, 230))
         text_center(draw, "Cinema Without Limits.", W // 2, H // 2 + 10, fn_med, (255, 180, 190, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 70
         cta_y = H - 115
         draw.rounded_rectangle([W // 2 - 210, cta_y, W // 2 + 210, cta_y + cta_h],
@@ -721,7 +721,7 @@ def pixelquest_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): pixel grid wipe + map tiles + compass spin
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -731,7 +731,7 @@ def pixelquest_frame(fi, t):
         tile_sz = 48
         cols = W // tile_sz + 1
         rows = H // tile_sz + 1
-        wipe_prog = ease_in_out(min(t / 8.0, 1.0))
+        wipe_prog = ease_in_out(min(t / 4.0, 1.0))
         total_tiles = cols * rows
         revealed = int(wipe_prog * total_tiles)
         tile_rng = random.Random(13)
@@ -771,9 +771,9 @@ def pixelquest_frame(fi, t):
         draw.ellipse([cx - 10, cy - 10, cx + 10, cy + 10], fill=(*acc, 255))
 
     # Scene 2 (10–22s): brand name + adventure particles + map grid
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -790,17 +790,17 @@ def pixelquest_frame(fi, t):
 
         fn_large = try_font(120)
         fn_med = try_font(52)
-        slide = ease_out(min((t - 10) / 1.3, 1.0))
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
         by = int(lerp(H + 80, H // 2 - 65, slide))
         shimmer_a = clamp(205 + 50 * math.sin(t * 4.2))
         text_center(draw, "PIXELQUEST", W // 2, by, fn_large, (*acc, shimmer_a))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 215)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
         text_center(draw, "Your Adventure Awaits.", W // 2, by + 92, fn_med, (210, 170, 255, tag_a))
 
     # Scene 3 (22–30s): CTA + orbiting star sparks
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -818,7 +818,7 @@ def pixelquest_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "PIXELQUEST", W // 2, H // 2 - 80, fn_large, (*acc, 235))
         text_center(draw, "Your Adventure Awaits.", W // 2, H // 2 + 12, fn_med, (210, 170, 255, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 72
         cta_y = H - 120
         draw.rounded_rectangle([W // 2 - 215, cta_y, W // 2 + 215, cta_y + cta_h],
@@ -839,7 +839,7 @@ def freshmint_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): ripple waves + floating bubbles + foam splash
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -888,9 +888,9 @@ def freshmint_frame(fi, t):
                              fill=(255, 255, 255, a))
 
     # Scene 2 (10–22s): brand name + tagline + ripples continue
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -920,16 +920,16 @@ def freshmint_frame(fi, t):
 
         fn_large = try_font(120)
         fn_med = try_font(52)
-        slide = ease_out(min((t - 10) / 1.4, 1.0))
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
         by = int(lerp(H, H // 2 - 60, slide))
         text_center(draw, "FRESHMINT", W // 2, by, fn_large, (20, 80, 90, 230))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 215)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
         text_center(draw, "Breathe Fresh. Live Bold.", W // 2, by + 90, fn_med, (30, 120, 130, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -951,7 +951,7 @@ def freshmint_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "FRESHMINT", W // 2, H // 2 - 80, fn_large, (20, 80, 90, 230))
         text_center(draw, "Breathe Fresh. Live Bold.", W // 2, H // 2 + 10, fn_med, (30, 120, 130, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 70
         cta_y = H - 115
         draw.rounded_rectangle([W // 2 - 200, cta_y, W // 2 + 200, cta_y + cta_h],
@@ -972,14 +972,14 @@ def buildright_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): blueprint grid reveal + hammer swing arc + sparks
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
         # Blueprint grid (fades in)
-        grid_a = clamp(ease_out(min(t / 3.0, 1.0)) * 50)
+        grid_a = clamp(ease_out(min(t / 1.5, 1.0)) * 50)
         for gx in range(0, W, 60):
             draw.line([(gx, 0), (gx, H)], fill=(80, 140, 200, grid_a))
         for gy in range(0, H, 60):
@@ -1021,9 +1021,9 @@ def buildright_frame(fi, t):
         pulse_rings(draw, W // 2, H // 2, t, acc, period=1.8, max_r=240)
 
     # Scene 2 (10–22s): brand name + tagline + geometric shapes + sparks
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1052,16 +1052,16 @@ def buildright_frame(fi, t):
 
         fn_large = try_font(120)
         fn_med = try_font(52)
-        slide = ease_out(min((t - 10) / 1.4, 1.0))
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
         by = int(lerp(H + 80, H // 2 - 65, slide))
         text_center(draw, "BUILDRIGHT", W // 2, by, fn_large, (*acc, 235))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 215)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
         text_center(draw, "Built Tough. Built Right.", W // 2, by + 92, fn_med, (200, 190, 170, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1072,7 +1072,7 @@ def buildright_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "BUILDRIGHT", W // 2, H // 2 - 80, fn_large, (*acc, 235))
         text_center(draw, "Built Tough. Built Right.", W // 2, H // 2 + 10, fn_med, (200, 190, 170, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 72
         cta_y = H - 120
         draw.rounded_rectangle([W // 2 - 215, cta_y, W // 2 + 215, cta_y + cta_h],
@@ -1093,7 +1093,7 @@ def drivepro_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): scrolling road map grid + animated route + pulsing location pin
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -1111,7 +1111,7 @@ def drivepro_frame(fi, t):
             (150, H - 80), (280, 420), (420, 360), (560, H // 2),
             (700, 300), (840, H // 2 - 30), (W - 150, 200)
         ]
-        drawn = int(ease_out(min(t / 8, 1.0)) * (len(route_pts) - 1))
+        drawn = int(ease_out(min(t / 4, 1.0)) * (len(route_pts) - 1))
         for i in range(min(drawn, len(route_pts) - 1)):
             draw.line([route_pts[i], route_pts[i + 1]], fill=(*acc, 200), width=7)
         # Route dots
@@ -1123,7 +1123,7 @@ def drivepro_frame(fi, t):
 
         # Pulsing location pin at end of route
         end = route_pts[min(drawn, len(route_pts) - 1)]
-        pin_scale = ease_back(min(t / 3.0, 1.0))
+        pin_scale = ease_back(min(t / 1.5, 1.0))
         pin_r = int(28 * pin_scale)
         pulse_a = clamp(int((0.5 + 0.5 * math.sin(t * 4)) * 160))
         draw.ellipse([end[0] - pin_r - 15, end[1] - pin_r - 15,
@@ -1135,9 +1135,9 @@ def drivepro_frame(fi, t):
                       end[0] + 10, end[1] - pin_r + 10], fill=(255, 255, 255, 220))
 
     # Scene 2 (10–22s): brand name + speed readout ticker + particles
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1152,7 +1152,7 @@ def drivepro_frame(fi, t):
         pulse_rings(draw, W // 2, H // 2, t, acc, period=1.8, max_r=240)
 
         # Speed ticker (counts up then settles)
-        speed = int(ease_out(min((t - 10) / 4.0, 1.0)) * 87)
+        speed = int(ease_out(min((t - 5) / 2.0, 1.0)) * 87)
         fn_speed = try_font(70)
         fn_unit = try_font(36)
         text_center(draw, f"{speed}", W // 2 + 10, H // 2 + 80, fn_speed, (*acc, 210))
@@ -1160,17 +1160,17 @@ def drivepro_frame(fi, t):
 
         fn_large = try_font(120)
         fn_med = try_font(50)
-        slide = ease_out(min((t - 10) / 1.4, 1.0))
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
         by = int(lerp(H + 80, H // 2 - 70, slide))
         glow_a = clamp(210 + 45 * math.sin(t * 3.5))
         text_center(draw, "DRIVEPRO", W // 2, by, fn_large, (*acc, glow_a))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 215)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
         text_center(draw, "Navigate Every Road.", W // 2, by + 90, fn_med, (200, 210, 240, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1180,7 +1180,7 @@ def drivepro_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "DRIVEPRO", W // 2, H // 2 - 80, fn_large, (*acc, 230))
         text_center(draw, "Navigate Every Road.", W // 2, H // 2 + 10, fn_med, (200, 210, 240, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 70
         cta_y = H - 115
         draw.rounded_rectangle([W // 2 - 200, cta_y, W // 2 + 200, cta_y + cta_h],
@@ -1201,7 +1201,7 @@ def speedlane_frame(fi, t):
     draw = ImageDraw.Draw(ov)
 
     # Scene 1 (0–10s): charging animation + lightning bolts + EV silhouette
-    if t < 10:
+    if t < 5:
         if t < 0.15:
             flash_alpha = int(255 * (1 - t / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
@@ -1209,7 +1209,7 @@ def speedlane_frame(fi, t):
 
         # Car silhouette (simple trapezoid body)
         car_y = H // 2 + 40
-        prog = ease_out(min(t / 5.0, 1.0))
+        prog = ease_out(min(t / 2.5, 1.0))
         car_a = clamp(int(prog * 200))
         car_pts = [
             (W // 2 - 260, car_y + 40),
@@ -1227,12 +1227,12 @@ def speedlane_frame(fi, t):
             draw.ellipse([wx - 18, car_y + 37, wx + 18, car_y + 73], fill=(*acc, car_a))
 
         # Charging cable + progress bar
-        cable_a = clamp(ease_out(min(t / 4.0, 1.0)) * 200)
+        cable_a = clamp(ease_out(min(t / 2.0, 1.0)) * 200)
         draw.line([(W // 2 + 260, car_y + 20), (W // 2 + 340, car_y - 30)],
                   fill=(*acc, cable_a), width=5)
         bar_w = 120
         bar_h = 20
-        charge_prog = ease_in_out(min(t / 8.0, 1.0))
+        charge_prog = ease_in_out(min(t / 4.0, 1.0))
         bx = W // 2 + 340
         by = car_y - 60
         draw.rounded_rectangle([bx, by, bx + bar_w, by + bar_h],
@@ -1249,9 +1249,9 @@ def speedlane_frame(fi, t):
         pulse_rings(draw, W // 2, car_y + 20, t, acc, period=1.5, max_r=200)
 
     # Scene 2 (10–22s): brand name + EV specs stats + particles
-    elif t < 22:
-        if t < 10.15:
-            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
+    elif t < 10:
+        if t < 5.15:
+            flash_alpha = int(200 * (1 - (t - 5) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1262,9 +1262,9 @@ def speedlane_frame(fi, t):
         fn_stat = try_font(56)
         fn_unit2 = try_font(30)
         stats = [
-            (int(ease_out(min((t - 10) / 3, 1.0)) * 480), "km range", W // 2 - 260),
-            (int(ease_out(min((t - 11) / 3, 1.0)) * 2.8 * 10) / 10, "s 0-100", W // 2),
-            (int(ease_out(min((t - 12) / 3, 1.0)) * 150), "kW charge", W // 2 + 260),
+            (int(ease_out(min((t - 5) / 1.5, 1.0)) * 480), "km range", W // 2 - 260),
+            (int(ease_out(min((t - 5.5) / 1.5, 1.0)) * 2.8 * 10) / 10, "s 0-100", W // 2),
+            (int(ease_out(min((t - 6) / 1.5, 1.0)) * 150), "kW charge", W // 2 + 260),
         ]
         for val, unit, sx in stats:
             text_center(draw, str(val), sx, H // 2 + 80, fn_stat, (*acc, 210))
@@ -1272,17 +1272,17 @@ def speedlane_frame(fi, t):
 
         fn_large = try_font(120)
         fn_med = try_font(50)
-        slide = ease_out(min((t - 10) / 1.3, 1.0))
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
         by = int(lerp(H + 80, H // 2 - 70, slide))
         shimmer_a = clamp(205 + 50 * math.sin(t * 4))
         text_center(draw, "SPEEDLANE", W // 2, by, fn_large, (*acc, shimmer_a))
-        tag_a = clamp(ease_out(min((t - 11.5) / 1.2, 1.0)) * 215)
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
         text_center(draw, "Drive the Future.", W // 2, by + 90, fn_med, (180, 230, 255, tag_a))
 
     # Scene 3 (22–30s): CTA
     else:
-        if t < 22.15:
-            flash_alpha = int(200 * (1 - (t - 22) / 0.15))
+        if t < 10.15:
+            flash_alpha = int(200 * (1 - (t - 10) / 0.15))
             fl = Image.new("RGBA", (W, H), (255, 255, 255, flash_alpha))
             bg = Image.alpha_composite(bg, fl)
 
@@ -1292,7 +1292,7 @@ def speedlane_frame(fi, t):
         fn_cta = try_font(46)
         text_center(draw, "SPEEDLANE", W // 2, H // 2 - 80, fn_large, (*acc, 235))
         text_center(draw, "Drive the Future.", W // 2, H // 2 + 10, fn_med, (180, 230, 255, 210))
-        cta_a = clamp(ease_out(min((t - 23) / 1.0, 1.0)) * 245)
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
         cta_h = 70
         cta_y = H - 115
         draw.rounded_rectangle([W // 2 - 205, cta_y, W // 2 + 205, cta_y + cta_h],

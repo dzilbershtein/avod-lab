@@ -97,9 +97,9 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 5 | Complete **Privacy concern** page | 6 × IUIPC items + 1 attention check (select "Agree" = 6) |
 | 6 | Browse screen appears | Hero tile and catalogue rows visible |
 | 7 | Click a title | Player screen opens; "Now watching" label correct |
-| 8 | *(A0)* Watch clip to end | 30-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
-| 8 | *(A1)* Click Play | 30-second pre-roll plays first; countdown visible; ad ends; content begins |
-| 8 | *(A2)* Watch to midpoint | Content pauses; 30-second mid-roll plays; content resumes |
+| 8 | *(A0)* Watch clip to end | 15-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
+| 8 | *(A1)* Click Play | 15-second pre-roll plays first; countdown visible; ad ends; content begins |
+| 8 | *(A2)* Watch to midpoint | Content pauses; 15-second mid-roll plays; content resumes |
 | 8 | *(A3)* Start clip | "Watch an ad" button is visible immediately in the top-left of the player; click it at any point → ad plays; button disappears after click |
 | 9 | Ad completes → post-survey appears | Page counter shows "1 / 5" |
 | 10 | Complete **Intrusiveness** page | 7 × 7-point items |
