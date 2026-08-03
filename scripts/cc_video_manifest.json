@@ -1,0 +1,88 @@
+{
+  "_notes": {
+    "purpose": "Curated Creative Commons video sources for AVOD-Lab. All entries must be CC BY or CC0. Run `python scripts/fetch_cc_videos.py --verify-only` to confirm licenses before downloading.",
+    "how_to_run": "python scripts/fetch_cc_videos.py  →  downloads all, trims to 15 min, writes static/content/<id>.mp4",
+    "how_to_add": "Add an object to 'videos'. 'url' accepts any yt-dlp-supported URL (YouTube, Vimeo, etc.). After running --verify-only, paste the printed catalogue snippet into config/experiment.json.",
+    "finding_more": "YouTube: search, then Filter → Type → Video, Features → Creative Commons. Vimeo CC search: https://vimeo.com/search?license=by. Blender Foundation channel: https://www.youtube.com/@BlenderFoundation — all short films are CC BY 3.0 or 4.0.",
+    "genre_to_ad_category": {
+      "Action / Horror / Sports / Superhero": "thrill_seeker",
+      "Sci-Fi / Fantasy / Travel / Science": "intellectual_explorer",
+      "Comedy / Family / Nature / Lifestyle": "content_chameleon",
+      "Drama / Thriller / Crime / Society": "investigative_viewer"
+    }
+  },
+  "videos": [
+    {
+      "id": "charge_blender",
+      "url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk",
+      "title": "Charge",
+      "tagline": "A soldier in a futuristic battlefield discovers an unexpected way out.",
+      "genre": "Sci-Fi",
+      "year": 2022,
+      "duration_sec": 542,
+      "color": "#1f2a3a",
+      "relevant_ad_category": "thrill_seeker",
+      "license_expected": "CC BY 4.0"
+    },
+    {
+      "id": "coffee_run",
+      "url": "https://www.youtube.com/watch?v=ir6LpkXfbHE",
+      "title": "Coffee Run",
+      "tagline": "A sleep-deprived animator makes a desperate run for caffeine.",
+      "genre": "Animation",
+      "year": 2020,
+      "duration_sec": 203,
+      "color": "#3a2a1f",
+      "relevant_ad_category": "content_chameleon",
+      "license_expected": "CC BY 4.0"
+    },
+    {
+      "id": "spring_blender",
+      "url": "https://www.youtube.com/watch?v=WhWc3b3KhnY",
+      "title": "Spring",
+      "tagline": "A shepherd and his dog make one last journey through the Italian hills at the end of the season.",
+      "genre": "Nature",
+      "year": 2019,
+      "duration_sec": 468,
+      "color": "#2c4a1e",
+      "relevant_ad_category": "intellectual_explorer",
+      "license_expected": "CC BY 4.0"
+    },
+    {
+      "id": "hero_blender",
+      "url": "https://www.youtube.com/watch?v=pKmSdY56VtY",
+      "title": "Hero",
+      "tagline": "In a ruined city, a lone warrior protects the last glimmer of hope.",
+      "genre": "Action",
+      "year": 2018,
+      "duration_sec": 195,
+      "color": "#1f1f2a",
+      "relevant_ad_category": "thrill_seeker",
+      "license_expected": "CC BY 4.0"
+    },
+    {
+      "id": "agent_327",
+      "url": "https://www.youtube.com/watch?v=ld8cr6Fikc0",
+      "title": "Agent 327: Operation Barbershop",
+      "tagline": "A Dutch secret agent goes undercover in a suspiciously busy barbershop.",
+      "genre": "Action",
+      "year": 2017,
+      "duration_sec": 225,
+      "color": "#2a1f10",
+      "relevant_ad_category": "investigative_viewer",
+      "license_expected": "CC BY 3.0"
+    },
+    {
+      "id": "caminandes_llamigos",
+      "url": "https://www.youtube.com/watch?v=eSzLRkGCvJ4",
+      "title": "Caminandes: Llamigos",
+      "tagline": "A llama on the Patagonian steppe versus one very determined cactus berry.",
+      "genre": "Nature",
+      "year": 2013,
+      "duration_sec": 147,
+      "color": "#4a6b3a",
+      "relevant_ad_category": "content_chameleon",
+      "license_expected": "CC BY 3.0"
+    }
+  ]
+}

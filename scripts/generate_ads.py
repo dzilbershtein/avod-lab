@@ -1302,6 +1302,571 @@ def speedlane_frame(fi, t):
     return Image.alpha_composite(bg, ov)
 
 
+# ---------------------------------------------------------------------------
+# ENERGYBLAST — sports energy drink  (electric red / black / yellow)
+# thrill_seeker category
+# ---------------------------------------------------------------------------
+
+def energyblast_frame(fi, t):
+    acc = (255, 40, 60)
+    yel = (255, 210, 30)
+    bg = gradient_bg([(8, 2, 4), (30, 8, 12), (8, 2, 4)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        for i in range(28):
+            angle = 2 * math.pi * i / 28 + t * 0.4
+            r0 = 70 + 25 * math.sin(t * 3 + i)
+            r1 = 360 + 50 * math.sin(t * 1.5 + i)
+            x0 = W // 2 + int(math.cos(angle) * r0)
+            y0 = H // 2 + int(math.sin(angle) * r0)
+            x1 = W // 2 + int(math.cos(angle) * r1)
+            y1 = H // 2 + int(math.sin(angle) * r1)
+            a = clamp(50 + 35 * math.sin(i + t * 4))
+            draw.line([(x0, y0), (x1, y1)], fill=(*acc, a), width=2)
+        bolt_a = clamp(int(abs(math.sin(t * 4)) * 240))
+        bolt = [(W // 2 + 18, 80), (W // 2 - 20, H // 2 - 60),
+                (W // 2 + 22, H // 2 - 60), (W // 2 - 18, H - 90)]
+        if bolt_a > 20:
+            draw.line(bolt, fill=(*yel, bolt_a), width=6)
+            draw.line(bolt, fill=(255, 255, 255, bolt_a // 4), width=14)
+        energy = int(ease_out(min(t / 3.5, 1.0)) * 8500)
+        fn_e = try_font(76)
+        text_center(draw, f"{energy} J", W // 2, H // 2 + 100, fn_e, (*acc, 200))
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.1, max_r=240)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, yel, count=28, seed=80, vy=-55, drift=20)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.1, max_r=230)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        glow_a = clamp(210 + 45 * math.sin(t * 5))
+        text_center(draw, "ENERGYBLAST", W // 2, by, fn_large, (*acc, glow_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Fuel Your Fire.", W // 2, by + 90, fn_med, (*yel, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, yel, count=20, seed=81, vy=-50)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        text_center(draw, "ENERGYBLAST", W // 2, H // 2 - 80, fn_large, (*acc, 235))
+        text_center(draw, "Fuel Your Fire.", W // 2, H // 2 + 10, fn_med, (*yel, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 190, cta_y, W // 2 + 190, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "GRAB YOURS", W // 2, cta_y + cta_h // 2, fn_cta, (255, 255, 255, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# BATTLECAST — esports streaming platform  (dark purple / cyan)
+# thrill_seeker category
+# ---------------------------------------------------------------------------
+
+def battlecast_frame(fi, t):
+    acc = (0, 220, 200)
+    bg = gradient_bg([(8, 2, 20), (20, 5, 40), (8, 2, 20)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        prog = ease_out(min(t / 4.5, 1.0))
+        bracket_segs = [
+            ((200, 200), (200, 300)), ((200, 400), (200, 500)),
+            ((200, 250), (380, 350)), ((200, 450), (380, 350)),
+            ((1080, 200), (1080, 300)), ((1080, 400), (1080, 500)),
+            ((1080, 250), (900, 350)), ((1080, 450), (900, 350)),
+            ((380, 350), (W // 2, H // 2)), ((900, 350), (W // 2, H // 2)),
+        ]
+        for i, (p0, p1) in enumerate(bracket_segs):
+            frac = (i + 1) / len(bracket_segs)
+            if prog >= frac:
+                a = clamp(int(min((prog - frac) / 0.08 + 1, 1.0) * 200))
+                draw.line([p0, p1], fill=(*acc, a), width=3)
+        trophy_a = clamp(int(ease_out(min(t / 3, 1.0)) * 220))
+        cx, cy = W // 2, H // 2
+        draw.ellipse([cx - 42, cy - 58, cx + 42, cy + 8], outline=(255, 180, 0, trophy_a), width=5)
+        draw.line([(cx, cy + 8), (cx, cy + 42)], fill=(255, 180, 0, trophy_a), width=5)
+        draw.line([(cx - 30, cy + 42), (cx + 30, cy + 42)], fill=(255, 180, 0, trophy_a), width=5)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.4, max_r=250)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, acc, count=30, seed=90, vy=-50, drift=25)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.4, max_r=240)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        shimmer_a = clamp(210 + 45 * math.sin(t * 4))
+        text_center(draw, "BATTLECAST", W // 2, by, fn_large, (*acc, shimmer_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 215)
+        text_center(draw, "Where Champions Stream.", W // 2, by + 92, fn_med, (200, 255, 240, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, acc, count=20, seed=91, vy=-45)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        text_center(draw, "BATTLECAST", W // 2, H // 2 - 80, fn_large, (*acc, 235))
+        text_center(draw, "Where Champions Stream.", W // 2, H // 2 + 10, fn_med, (200, 255, 240, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 185, cta_y, W // 2 + 185, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "JOIN FREE", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# MINDSPAN — documentary / educational streaming  (deep navy / amber)
+# intellectual_explorer category
+# ---------------------------------------------------------------------------
+
+def mindspan_frame(fi, t):
+    acc = (255, 185, 30)
+    bg = gradient_bg([(2, 8, 28), (5, 18, 55), (2, 8, 28)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        cx, cy, globe_r = W // 2, H // 2, 180
+        draw.ellipse([cx - globe_r, cy - globe_r, cx + globe_r, cy + globe_r],
+                     outline=(*acc, 200), width=4)
+        for lat_frac in [0.25, 0.5, 0.75]:
+            y_lat = cy - globe_r + int(2 * globe_r * lat_frac)
+            ry_lat = int(math.sqrt(max(0, globe_r ** 2 - (y_lat - cy) ** 2)))
+            draw.ellipse([cx - ry_lat, y_lat - 3, cx + ry_lat, y_lat + 3],
+                         outline=(*acc, 70), width=2)
+        for k in range(4):
+            angle = math.radians(k * 45 + t * 30)
+            rx = int(globe_r * abs(math.cos(angle)))
+            a_lon = clamp(90 * abs(math.cos(angle)))
+            draw.ellipse([cx - rx, cy - globe_r, cx + rx, cy + globe_r],
+                         outline=(*acc, a_lon), width=2)
+        pulse_rings(draw, cx, cy, t, acc, period=2.0, n=3, max_r=280)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, acc, count=25, seed=100, vy=-40, drift=30)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=2.0, n=2, max_r=260)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        shimmer_a = clamp(205 + 50 * math.sin(t * 3.5))
+        text_center(draw, "MINDSPAN", W // 2, by, fn_large, (*acc, shimmer_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Discover. Learn. Explore.", W // 2, by + 90, fn_med, (220, 200, 140, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, acc, count=18, seed=101, vy=-38)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        fn_cta = try_font(44)
+        text_center(draw, "MINDSPAN", W // 2, H // 2 - 80, fn_large, (*acc, 235))
+        text_center(draw, "Discover. Learn. Explore.", W // 2, H // 2 + 10, fn_med, (220, 200, 140, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 215, cta_y, W // 2 + 215, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "EXPLORE FREE", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# WANDERSCOUT — adventure travel booking  (emerald green / sky blue)
+# intellectual_explorer category
+# ---------------------------------------------------------------------------
+
+def wanderscout_frame(fi, t):
+    acc = (40, 200, 140)
+    sky = (100, 190, 230)
+    bg = gradient_bg([(4, 28, 20), (8, 50, 36), (4, 28, 20)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        cx, cy, comp_r = W // 2, H // 2, 160
+        draw.ellipse([cx - comp_r, cy - comp_r, cx + comp_r, cy + comp_r],
+                     outline=(*acc, 200), width=5)
+        for d in range(4):
+            angle = math.radians(d * 90 + t * 60)
+            ix = cx + int(math.cos(angle) * (comp_r - 22))
+            iy = cy + int(math.sin(angle) * (comp_r - 22))
+            ox = cx + int(math.cos(angle) * comp_r)
+            oy = cy + int(math.sin(angle) * comp_r)
+            draw.line([(ix, iy), (ox, oy)], fill=(*acc, 200), width=4)
+        n_angle = math.radians(t * 60)
+        nx = cx + int(math.cos(n_angle) * (comp_r - 30))
+        ny = cy + int(math.sin(n_angle) * (comp_r - 30))
+        draw.line([(cx, cy), (nx, ny)], fill=(255, 80, 80, 240), width=7)
+        sx = cx - int(math.cos(n_angle) * (comp_r - 30))
+        sy = cy - int(math.sin(n_angle) * (comp_r - 30))
+        draw.line([(cx, cy), (sx, sy)], fill=(*sky, 200), width=5)
+        draw.ellipse([cx - 12, cy - 12, cx + 12, cy + 12], fill=(*acc, 255))
+        lat = 40.7 + t * 0.8
+        lon = 74.0 - t * 1.2
+        fn_coord = try_font(36)
+        coord_a = clamp(ease_out(min(t / 2, 1.0)) * 200)
+        text_center(draw, f"{lat:.1f}°N  {lon:.1f}°W", W // 2, H // 2 + 120, fn_coord, (*sky, coord_a))
+        pulse_rings(draw, cx, cy, t, acc, period=1.8, n=3, max_r=250)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, sky, count=28, seed=110, vy=-45, drift=25)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.8, n=2, max_r=240)
+        fn_large = try_font(110)
+        fn_med = try_font(48)
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        shimmer_a = clamp(205 + 50 * math.sin(t * 4))
+        text_center(draw, "WANDERSCOUT", W // 2, by, fn_large, (*acc, shimmer_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Find Your Next Adventure.", W // 2, by + 92, fn_med, (*sky, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, sky, count=18, seed=111, vy=-42)
+        fn_large = try_font(110)
+        fn_med = try_font(48)
+        fn_cta = try_font(46)
+        text_center(draw, "WANDERSCOUT", W // 2, H // 2 - 80, fn_large, (*acc, 235))
+        text_center(draw, "Find Your Next Adventure.", W // 2, H // 2 + 10, fn_med, (*sky, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 185, cta_y, W // 2 + 185, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "BOOK NOW", W // 2, cta_y + cta_h // 2, fn_cta, (0, 0, 0, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# COMFYHOME — home décor / lifestyle brand  (warm brown / sage / terracotta)
+# content_chameleon category
+# ---------------------------------------------------------------------------
+
+def comfyhome_frame(fi, t):
+    acc = (74, 140, 90)
+    ter = (192, 89, 61)
+    cream = (245, 220, 180)
+    bg = gradient_bg([(38, 28, 18), (55, 42, 28), (38, 28, 18)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        tile_data = [
+            (220, 260, 160, 110, ter, "SOFA"),
+            (640, 180, 120, 120, acc, "PLANT"),
+            (1040, 250, 140, 100, (180, 140, 90), "LAMP"),
+            (380, 440, 130, 100, (140, 100, 70), "TABLE"),
+            (860, 400, 120, 110, ter, "CHAIR"),
+        ]
+        for i, (tx, ty, tw, th, col, label) in enumerate(tile_data):
+            float_y = ty + int(10 * math.sin(t * 0.9 + i * 1.4))
+            a = clamp(ease_out(t / 2.0 - i * 0.12) * 190)
+            tile = Image.new("RGBA", (tw, th), (0, 0, 0, 0))
+            td = ImageDraw.Draw(tile)
+            td.rounded_rectangle([0, 0, tw - 1, th - 1], radius=10,
+                                  fill=(*col, min(a, 100)), outline=(*col, a), width=2)
+            fn_tile = try_font(24)
+            text_center(td, label, tw // 2, th // 2, fn_tile, (*cream, a))
+            ov.alpha_composite(tile, (tx - tw // 2, float_y - th // 2))
+        pulse_rings(draw, W // 2, H // 2, t, cream, period=2.2, n=2, max_r=240)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, cream, count=22, seed=120, vy=-35, drift=20, r_range=(3, 8))
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        glow_a = clamp(210 + 30 * math.sin(t * 3))
+        text_center(draw, "COMFYHOME", W // 2, by, fn_large, (*acc, glow_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Make Every Room Yours.", W // 2, by + 90, fn_med, (*cream, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, cream, count=16, seed=121, vy=-32)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        text_center(draw, "COMFYHOME", W // 2, H // 2 - 80, fn_large, (*acc, 230))
+        text_center(draw, "Make Every Room Yours.", W // 2, H // 2 + 10, fn_med, (*cream, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 200, cta_y, W // 2 + 200, cta_y + cta_h],
+                                radius=35, fill=(*ter, cta_a))
+        text_center(draw, "SHOP ONLINE", W // 2, cta_y + cta_h // 2, fn_cta, (255, 250, 240, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# FUNSTREAM — family entertainment streaming  (coral / yellow / teal)
+# content_chameleon category
+# ---------------------------------------------------------------------------
+
+def funstream_frame(fi, t):
+    acc = (255, 100, 65)
+    yel = (255, 225, 60)
+    tea = (0, 185, 210)
+    bg = gradient_bg([(40, 10, 5), (90, 25, 15), (40, 10, 5)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        conf_rng = random.Random(55)
+        n_conf = int(ease_out(min(t / 5, 1.0)) * 120)
+        for _ in range(n_conf):
+            angle = conf_rng.uniform(0, 2 * math.pi)
+            dist = conf_rng.uniform(10, 360) * min(t / 2, 1.0)
+            cx = W // 2 + int(math.cos(angle) * dist)
+            cy = H // 2 + int(math.sin(angle) * dist) - int(80 * (t / 5) ** 2)
+            size = conf_rng.randint(8, 20)
+            col = [acc, yel, tea][conf_rng.randint(0, 2)]
+            a = clamp(int(conf_rng.uniform(0.5, 0.9) * 220))
+            if 0 <= cx <= W and 0 <= cy <= H:
+                if conf_rng.random() > 0.5:
+                    draw.rectangle([cx - size // 2, cy - size // 4,
+                                    cx + size // 2, cy + size // 4], fill=(*col, a))
+                else:
+                    draw.ellipse([cx - size // 2, cy - size // 2,
+                                  cx + size // 2, cy + size // 2], fill=(*col, a))
+        for i in range(6):
+            bx = 160 + i * 195
+            period = 1.2 + i * 0.15
+            by = H // 2 + int(120 * abs(math.sin(t * 2 * math.pi / period + i)))
+            r = 30 + i % 3 * 10
+            col = [acc, yel, tea][i % 3]
+            draw.ellipse([bx - r, by - r, bx + r, by + r], fill=(*col, 180))
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, yel, count=30, seed=130, vy=-45, drift=25, r_range=(3, 10))
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.65, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        glow_a = clamp(210 + 45 * math.sin(t * 4))
+        text_center(draw, "FUNSTREAM", W // 2, by, fn_large, (*acc, glow_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Something For Everyone.", W // 2, by + 90, fn_med, (*yel, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, yel, count=20, seed=131, vy=-40)
+        fn_large = try_font(120)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        text_center(draw, "FUNSTREAM", W // 2, H // 2 - 80, fn_large, (*acc, 235))
+        text_center(draw, "Something For Everyone.", W // 2, H // 2 + 10, fn_med, (*yel, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 185, cta_y, W // 2 + 185, cta_y + cta_h],
+                                radius=35, fill=(*tea, cta_a))
+        text_center(draw, "WATCH FREE", W // 2, cta_y + cta_h // 2, fn_cta, (255, 255, 255, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# TRUEVIEW — true crime & drama streaming  (dark crimson / slate / yellow tape)
+# investigative_viewer category
+# ---------------------------------------------------------------------------
+
+def trueview_frame(fi, t):
+    acc = (180, 20, 30)
+    yel = (255, 210, 0)
+    bg = gradient_bg([(10, 2, 2), (25, 5, 8), (10, 2, 2)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        tape_prog = ease_out(min(t / 4, 1.0))
+        tape_reach = int(tape_prog * (W + H))
+        for i in range(0, tape_reach + 80, 80):
+            x0 = i - H
+            y0 = 0
+            x1 = i
+            y1 = H
+            a = clamp(int(tape_prog * 160))
+            if a > 0:
+                draw.line([(x0, y0), (x1, y1)], fill=(*yel, a), width=28)
+                draw.line([(x0 + 14, y0), (x1 + 14, y1)], fill=(0, 0, 0, a // 2), width=4)
+        mg_prog = ease_back(min(t / 3, 1.0))
+        mg_cx = W // 2 + int((1 - mg_prog) * 280)
+        mg_cy = H // 2 - int((1 - mg_prog) * 180)
+        mg_r = int(100 * mg_prog)
+        mg_a = clamp(int(mg_prog * 220))
+        if mg_r > 5:
+            draw.ellipse([mg_cx - mg_r, mg_cy - mg_r, mg_cx + mg_r, mg_cy + mg_r],
+                         outline=(200, 200, 220, mg_a), width=8)
+            hdx = int(mg_r * 0.7)
+            draw.line([(mg_cx + mg_r - 5, mg_cy + mg_r - 5),
+                       (mg_cx + mg_r + hdx, mg_cy + mg_r + hdx)],
+                      fill=(160, 160, 180, mg_a), width=10)
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.6, max_r=260)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        for i in range(0, W + H, 80):
+            draw.line([(i - H, 0), (i, H)], fill=(*yel, 18), width=28)
+        particles(draw, t, acc, count=22, seed=140, vy=-40, drift=15, r_range=(2, 6))
+        pulse_rings(draw, W // 2, H // 2, t, acc, period=1.6, n=2, max_r=240)
+        fn_large = try_font(120)
+        fn_med = try_font(46)
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
+        by = int(lerp(H + 80, H // 2 - 70, slide))
+        glow_a = clamp(205 + 50 * math.sin(t * 3.8))
+        text_center(draw, "TRUEVIEW", W // 2, by, fn_large, (220, 220, 235, glow_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "The Truth Is Closer Than You Think.", W // 2, by + 88,
+                    fn_med, (180, 190, 210, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, acc, count=16, seed=141, vy=-38)
+        fn_large = try_font(120)
+        fn_med = try_font(46)
+        fn_cta = try_font(46)
+        text_center(draw, "TRUEVIEW", W // 2, H // 2 - 80, fn_large, (220, 220, 235, 235))
+        text_center(draw, "The Truth Is Closer Than You Think.", W // 2, H // 2 + 10,
+                    fn_med, (180, 190, 210, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 190, cta_y, W // 2 + 190, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "WATCH NOW", W // 2, cta_y + cta_h // 2, fn_cta, (255, 255, 255, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
+# ---------------------------------------------------------------------------
+# NEWSDESK — news & current affairs platform  (navy / white / red)
+# investigative_viewer category
+# ---------------------------------------------------------------------------
+
+def newsdesk_frame(fi, t):
+    acc = (0, 80, 180)
+    red = (200, 20, 30)
+    lite = (200, 220, 255)
+    bg = gradient_bg([(2, 6, 22), (5, 14, 46), (2, 6, 22)])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(ov)
+
+    if t < 5:
+        if t < 0.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(255 * (1 - t / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        for k in range(4):
+            phase = ((t * 0.8 + k * 0.5) % 2.0) / 2.0
+            r = int(phase * 320)
+            a = clamp(int((1 - phase) * 140))
+            if a > 0 and r > 10:
+                draw.arc([W // 2 - r, H // 2 - r // 2, W // 2 + r, H // 2 + r // 2],
+                         start=-60, end=60, fill=(*lite, a), width=4)
+                draw.arc([W // 2 - r, H // 2 - r // 2, W // 2 + r, H // 2 + r // 2],
+                         start=120, end=240, fill=(*lite, a), width=4)
+        draw.rectangle([0, H - 80, W, H - 42], fill=(*red, 200))
+        font_tick = try_font(26)
+        ticker_items = "BREAKING NEWS  ·  LIVE  ·  WORLD  ·  SCIENCE  ·  POLITICS  ·  SOCIETY  ·  "
+        offset = int(t * 150) % 800
+        for rep in range(3):
+            draw.text((rep * 800 - offset, H - 74), ticker_items,
+                      font=font_tick, fill=(255, 255, 255, 230))
+        cx, cy, gr = W // 2, H // 2 - 20, 130
+        draw.ellipse([cx - gr, cy - gr, cx + gr, cy + gr], outline=(*lite, 180), width=3)
+        for lat_frac in [0.3, 0.5, 0.7]:
+            y_lat = cy - gr + int(2 * gr * lat_frac)
+            ry_lat = int(math.sqrt(max(0, gr ** 2 - (y_lat - cy) ** 2)))
+            draw.ellipse([cx - ry_lat, y_lat - 2, cx + ry_lat, y_lat + 2],
+                         outline=(*lite, 55), width=2)
+        pulse_rings(draw, cx, cy, t, lite, period=2.2, n=2, max_r=210)
+    elif t < 10:
+        if t < 5.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 5) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        bar_a = clamp(ease_out(min((t - 5) / 0.5, 1.0)) * 200)
+        bar_y = H // 2 + 45
+        draw.rectangle([W // 2 - 250, bar_y, W // 2 + 250, bar_y + 5], fill=(*red, bar_a))
+        particles(draw, t, lite, count=20, seed=150, vy=-38, drift=20)
+        fn_large = try_font(130)
+        fn_med = try_font(50)
+        slide = ease_out(min((t - 5) / 0.7, 1.0))
+        by = int(lerp(H + 80, H // 2 - 75, slide))
+        shimmer_a = clamp(210 + 45 * math.sin(t * 3.5))
+        text_center(draw, "NEWSDESK", W // 2, by, fn_large, (*lite, shimmer_a))
+        tag_a = clamp(ease_out(min((t - 6.5) / 0.6, 1.0)) * 210)
+        text_center(draw, "Stay Informed. Stay Ahead.", W // 2, by + 92, fn_med, (180, 200, 240, tag_a))
+    else:
+        if t < 10.15:
+            fl = Image.new("RGBA", (W, H), (255, 255, 255, int(200 * (1 - (t - 10) / 0.15))))
+            bg = Image.alpha_composite(bg, fl)
+        particles(draw, t, lite, count=16, seed=151, vy=-35)
+        fn_large = try_font(130)
+        fn_med = try_font(50)
+        fn_cta = try_font(46)
+        text_center(draw, "NEWSDESK", W // 2, H // 2 - 80, fn_large, (*lite, 235))
+        text_center(draw, "Stay Informed. Stay Ahead.", W // 2, H // 2 + 10, fn_med, (180, 200, 240, 210))
+        cta_a = clamp(ease_out(min((t - 11) / 0.5, 1.0)) * 245)
+        cta_h = 70
+        cta_y = H - 115
+        draw.rounded_rectangle([W // 2 - 180, cta_y, W // 2 + 180, cta_y + cta_h],
+                                radius=35, fill=(*acc, cta_a))
+        text_center(draw, "READ NOW", W // 2, cta_y + cta_h // 2, fn_cta, (255, 255, 255, cta_a))
+    return Image.alpha_composite(bg, ov)
+
+
 ADS = [
     ("ad_relevant_screentime", screentime_frame),
     ("ad_relevant_arcademax", arcademax_frame),
@@ -1313,6 +1878,15 @@ ADS = [
     ("ad_irrelevant_buildright", buildright_frame),
     ("ad_auto_drivepro", drivepro_frame),
     ("ad_auto_speedlane", speedlane_frame),
+    # Viewer-profile synthetic ads
+    ("ad_thrill_energyblast", energyblast_frame),
+    ("ad_thrill_battlecast", battlecast_frame),
+    ("ad_intel_mindspan", mindspan_frame),
+    ("ad_intel_wanderscout", wanderscout_frame),
+    ("ad_chame_comfyhome", comfyhome_frame),
+    ("ad_chame_funstream", funstream_frame),
+    ("ad_invest_trueview", trueview_frame),
+    ("ad_invest_newsdesk", newsdesk_frame),
 ]
 
 if __name__ == "__main__":

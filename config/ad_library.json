@@ -7,24 +7,24 @@
   },
   "categories": [
     {
-      "id": "food_beverage",
-      "label": "Food & Beverage",
-      "description": "Snacks, drinks, restaurants. Typical mainstream advertising target."
+      "id": "thrill_seeker",
+      "label": "Thrill Seeker",
+      "description": "Action, horror, sports, gaming, superhero content. Relevant ads: energy, gaming, sports brands."
     },
     {
-      "id": "automotive",
-      "label": "Automotive",
-      "description": "Cars, trucks, accessories. High-involvement, high-budget category."
+      "id": "intellectual_explorer",
+      "label": "Intellectual Explorer",
+      "description": "Sci-fi, fantasy, travel, documentary, science content. Relevant ads: travel booking, educational streaming."
     },
     {
-      "id": "electronics_tech",
-      "label": "Electronics & Tech",
-      "description": "Consumer electronics, software, streaming devices."
+      "id": "content_chameleon",
+      "label": "Content Chameleon",
+      "description": "Comedy, family, nature, lifestyle, variety content. Relevant ads: home/lifestyle, family entertainment."
     },
     {
-      "id": "public_service",
-      "label": "Public Service",
-      "description": "Non-commercial PSAs. Useful as a non-product-promotion contrast."
+      "id": "investigative_viewer",
+      "label": "Investigative Viewer",
+      "description": "Drama, thriller, crime, true crime, society, news content. Relevant ads: news, true crime streaming."
     }
   ],
   "ads": [
@@ -347,6 +347,103 @@
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "Recommended based on the automotive content you watch."
+    },
+
+    {
+      "id": "ad_thrill_energyblast",
+      "category": "thrill_seeker",
+      "title": "ENERGYBLAST — sports energy drink (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_energyblast.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch action content, we picked this for you."
+    },
+    {
+      "id": "ad_thrill_battlecast",
+      "category": "thrill_seeker",
+      "title": "BATTLECAST — esports streaming platform (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_battlecast.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch action and gaming content, we picked this for you."
+    },
+    {
+      "id": "ad_intel_mindspan",
+      "category": "intellectual_explorer",
+      "title": "MINDSPAN — documentary streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_mindspan.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch exploratory content, we picked this for you."
+    },
+    {
+      "id": "ad_intel_wanderscout",
+      "category": "intellectual_explorer",
+      "title": "WANDERSCOUT — adventure travel booking (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_wanderscout.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch travel and sci-fi content, we picked this for you."
+    },
+    {
+      "id": "ad_chame_comfyhome",
+      "category": "content_chameleon",
+      "title": "COMFYHOME — home décor and lifestyle (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_comfyhome.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch family and lifestyle content, we picked this for you."
+    },
+    {
+      "id": "ad_chame_funstream",
+      "category": "content_chameleon",
+      "title": "FUNSTREAM — family entertainment streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_funstream.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch comedy and family content, we picked this for you."
+    },
+    {
+      "id": "ad_invest_trueview",
+      "category": "investigative_viewer",
+      "title": "TRUEVIEW — true crime and drama streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_trueview.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch drama and thriller content, we picked this for you."
+    },
+    {
+      "id": "ad_invest_newsdesk",
+      "category": "investigative_viewer",
+      "title": "NEWSDESK — news and current affairs (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_newsdesk.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch news and documentary content, we picked this for you."
     }
   ]
 }

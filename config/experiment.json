@@ -4,12 +4,21 @@
   "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one or two short ads, just like a real streaming service. Please keep this tab focused.",
 
   "_notes": {
-    "video_sources": "All titles use publicly available CDNs. video_url is the primary; fallback_urls is tried in order if the primary fails. Sources: Google sample-videos bucket, Internet Archive (public-domain feature films), test-videos.co.uk (short H.264 demos), MDN shared-assets (CC0).",
-    "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s."
+    "video_sources": "All active titles are self-hosted at /static/content/<id>.mp4 (run python scripts/download_content.py to populate). Titles still pointing to external URLs are not yet downloaded.",
+    "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s.",
+    "content_duration": "All clips are trimmed to 5 minutes (300 s) at download time. Shorter native films (agent_327 225 s, coffee_run 203 s, hero_blender 195 s, caminandes_llamigos 147 s) play to their natural end.",
+    "viewer_profile_categories": "4 profiles drive ad relevance. Each title's relevant_ad_category matches one profile; the player picks relevant synthetic ads (category matches) or irrelevant ones (category does not match).",
+    "genre_to_ad_category": {
+      "thrill_seeker": "Action, horror, superhero, sports — relevant synthetic ads: ENERGYBLAST, BATTLECAST / irrelevant: MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM, TRUEVIEW, NEWSDESK",
+      "intellectual_explorer": "Sci-Fi, fantasy, travel, science — relevant synthetic ads: MINDSPAN, WANDERSCOUT / irrelevant: ENERGYBLAST, BATTLECAST, COMFYHOME, FUNSTREAM, TRUEVIEW, NEWSDESK",
+      "content_chameleon": "Comedy, family, nature, variety, lifestyle — relevant synthetic ads: COMFYHOME, FUNSTREAM / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, TRUEVIEW, NEWSDESK",
+      "investigative_viewer": "Drama, thriller, crime, society, news — relevant synthetic ads: TRUEVIEW, NEWSDESK / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM"
+    },
+    "inactive_titles": "Titles kept in the dict but excluded from all rows: local_demo, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, we_are_going_on_bullrun, mdn_flower, tv_jellyfish, tv_bbb_demo, tv_sintel_demo, subaru_outback, volkswagen_gti, what_car_can_you_get, date_with_your_family, foundation_foods, uncle_jim_dairy"
   },
 
   "catalog": {
-    "hero": "local_demo",
+    "hero": "big_buck_bunny",
     "titles": {
       "local_demo": {
         "id": "local_demo",
@@ -28,12 +37,12 @@
       "big_buck_bunny": {
         "id": "big_buck_bunny",
         "title": "Big Buck Bunny",
-        "tagline": "A peaceful giant rabbit takes on three rodent bullies.",
-        "genre": "Animation",
+        "tagline": "A gentle giant rabbit finally snaps — and three bullying rodents won't know what hit them.",
+        "genre": "Animated Comedy",
         "year": 2008,
         "duration_sec": 596,
         "color": "#3a5f7d",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "content_chameleon",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         "fallback_urls": [
@@ -44,11 +53,11 @@
         "id": "elephant_dream",
         "title": "Elephant's Dream",
         "tagline": "Two characters navigate a strange mechanical world.",
-        "genre": "Animation",
+        "genre": "Sci-Fi Animation",
         "year": 2006,
         "duration_sec": 653,
         "color": "#2c2c54",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "intellectual_explorer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
         "fallback_urls": []
@@ -56,12 +65,12 @@
       "sintel": {
         "id": "sintel",
         "title": "Sintel",
-        "tagline": "A lonely young woman searches for her lost dragon.",
-        "genre": "Animation",
+        "tagline": "A lonely young woman searches for her lost dragon across a vast and unforgiving world.",
+        "genre": "Fantasy Drama",
         "year": 2010,
         "duration_sec": 888,
         "color": "#6b3f3a",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "investigative_viewer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
         "fallback_urls": [
@@ -71,12 +80,12 @@
       "tears_of_steel": {
         "id": "tears_of_steel",
         "title": "Tears of Steel",
-        "tagline": "A team of soldiers fights to save the world from rogue robots.",
-        "genre": "Sci-Fi",
+        "tagline": "Warriors from the future travel back in time to stop the machines — but the cost may be everything.",
+        "genre": "Sci-Fi Thriller",
         "year": 2012,
         "duration_sec": 734,
         "color": "#1f3a5f",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "intellectual_explorer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
         "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
         "fallback_urls": []
@@ -207,7 +216,7 @@
         "year": 1959,
         "duration_sec": 4700,
         "color": "#1f1f29",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "content_chameleon",
         "poster": "https://archive.org/services/img/plan-9-from-outer-space",
         "video_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
         "fallback_urls": [],
@@ -221,7 +230,7 @@
         "year": 1968,
         "duration_sec": 5810,
         "color": "#2a1a1a",
-        "relevant_ad_category": "electronics_tech",
+        "relevant_ad_category": "thrill_seeker",
         "poster": "https://archive.org/services/img/night-of-the-living-dead_1968",
         "video_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
         "fallback_urls": [],
@@ -339,41 +348,148 @@
           "https://archive.org/download/UncleJim1963/UncleJim1963_512kb.mp4"
         ],
         "license": "Public Domain (Prelinger Archives)"
+      },
+
+      "_cc_note": "Entries with source=youtube_cc require `python scripts/download_content.py`. Entries with source=archive_org_cc can also be fetched by the same script. All clips trimmed to 5 min (300 s) at download time.",
+
+      "decay_cern": {
+        "id": "decay_cern",
+        "title": "Decay",
+        "tagline": "When experiments at CERN go wrong, zombie physicists stalk the tunnels beneath Geneva. A horror film made by actual PhD students on site.",
+        "genre": "Horror · Thriller",
+        "year": 2012,
+        "duration_sec": 4560,
+        "color": "#1a1a2e",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "https://archive.org/services/img/Decay2012-TheLhcZombieFilmfullFilm",
+        "video_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4",
+        "fallback_urls": [],
+        "license": "CC BY-NC 3.0",
+        "source": "archive_org_cc"
+      },
+
+      "charge_blender": {
+        "id": "charge_blender",
+        "title": "Charge",
+        "tagline": "A soldier in a futuristic battlefield discovers an unexpected way out.",
+        "genre": "Sci-Fi Action",
+        "year": 2022,
+        "duration_sec": 542,
+        "color": "#1f2a3a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "",
+        "video_url": "/static/content/charge_blender.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 4.0",
+        "source": "youtube_cc"
+      },
+      "coffee_run": {
+        "id": "coffee_run",
+        "title": "Coffee Run",
+        "tagline": "A sleep-deprived animator makes a desperate run for caffeine.",
+        "genre": "Comedy Animation",
+        "year": 2020,
+        "duration_sec": 203,
+        "color": "#3a2a1f",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "",
+        "video_url": "/static/content/coffee_run.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 4.0",
+        "source": "youtube_cc"
+      },
+      "spring_blender": {
+        "id": "spring_blender",
+        "title": "Spring",
+        "tagline": "A shepherd and his dog make one last journey through the Italian hills at the end of the season.",
+        "genre": "Travel · Nature",
+        "year": 2019,
+        "duration_sec": 468,
+        "color": "#2c4a1e",
+        "relevant_ad_category": "intellectual_explorer",
+        "poster": "",
+        "video_url": "/static/content/spring_blender.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 4.0",
+        "source": "youtube_cc"
+      },
+      "hero_blender": {
+        "id": "hero_blender",
+        "title": "Hero",
+        "tagline": "In a ruined city, a lone warrior protects the last glimmer of hope.",
+        "genre": "Action",
+        "year": 2018,
+        "duration_sec": 195,
+        "color": "#1f1f2a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "",
+        "video_url": "/static/content/hero_blender.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 4.0",
+        "source": "youtube_cc"
+      },
+      "agent_327": {
+        "id": "agent_327",
+        "title": "Agent 327: Operation Barbershop",
+        "tagline": "A Dutch secret agent goes undercover in a suspiciously busy barbershop.",
+        "genre": "Spy Thriller",
+        "year": 2017,
+        "duration_sec": 225,
+        "color": "#2a1f10",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "",
+        "video_url": "/static/content/agent_327.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 3.0",
+        "source": "youtube_cc"
+      },
+      "caminandes_llamigos": {
+        "id": "caminandes_llamigos",
+        "title": "Caminandes: Llamigos",
+        "tagline": "A llama on the Patagonian steppe versus one very determined cactus berry.",
+        "genre": "Nature Comedy",
+        "year": 2013,
+        "duration_sec": 147,
+        "color": "#4a6b3a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "",
+        "video_url": "/static/content/caminandes_llamigos.mp4",
+        "fallback_urls": [],
+        "license": "CC BY 3.0",
+        "source": "youtube_cc"
       }
     },
 
     "rows": [
       {
-        "name": "Trending Now",
-        "title_ids": ["local_demo", "plan_9", "tears_of_steel", "night_of_living_dead", "sintel", "big_buck_bunny", "we_are_going_on_bullrun", "what_car_can_you_get"]
+        "_note": "Featured: one title per viewer profile for catalogue variety",
+        "name": "Featured",
+        "title_ids": ["charge_blender", "sintel", "big_buck_bunny", "agent_327", "elephant_dream", "night_of_living_dead", "coffee_run", "spring_blender"]
       },
       {
-        "name": "Classic Public-Domain Cinema",
-        "title_ids": ["plan_9", "night_of_living_dead"]
+        "_note": "ad-relevant category: thrill_seeker",
+        "name": "Action & Horror",
+        "title_ids": ["charge_blender", "hero_blender", "night_of_living_dead"]
       },
       {
-        "name": "Action & Adventure",
-        "title_ids": ["we_are_going_on_bullrun", "subaru_outback", "for_bigger_joyrides", "for_bigger_escapes", "for_bigger_blazes"]
+        "_note": "ad-relevant category: intellectual_explorer",
+        "name": "Sci-Fi & Travel",
+        "title_ids": ["elephant_dream", "tears_of_steel", "spring_blender"]
       },
       {
-        "name": "Animation",
-        "title_ids": ["big_buck_bunny", "elephant_dream", "sintel", "tv_bbb_demo", "tv_sintel_demo"]
+        "_note": "ad-relevant category: content_chameleon",
+        "name": "Comedy & Family",
+        "title_ids": ["big_buck_bunny", "coffee_run", "caminandes_llamigos", "plan_9"]
       },
       {
-        "name": "Quick Watch (Under 5 Minutes)",
-        "title_ids": ["mdn_flower", "tv_jellyfish", "tv_bbb_demo", "tv_sintel_demo", "for_bigger_blazes", "for_bigger_escapes", "for_bigger_fun", "for_bigger_joyrides", "for_bigger_meltdowns", "we_are_going_on_bullrun"]
+        "_note": "ad-relevant category: investigative_viewer",
+        "name": "Drama & Thriller",
+        "title_ids": ["sintel", "agent_327", "decay_cern"]
       },
       {
-        "name": "Documentaries",
-        "title_ids": ["volkswagen_gti", "subaru_outback", "what_car_can_you_get"]
-      },
-      {
-        "name": "Nature & Stock",
-        "title_ids": ["mdn_flower", "tv_jellyfish"]
-      },
-      {
-        "name": "Food & Cooking",
-        "title_ids": ["date_with_your_family", "foundation_foods", "uncle_jim_dairy"]
+        "_note": "Blender Foundation open movies — all CC BY, self-hosted",
+        "name": "Blender Open Films",
+        "title_ids": ["big_buck_bunny", "elephant_dream", "sintel", "tears_of_steel", "charge_blender", "coffee_run", "spring_blender", "hero_blender", "agent_327", "caminandes_llamigos"]
       }
     ]
   },
