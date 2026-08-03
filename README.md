@@ -57,7 +57,7 @@ python scripts/download_all.py --force    # re-download even if file exists
 | `spring_blender` | Spring | Travel · Nature | intellectual_explorer | YouTube (CC BY 4.0) |
 | `hero_blender` | Hero | Action | thrill_seeker | YouTube (CC BY 4.0) |
 | `agent_327` | Agent 327: Operation Barbershop | Spy Thriller | investigative_viewer | YouTube (CC BY 3.0) |
-| `caminandes_llamigos` | Caminandes: Llamigos | Nature Comedy | content_chameleon | YouTube (CC BY 3.0) |
+| `caminandes_llamigos` | Caminandes: Llamigos | Nature Comedy | content_chameleon | Internet Archive (CC BY 3.0) |
 
 To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run `python scripts/fetch_cc_videos.py --verify-only` to confirm the license, then paste the catalogue snippet into `config/experiment.json` and add the ID to the relevant `rows`.
 
