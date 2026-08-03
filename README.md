@@ -20,47 +20,89 @@ http://localhost:8000/admin?token=dev-admin-token
 
 ---
 
+## Content and ad videos
+
+All video files are excluded from git. Before running the server, generate synthetic ads and download content:
+
+```bash
+# 1. Generate 18 synthetic ad MP4s (requires Pillow + ffmpeg)
+python scripts/generate_ads.py
+
+# 2. Download all content and non-synthetic ad videos
+#    (requires yt-dlp + ffmpeg on PATH)
+python scripts/download_all.py
+
+# Download selectively
+python scripts/download_all.py --content-only
+python scripts/download_all.py --ads-only
+python scripts/download_all.py --ids big_buck_bunny sintel decay_cern
+python scripts/download_all.py --force    # re-download even if file exists
+```
+
+`download_all.py` reads `source_url` from `config/experiment.json` and `config/ad_library.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**; ads are trimmed to **15 seconds**.
+
+### Content catalogue
+
+| ID | Title | Genre | Viewer profile | Source |
+|---|---|---|---|---|
+| `big_buck_bunny` | Big Buck Bunny | Animated Comedy | content_chameleon | Google sample bucket |
+| `elephant_dream` | Elephant's Dream | Sci-Fi Animation | intellectual_explorer | Google sample bucket |
+| `sintel` | Sintel | Fantasy Drama | investigative_viewer | Google sample bucket |
+| `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | intellectual_explorer | Google sample bucket |
+| `plan_9` | Plan 9 from Outer Space | Cult Horror | content_chameleon | Internet Archive |
+| `night_of_living_dead` | Night of the Living Dead | Horror | thrill_seeker | Internet Archive |
+| `decay_cern` | Decay | Horror · Thriller | investigative_viewer | Internet Archive |
+| `charge_blender` | Charge | Sci-Fi Action | thrill_seeker | YouTube (CC BY 4.0) |
+| `coffee_run` | Coffee Run | Comedy Animation | content_chameleon | YouTube (CC BY 4.0) |
+| `spring_blender` | Spring | Travel · Nature | intellectual_explorer | YouTube (CC BY 4.0) |
+| `hero_blender` | Hero | Action | thrill_seeker | YouTube (CC BY 4.0) |
+| `agent_327` | Agent 327: Operation Barbershop | Spy Thriller | investigative_viewer | YouTube (CC BY 3.0) |
+| `caminandes_llamigos` | Caminandes: Llamigos | Nature Comedy | content_chameleon | YouTube (CC BY 3.0) |
+
+To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run `python scripts/fetch_cc_videos.py --verify-only` to confirm the license, then paste the catalogue snippet into `config/experiment.json` and add the ID to the relevant `rows`.
+
+### Viewer profile ad categories
+
+Ad relevance is determined by matching a title's `relevant_ad_category` to the category of synthetic ads:
+
+| Profile | Content genres | Relevant synthetic ads |
+|---|---|---|
+| `thrill_seeker` | Action, horror, sports, superhero | ENERGYBLAST, BATTLECAST |
+| `intellectual_explorer` | Sci-Fi, fantasy, travel, science | MINDSPAN, WANDERSCOUT |
+| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM |
+| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK |
+
+---
+
 ## Triggering conditions
 
 Append `?cond=<code>` to any participant URL to override the balanced assignment. Use this for testing and for sending condition-specific Prolific links.
 
 ### Experiment 1 — condition URLs
 
-Experiment 1 is a **4 × 2 between-subjects design**: five ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
+Experiment 1 is a **4 × 2 between-subjects design**: four ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
 
-| Code | Label                    | URL                        | Design note                         |
-|------|--------------------------|----------------------------|-------------------------------------|
-| A0   | Post-roll (control)      | `/?cond=A0`                | Ad after clip; baseline             |
-| A1   | Forced pre-roll          | `/?cond=A1`                | Ad before clip; shallow interruption|
-| A2   | Forced mid-roll          | `/?cond=A2`                | Ad at midpoint; deep interruption   |
-| A3   | User-initiated           | `/?cond=A3`                | Persistent "Watch an ad" button available throughout playback|
+| Code | Label | URL | Design note |
+|------|-------|-----|-------------|
+| A0   | Post-roll (control)  | `/?cond=A0` | Ad after clip; baseline |
+| A1   | Forced pre-roll      | `/?cond=A1` | Ad before clip; shallow interruption |
+| A2   | Forced mid-roll      | `/?cond=A2` | Ad at midpoint; deep interruption |
+| A3   | User-initiated       | `/?cond=A3` | Persistent "Watch an ad" button throughout playback |
 
-**Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using the same balanced-minimisation logic used for placement. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the genre of the specific video the participant chose:
-
-| Content genre | Relevant ads | Irrelevant ads |
-|---|---|---|
-| Animation, Sci-Fi, Horror, Promo | SCREENTIME, ARCADEMAX, NEONFLIX, PIXELQUEST | CRUNCHPOP, FRESHMINT, HOMESAFE, BUILDRIGHT |
-| Automotive / driving | DRIVEPRO, SPEEDLANE | SCREENTIME, ARCADEMAX, CRUNCHPOP, FRESHMINT |
-| Nature / lifestyle | CRUNCHPOP, FRESHMINT | SCREENTIME, ARCADEMAX, DRIVEPRO, SPEEDLANE |
-
-Synthetic ad MP4s are not tracked in git. Regenerate them with:
-
-```bash
-python scripts/generate_ads.py   # requires Pillow + ffmpeg; writes to static/ads/
-```
+**Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using balanced minimisation. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the viewer profile of the specific video the participant chose.
 
 ### Experiment 2 — condition URLs
 
-Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placement. Ad relevance is fixed to *relevant* in all B conditions so that the explanation banners ("This ad was selected based on what you watch…") are truthful.
+Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placement. Ad relevance is fixed to *relevant* in all B conditions so that the explanation banners are truthful.
 
-| Code | Label                                       | URL           |
-|------|---------------------------------------------|---------------|
-| B0   | No explanation, Mid-roll                    | `/?cond=B0`   |
-| B1   | Content-based explanation, Mid-roll         | `/?cond=B1`   |
-| B2   | Data-based explanation, Mid-roll            | `/?cond=B2`   |
-| B3   | No explanation, User-initiated              | `/?cond=B3`   |
-| B4   | Content-based explanation, User-initiated   | `/?cond=B4`   |
-| B5   | Data-based explanation, User-initiated      | `/?cond=B5`   |
+| Code | Label | URL |
+|------|-------|-----|
+| B0   | No explanation, Mid-roll                  | `/?cond=B0` |
+| B1   | Content-based explanation, Mid-roll       | `/?cond=B1` |
+| B2   | Data-based explanation, Mid-roll          | `/?cond=B2` |
+| B3   | No explanation, User-initiated            | `/?cond=B3` |
+| B4   | Content-based explanation, User-initiated | `/?cond=B4` |
+| B5   | Data-based explanation, User-initiated    | `/?cond=B5` |
 
 > **Note.** Without `?cond=`, the server uses balanced minimisation to assign the least-filled arm from `random_pool` in `config/experiment.json`. For a live study, send each Prolific participant their condition-specific link; the override is logged in `condition_source = "override"`.
 
@@ -71,7 +113,6 @@ Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placem
 ### 1. Pre-flight check (run once)
 
 ```bash
-# Verify the server starts and the DB migrates cleanly
 python app.py &
 curl -s http://localhost:8000/healthz          # → {"ok": true, ...}
 curl -s http://localhost:8000/admin?token=dev-admin-token | grep "AVOD-Lab"
@@ -108,7 +149,7 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 13 | Complete **Purchase / skip** page | 3 PI items + skip item + attention check (select "Somewhat agree" = 5) |
 | 14 | Complete **Manipulation checks** page | A3: control item; all: ad-seen + prior-exposure |
 | 15 | Click **Submit** | Debriefing screen appears |
-| 17 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
+| 16 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
 
 ### 3. Decline path — A3 only
 
@@ -280,7 +321,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 // Switch between experiments:
 "condition_assignment_mode": "balanced",   // balanced | random | fixed
 "active_condition": "A0",                  // used only when mode = "fixed"
-"random_pool": ["A0","A1","A2","A3"], // Experiment 1
+"random_pool": ["A0","A1","A2","A3"],      // Experiment 1
 // "random_pool": ["B0","B1","B2","B3","B4","B5"],  // switch to Experiment 2
 ```
 
@@ -291,10 +332,10 @@ Each ad slot in a condition carries an `ad_relevance` field:
 | Value | Behaviour |
 |---|---|
 | `"balanced"` | Server assigns "relevant" or "irrelevant" using balanced minimisation within that condition (Exp 1) |
-| `"relevant"` | Always show an ad matching the video's genre (Exp 2 / B conditions) |
-| `"irrelevant"` | Always show an ad that does not match the video's genre |
+| `"relevant"` | Always show an ad matching the video's viewer profile (Exp 2 / B conditions) |
+| `"irrelevant"` | Always show an ad that does not match the video's viewer profile |
 
-The video genre → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four taxonomy IDs (`electronics_tech`, `automotive`, `food_beverage`, `public_service`). Synthetic ads must also exist as MP4 files in `static/ads/` (run `python scripts/generate_ads.py` to regenerate).
+The video → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four viewer profile IDs (`thrill_seeker`, `intellectual_explorer`, `content_chameleon`, `investigative_viewer`). Synthetic ads must also exist as MP4 files in `static/ads/` (run `python scripts/generate_ads.py` to regenerate).
 
 ---
 
@@ -306,6 +347,17 @@ gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
 Mount `data/` on a persistent volume (SQLite). For high concurrency, swap to Postgres — the schema ports unchanged.
+
+### Offline / air-gapped server
+
+The server does not need internet access at runtime. All `video_url` fields point to `/static/content/<id>.mp4` or `/static/ads/<id>.mp4`. Populate these before deployment:
+
+```bash
+python scripts/generate_ads.py    # synthetic ads
+python scripts/download_all.py    # content + non-synthetic ads
+```
+
+Then copy the `static/` tree to the server. No outbound requests are made during participant sessions.
 
 ### Prolific completion redirect
 
@@ -320,19 +372,23 @@ avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── config/
 │   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
-│   └── ad_library.json         Ad creative metadata; 4 categories; 10 synthetic ads
+│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 18 synthetic ads
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
 │   ├── survey.js               Pre- and post-exposure questionnaire (Exp 1)
 │   ├── browse.js               Catalogue / hero rendering
-│   ├── player.js               Video + ad scheduler + category-matched ad selection
+│   ├── player.js               Video + ad scheduler + viewer-profile ad selection
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads.py)
+│   ├── content/                Content MP4s (gitignored — run download_all.py)
 │   └── style.css               Dark-theme UI + survey form styles
 ├── templates/
 │   ├── index.html              Participant page (intro → surveys → browse → player)
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    └── generate_ads.py         Renders 10 synthetic ad MP4s via Pillow + ffmpeg
+    ├── generate_ads.py         Renders 18 synthetic ad MP4s via Pillow + ffmpeg
+    ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
+    ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
+    └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
 ```
