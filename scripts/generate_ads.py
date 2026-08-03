@@ -1868,23 +1868,16 @@ def newsdesk_frame(fi, t):
 
 
 ADS = [
-    ("ad_relevant_screentime", screentime_frame),
-    ("ad_relevant_arcademax", arcademax_frame),
-    ("ad_irrelevant_crunchpop", crunchpop_frame),
-    ("ad_irrelevant_homesafe", homesafe_frame),
-    ("ad_relevant_neonflix", neonflix_frame),
-    ("ad_relevant_pixelquest", pixelquest_frame),
-    ("ad_irrelevant_freshmint", freshmint_frame),
-    ("ad_irrelevant_buildright", buildright_frame),
-    ("ad_auto_drivepro", drivepro_frame),
-    ("ad_auto_speedlane", speedlane_frame),
-    # Viewer-profile synthetic ads
+    # thrill_seeker
     ("ad_thrill_energyblast", energyblast_frame),
     ("ad_thrill_battlecast", battlecast_frame),
+    # intellectual_explorer
     ("ad_intel_mindspan", mindspan_frame),
     ("ad_intel_wanderscout", wanderscout_frame),
+    # content_chameleon
     ("ad_chame_comfyhome", comfyhome_frame),
     ("ad_chame_funstream", funstream_frame),
+    # investigative_viewer
     ("ad_invest_trueview", trueview_frame),
     ("ad_invest_newsdesk", newsdesk_frame),
 ]
