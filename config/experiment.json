@@ -2,11 +2,10 @@
   "condition_label": "phase2b-default",
   "study_title": "AVOD-Lab",
   "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one or two short ads, just like a real streaming service. Please keep this tab focused.",
-
   "_notes": {
     "video_sources": "All active titles are self-hosted at /static/content/<id>.mp4 (run python scripts/download_content.py to populate). Titles still pointing to external URLs are not yet downloaded.",
     "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s.",
-    "content_duration": "All clips are trimmed to 5 minutes (300 s) at download time. Shorter native films (agent_327 225 s, coffee_run 203 s, hero_blender 195 s, caminandes_llamigos 147 s) play to their natural end.",
+    "content_duration": "All clips are trimmed to 15 minutes (900 s) at download time. Clips shorter than 15 min play to their natural end.",
     "viewer_profile_categories": "4 profiles drive ad relevance. Each title's relevant_ad_category matches one profile; the player picks relevant synthetic ads (category matches) or irrelevant ones (category does not match).",
     "genre_to_ad_category": {
       "thrill_seeker": "Action, horror, superhero, sports — relevant synthetic ads: ENERGYBLAST, BATTLECAST / irrelevant: MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM, TRUEVIEW, NEWSDESK",
@@ -16,7 +15,6 @@
     },
     "inactive_titles": "Titles kept in the dict but excluded from all rows: local_demo, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, we_are_going_on_bullrun, mdn_flower, tv_jellyfish, tv_bbb_demo, tv_sintel_demo, subaru_outback, volkswagen_gti, what_car_can_you_get, date_with_your_family, foundation_foods, uncle_jim_dairy"
   },
-
   "catalog": {
     "hero": "big_buck_bunny",
     "titles": {
@@ -44,10 +42,9 @@
         "color": "#3a5f7d",
         "relevant_ad_category": "content_chameleon",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        "fallback_urls": [
-          "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_30MB.mp4"
-        ]
+        "video_url": "/static/content/big_buck_bunny.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
       },
       "elephant_dream": {
         "id": "elephant_dream",
@@ -59,8 +56,9 @@
         "color": "#2c2c54",
         "relevant_ad_category": "intellectual_explorer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/elephant_dream.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
       },
       "sintel": {
         "id": "sintel",
@@ -72,10 +70,9 @@
         "color": "#6b3f3a",
         "relevant_ad_category": "investigative_viewer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-        "fallback_urls": [
-          "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_30MB.mp4"
-        ]
+        "video_url": "/static/content/sintel.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
       },
       "tears_of_steel": {
         "id": "tears_of_steel",
@@ -87,8 +84,9 @@
         "color": "#1f3a5f",
         "relevant_ad_category": "intellectual_explorer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/tears_of_steel.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
       },
       "for_bigger_blazes": {
         "id": "for_bigger_blazes",
@@ -100,8 +98,9 @@
         "color": "#a83232",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/for_bigger_blazes.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
       },
       "for_bigger_escapes": {
         "id": "for_bigger_escapes",
@@ -113,8 +112,9 @@
         "color": "#3a7d5f",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/for_bigger_escapes.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
       },
       "for_bigger_fun": {
         "id": "for_bigger_fun",
@@ -126,8 +126,9 @@
         "color": "#7d6f3a",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/for_bigger_fun.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
       },
       "for_bigger_joyrides": {
         "id": "for_bigger_joyrides",
@@ -139,8 +140,9 @@
         "color": "#3a6f7d",
         "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/for_bigger_joyrides.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
       },
       "for_bigger_meltdowns": {
         "id": "for_bigger_meltdowns",
@@ -152,8 +154,9 @@
         "color": "#a85932",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/for_bigger_meltdowns.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
       },
       "subaru_outback": {
         "id": "subaru_outback",
@@ -165,8 +168,9 @@
         "color": "#3a4d2c",
         "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/subaru_outback.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
       },
       "volkswagen_gti": {
         "id": "volkswagen_gti",
@@ -178,8 +182,9 @@
         "color": "#2c4d6b",
         "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/volkswagen_gti.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
       },
       "we_are_going_on_bullrun": {
         "id": "we_are_going_on_bullrun",
@@ -191,8 +196,9 @@
         "color": "#6b2c2c",
         "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/we_are_going_on_bullrun.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
       },
       "what_car_can_you_get": {
         "id": "what_car_can_you_get",
@@ -204,10 +210,10 @@
         "color": "#7d3a6b",
         "relevant_ad_category": "automotive",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
-        "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-        "fallback_urls": []
+        "video_url": "/static/content/what_car_can_you_get.mp4",
+        "fallback_urls": [],
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
       },
-
       "plan_9": {
         "id": "plan_9",
         "title": "Plan 9 from Outer Space",
@@ -218,9 +224,10 @@
         "color": "#1f1f29",
         "relevant_ad_category": "content_chameleon",
         "poster": "https://archive.org/services/img/plan-9-from-outer-space",
-        "video_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
+        "video_url": "/static/content/plan_9.mp4",
         "fallback_urls": [],
-        "license": "CC0 / public domain"
+        "license": "CC0 / public domain",
+        "source_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4"
       },
       "night_of_living_dead": {
         "id": "night_of_living_dead",
@@ -232,9 +239,10 @@
         "color": "#2a1a1a",
         "relevant_ad_category": "thrill_seeker",
         "poster": "https://archive.org/services/img/night-of-the-living-dead_1968",
-        "video_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
+        "video_url": "/static/content/night_of_living_dead.mp4",
         "fallback_urls": [],
-        "license": "Public Domain Mark 1.0"
+        "license": "Public Domain Mark 1.0",
+        "source_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4"
       },
       "mdn_flower": {
         "id": "mdn_flower",
@@ -246,11 +254,10 @@
         "color": "#3a6b3a",
         "relevant_ad_category": "electronics_tech",
         "poster": "",
-        "video_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4",
-        "fallback_urls": [
-          "https://developer.mozilla.org/shared-assets/videos/flower.webm"
-        ],
-        "license": "CC0 (Mozilla shared-assets)"
+        "video_url": "/static/content/mdn_flower.mp4",
+        "fallback_urls": [],
+        "license": "CC0 (Mozilla shared-assets)",
+        "source_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4"
       },
       "tv_jellyfish": {
         "id": "tv_jellyfish",
@@ -262,11 +269,10 @@
         "color": "#2a4a6b",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://test-videos.co.uk/user/pages/images/jellyfish-3-mbps-hd-h264.jpg",
-        "video_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4",
-        "fallback_urls": [
-          "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_10MB.mp4"
-        ],
-        "license": "test-videos.co.uk public test asset"
+        "video_url": "/static/content/tv_jellyfish.mp4",
+        "fallback_urls": [],
+        "license": "test-videos.co.uk public test asset",
+        "source_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4"
       },
       "tv_bbb_demo": {
         "id": "tv_bbb_demo",
@@ -278,11 +284,10 @@
         "color": "#7d5f3a",
         "relevant_ad_category": "electronics_tech",
         "poster": "https://test-videos.co.uk/user/pages/images/big_buck_bunny.jpg",
-        "video_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4",
-        "fallback_urls": [
-          "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_10MB.mp4"
-        ],
-        "license": "test-videos.co.uk public test asset"
+        "video_url": "/static/content/tv_bbb_demo.mp4",
+        "fallback_urls": [],
+        "license": "test-videos.co.uk public test asset",
+        "source_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4"
       },
       "tv_sintel_demo": {
         "id": "tv_sintel_demo",
@@ -294,13 +299,11 @@
         "color": "#6b4d3a",
         "relevant_ad_category": "electronics_tech",
         "poster": "",
-        "video_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4",
-        "fallback_urls": [
-          "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_10MB.mp4"
-        ],
-        "license": "test-videos.co.uk public test asset"
+        "video_url": "/static/content/tv_sintel_demo.mp4",
+        "fallback_urls": [],
+        "license": "test-videos.co.uk public test asset",
+        "source_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4"
       },
-
       "date_with_your_family": {
         "id": "date_with_your_family",
         "title": "A Date with Your Family",
@@ -311,11 +314,10 @@
         "color": "#5a3e28",
         "relevant_ad_category": "food_beverage",
         "poster": "https://archive.org/services/img/DateWith1950",
-        "video_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4",
-        "fallback_urls": [
-          "https://archive.org/download/DateWith1950/DateWith1950_512kb.mp4"
-        ],
-        "license": "Public Domain (Prelinger Archives)"
+        "video_url": "/static/content/date_with_your_family.mp4",
+        "fallback_urls": [],
+        "license": "Public Domain (Prelinger Archives)",
+        "source_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4"
       },
       "foundation_foods": {
         "id": "foundation_foods",
@@ -327,11 +329,10 @@
         "color": "#3a5c2c",
         "relevant_ad_category": "food_beverage",
         "poster": "https://archive.org/services/img/Foundati1951",
-        "video_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4",
-        "fallback_urls": [
-          "https://archive.org/download/Foundati1951/Foundati1951_512kb.mp4"
-        ],
-        "license": "Public Domain (Prelinger Archives)"
+        "video_url": "/static/content/foundation_foods.mp4",
+        "fallback_urls": [],
+        "license": "Public Domain (Prelinger Archives)",
+        "source_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4"
       },
       "uncle_jim_dairy": {
         "id": "uncle_jim_dairy",
@@ -343,15 +344,12 @@
         "color": "#4a6b3a",
         "relevant_ad_category": "food_beverage",
         "poster": "https://archive.org/services/img/UncleJim1963",
-        "video_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4",
-        "fallback_urls": [
-          "https://archive.org/download/UncleJim1963/UncleJim1963_512kb.mp4"
-        ],
-        "license": "Public Domain (Prelinger Archives)"
+        "video_url": "/static/content/uncle_jim_dairy.mp4",
+        "fallback_urls": [],
+        "license": "Public Domain (Prelinger Archives)",
+        "source_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4"
       },
-
       "_cc_note": "Entries with source=youtube_cc require `python scripts/download_content.py`. Entries with source=archive_org_cc can also be fetched by the same script. All clips trimmed to 5 min (300 s) at download time.",
-
       "decay_cern": {
         "id": "decay_cern",
         "title": "Decay",
@@ -362,12 +360,12 @@
         "color": "#1a1a2e",
         "relevant_ad_category": "investigative_viewer",
         "poster": "https://archive.org/services/img/Decay2012-TheLhcZombieFilmfullFilm",
-        "video_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4",
+        "video_url": "/static/content/decay_cern.mp4",
         "fallback_urls": [],
         "license": "CC BY-NC 3.0",
-        "source": "archive_org_cc"
+        "source": "archive_org_cc",
+        "source_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4"
       },
-
       "charge_blender": {
         "id": "charge_blender",
         "title": "Charge",
@@ -381,7 +379,8 @@
         "video_url": "/static/content/charge_blender.mp4",
         "fallback_urls": [],
         "license": "CC BY 4.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk"
       },
       "coffee_run": {
         "id": "coffee_run",
@@ -396,7 +395,8 @@
         "video_url": "/static/content/coffee_run.mp4",
         "fallback_urls": [],
         "license": "CC BY 4.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=ir6LpkXfbHE"
       },
       "spring_blender": {
         "id": "spring_blender",
@@ -411,7 +411,8 @@
         "video_url": "/static/content/spring_blender.mp4",
         "fallback_urls": [],
         "license": "CC BY 4.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=WhWc3b3KhnY"
       },
       "hero_blender": {
         "id": "hero_blender",
@@ -426,7 +427,8 @@
         "video_url": "/static/content/hero_blender.mp4",
         "fallback_urls": [],
         "license": "CC BY 4.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=pKmSdY56VtY"
       },
       "agent_327": {
         "id": "agent_327",
@@ -441,7 +443,8 @@
         "video_url": "/static/content/agent_327.mp4",
         "fallback_urls": [],
         "license": "CC BY 3.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=ld8cr6Fikc0"
       },
       "caminandes_llamigos": {
         "id": "caminandes_llamigos",
@@ -456,51 +459,97 @@
         "video_url": "/static/content/caminandes_llamigos.mp4",
         "fallback_urls": [],
         "license": "CC BY 3.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "source_url": "https://www.youtube.com/watch?v=eSzLRkGCvJ4"
       }
     },
-
     "rows": [
       {
         "_note": "Featured: one title per viewer profile for catalogue variety",
         "name": "Featured",
-        "title_ids": ["charge_blender", "sintel", "big_buck_bunny", "agent_327", "elephant_dream", "night_of_living_dead", "coffee_run", "spring_blender"]
+        "title_ids": [
+          "charge_blender",
+          "sintel",
+          "big_buck_bunny",
+          "agent_327",
+          "elephant_dream",
+          "night_of_living_dead",
+          "coffee_run",
+          "spring_blender"
+        ]
       },
       {
         "_note": "ad-relevant category: thrill_seeker",
         "name": "Action & Horror",
-        "title_ids": ["charge_blender", "hero_blender", "night_of_living_dead"]
+        "title_ids": [
+          "charge_blender",
+          "hero_blender",
+          "night_of_living_dead"
+        ]
       },
       {
         "_note": "ad-relevant category: intellectual_explorer",
         "name": "Sci-Fi & Travel",
-        "title_ids": ["elephant_dream", "tears_of_steel", "spring_blender"]
+        "title_ids": [
+          "elephant_dream",
+          "tears_of_steel",
+          "spring_blender"
+        ]
       },
       {
         "_note": "ad-relevant category: content_chameleon",
         "name": "Comedy & Family",
-        "title_ids": ["big_buck_bunny", "coffee_run", "caminandes_llamigos", "plan_9"]
+        "title_ids": [
+          "big_buck_bunny",
+          "coffee_run",
+          "caminandes_llamigos",
+          "plan_9"
+        ]
       },
       {
         "_note": "ad-relevant category: investigative_viewer",
         "name": "Drama & Thriller",
-        "title_ids": ["sintel", "agent_327", "decay_cern"]
+        "title_ids": [
+          "sintel",
+          "agent_327",
+          "decay_cern"
+        ]
       },
       {
         "_note": "Blender Foundation open movies — all CC BY, self-hosted",
         "name": "Blender Open Films",
-        "title_ids": ["big_buck_bunny", "elephant_dream", "sintel", "tears_of_steel", "charge_blender", "coffee_run", "spring_blender", "hero_blender", "agent_327", "caminandes_llamigos"]
+        "title_ids": [
+          "big_buck_bunny",
+          "elephant_dream",
+          "sintel",
+          "tears_of_steel",
+          "charge_blender",
+          "coffee_run",
+          "spring_blender",
+          "hero_blender",
+          "agent_327",
+          "caminandes_llamigos"
+        ]
       }
     ]
   },
-
   "_conditions_notes": "Each session is assigned one of four ad conditions (A0–A3) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0–1.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 15-second spec is enforced regardless of the underlying asset length.",
-
   "condition_assignment_mode": "balanced",
   "active_condition": "A0",
-  "random_pool": ["A0", "A1", "A2", "A3"],
-  "random_pool_exp2": ["B0", "B1", "B2", "B3", "B4", "B5"],
-
+  "random_pool": [
+    "A0",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "random_pool_exp2": [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5"
+  ],
   "conditions": {
     "A0": {
       "label": "Post-roll (control)",
@@ -552,9 +601,7 @@
         }
       ]
     },
-
     "_exp2_notes": "Experiment 2 — 3×2 between-subjects (Explanation type E0/E1/E2 × Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Conditions B0–B5 replace the ad library reference with the same creative used in Exp 1; update library_ref to your actual 15-second consumer-electronics creative before running the main study. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
-
     "B0": {
       "label": "Exp2: No explanation, Mid-roll",
       "description": "Forced mid-roll, no ad explanation (E0×P1). Control cell for Experiment 2.",
@@ -565,7 +612,9 @@
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
           "skippable_after_sec": null,
-          "banner": { "show": false }
+          "banner": {
+            "show": false
+          }
         }
       ]
     },
@@ -619,7 +668,9 @@
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
           "skippable_after_sec": null,
-          "banner": { "show": false }
+          "banner": {
+            "show": false
+          }
         }
       ]
     },

@@ -1,0 +1,3 @@
+# Downloaded CC YouTube videos — regenerate with: python scripts/fetch_cc_videos.py
+*.mp4
+!sample_demo.mp4
