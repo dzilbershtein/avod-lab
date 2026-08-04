@@ -13,7 +13,7 @@
       "content_chameleon": "Comedy, family, nature, variety, lifestyle — relevant synthetic ads: COMFYHOME, FUNSTREAM / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, TRUEVIEW, NEWSDESK",
       "investigative_viewer": "Drama, thriller, crime, society, news — relevant synthetic ads: TRUEVIEW, NEWSDESK / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM"
     },
-    "inactive_titles": "Titles kept in the dict but excluded from all rows: local_demo, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, we_are_going_on_bullrun, mdn_flower, tv_jellyfish, tv_bbb_demo, tv_sintel_demo, subaru_outback, volkswagen_gti, what_car_can_you_get, date_with_your_family, foundation_foods, uncle_jim_dairy"
+    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, date_with_your_family, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, local_demo, mdn_flower, spring_blender, subaru_outback, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
   },
   "catalog": {
     "hero": "big_buck_bunny",
@@ -44,7 +44,7 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
         "video_url": "/static/content/big_buck_bunny.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Big%20Buck%20Bunny.mp4"
       },
       "elephant_dream": {
         "id": "elephant_dream",
@@ -58,7 +58,7 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
         "video_url": "/static/content/elephant_dream.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Elephants%20Dream.mp4"
       },
       "sintel": {
         "id": "sintel",
@@ -72,7 +72,7 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
         "video_url": "/static/content/sintel.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Sintel.mp4"
       },
       "tears_of_steel": {
         "id": "tears_of_steel",
@@ -86,7 +86,7 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
         "video_url": "/static/content/tears_of_steel.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Tears%20of%20Steel.mp4"
       },
       "for_bigger_blazes": {
         "id": "for_bigger_blazes",
@@ -461,74 +461,143 @@
         "license": "CC BY 3.0",
         "source": "youtube_cc",
         "source_url": "https://archive.org/download/CaminandesLlamigos/Caminandes_%20Llamigos-1080p.mp4"
+      },
+      "cosmos_laundromat": {
+        "id": "cosmos_laundromat",
+        "title": "Cosmos Laundromat",
+        "tagline": "A suicidal sheep on a desolate island meets a mysterious man who offers him a second chance — at a price.",
+        "genre": "Sci-Fi · Fantasy",
+        "year": 2015,
+        "duration_sec": 732,
+        "color": "#1a1040",
+        "relevant_ad_category": "intellectual_explorer",
+        "poster": "https://archive.org/services/img/CosmosLaundromatFirstCycle",
+        "video_url": "/static/content/cosmos_laundromat.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/CosmosLaundromatFirstCycle/Cosmos%20Laundromat%20-%20First%20Cycle%20%281080p%29.mp4",
+        "license": "CC BY 4.0",
+        "source": "archive_org_cc"
+      },
+      "sprite_fright": {
+        "id": "sprite_fright",
+        "title": "Sprite Fright",
+        "tagline": "Teenagers trekking through an isolated forest disturb peaceful mushroom creatures — with chaotic consequences.",
+        "genre": "Horror · Comedy",
+        "year": 2021,
+        "duration_sec": 630,
+        "color": "#1a2e1a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "https://archive.org/services/img/sprite-fright",
+        "video_url": "/static/content/sprite_fright.mp4",
+        "fallback_urls": [],
+        "source_url": "https://www.youtube.com/watch?v=_cMxraX_5RE",
+        "license": "CC BY 4.0",
+        "source": "youtube_cc"
+      },
+      "doa_1950": {
+        "id": "doa_1950",
+        "title": "D.O.A.",
+        "tagline": "A man walks into a police station to report a murder — his own. He has 24 hours to find his killer.",
+        "genre": "Crime · Noir",
+        "year": 1950,
+        "duration_sec": 4980,
+        "color": "#1a1a1a",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "https://archive.org/services/img/D.o.a.VideoQualityUpgrade",
+        "video_url": "/static/content/doa_1950.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/D.o.a.VideoQualityUpgrade/D.o.a.VideoQualityUpgrade.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "teenagers_outer_space": {
+        "id": "teenagers_outer_space",
+        "title": "Teenagers from Outer Space",
+        "tagline": "An alien fleet arrives on Earth to use it as a breeding ground — only one young alien dares to resist.",
+        "genre": "Sci-Fi · Horror",
+        "year": 1959,
+        "duration_sec": 5160,
+        "color": "#0a1a0a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "https://archive.org/services/img/TeenagersFromOuterSpace_1959",
+        "video_url": "/static/content/teenagers_outer_space.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/TeenagersFromOuterSpace_1959/TeenagersFromOuterSpace.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "little_shop_horrors": {
+        "id": "little_shop_horrors",
+        "title": "The Little Shop of Horrors",
+        "tagline": "A hapless florist's assistant nurtures a mysterious plant with an insatiable appetite — for human flesh.",
+        "genre": "Horror · Comedy",
+        "year": 1960,
+        "duration_sec": 4320,
+        "color": "#1a2a0a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "https://archive.org/services/img/the-little-shop-of-horrors-1960-colorized",
+        "video_url": "/static/content/little_shop_horrors.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/the-little-shop-of-horrors-1960-colorized/The%20Little%20Shop%20Of%20Horrors%201960%20%28Colorized%29.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
       }
     },
     "rows": [
       {
-        "_note": "Featured: one title per viewer profile for catalogue variety",
         "name": "Featured",
         "title_ids": [
-          "charge_blender",
+          "cosmos_laundromat",
           "sintel",
           "big_buck_bunny",
-          "agent_327",
+          "doa_1950",
           "elephant_dream",
           "night_of_living_dead",
-          "coffee_run",
-          "spring_blender"
+          "little_shop_horrors",
+          "tears_of_steel"
         ]
       },
       {
-        "_note": "ad-relevant category: thrill_seeker",
         "name": "Action & Horror",
         "title_ids": [
-          "charge_blender",
-          "hero_blender",
+          "sprite_fright",
+          "teenagers_outer_space",
           "night_of_living_dead"
         ]
       },
       {
-        "_note": "ad-relevant category: intellectual_explorer",
         "name": "Sci-Fi & Travel",
         "title_ids": [
           "elephant_dream",
           "tears_of_steel",
-          "spring_blender"
+          "cosmos_laundromat"
         ]
       },
       {
-        "_note": "ad-relevant category: content_chameleon",
         "name": "Comedy & Family",
         "title_ids": [
           "big_buck_bunny",
-          "coffee_run",
-          "caminandes_llamigos",
+          "little_shop_horrors",
           "plan_9"
         ]
       },
       {
-        "_note": "ad-relevant category: investigative_viewer",
         "name": "Drama & Thriller",
         "title_ids": [
           "sintel",
-          "agent_327",
+          "doa_1950",
           "decay_cern"
         ]
       },
       {
-        "_note": "Blender Foundation open movies — all CC BY, self-hosted",
         "name": "Blender Open Films",
         "title_ids": [
           "big_buck_bunny",
           "elephant_dream",
           "sintel",
           "tears_of_steel",
-          "charge_blender",
-          "coffee_run",
-          "spring_blender",
-          "hero_blender",
-          "agent_327",
-          "caminandes_llamigos"
+          "cosmos_laundromat",
+          "sprite_fright"
         ]
       }
     ]

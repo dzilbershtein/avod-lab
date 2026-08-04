@@ -9,80 +9,77 @@
       "Sci-Fi / Fantasy / Travel / Science": "intellectual_explorer",
       "Comedy / Family / Nature / Lifestyle": "content_chameleon",
       "Drama / Thriller / Crime / Society": "investigative_viewer"
-    }
+    },
+    "retired_titles": "charge_blender, coffee_run, spring_blender, hero_blender, agent_327, caminandes_llamigos — all under 10 min, retired in favour of 10-15 min replacements"
   },
   "videos": [
+    {
+      "id": "cosmos_laundromat",
+      "url": "https://www.youtube.com/watch?v=Y-rmzh0PI3c",
+      "title": "Cosmos Laundromat",
+      "tagline": "On a desolate island, a suicidal sheep meets a strange man who offers him a new universe.",
+      "genre": "Sci-Fi",
+      "year": 2015,
+      "duration_sec": 731,
+      "color": "#1a2a3a",
+      "relevant_ad_category": "intellectual_explorer",
+      "license_expected": "CC BY 4.0"
+    },
+    {
+      "id": "sprite_fright",
+      "url": "https://www.youtube.com/watch?v=_cMxraX_5RE",
+      "title": "Sprite Fright",
+      "tagline": "A group of obnoxious teens venture into an ancient forest and meet its feral inhabitants.",
+      "genre": "Horror",
+      "year": 2021,
+      "duration_sec": 630,
+      "color": "#1f3a1a",
+      "relevant_ad_category": "thrill_seeker",
+      "license_expected": "CC BY 4.0"
+    }
+  ],
+  "retired": [
     {
       "id": "charge_blender",
       "url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk",
       "title": "Charge",
-      "tagline": "A soldier in a futuristic battlefield discovers an unexpected way out.",
-      "genre": "Sci-Fi",
-      "year": 2022,
       "duration_sec": 542,
-      "color": "#1f2a3a",
-      "relevant_ad_category": "thrill_seeker",
-      "license_expected": "CC BY 4.0"
+      "retired_reason": "Too short (< 10 min)"
     },
     {
       "id": "coffee_run",
-      "url": "https://www.youtube.com/watch?v=ir6LpkXfbHE",
+      "url": "https://archive.org/download/coffee_202209/coffee.mp4",
       "title": "Coffee Run",
-      "tagline": "A sleep-deprived animator makes a desperate run for caffeine.",
-      "genre": "Animation",
-      "year": 2020,
       "duration_sec": 203,
-      "color": "#3a2a1f",
-      "relevant_ad_category": "content_chameleon",
-      "license_expected": "CC BY 4.0"
+      "retired_reason": "Too short (< 10 min)"
     },
     {
       "id": "spring_blender",
       "url": "https://www.youtube.com/watch?v=WhWc3b3KhnY",
       "title": "Spring",
-      "tagline": "A shepherd and his dog make one last journey through the Italian hills at the end of the season.",
-      "genre": "Nature",
-      "year": 2019,
       "duration_sec": 468,
-      "color": "#2c4a1e",
-      "relevant_ad_category": "intellectual_explorer",
-      "license_expected": "CC BY 4.0"
+      "retired_reason": "Too short (< 10 min)"
     },
     {
       "id": "hero_blender",
       "url": "https://www.youtube.com/watch?v=pKmSdY56VtY",
       "title": "Hero",
-      "tagline": "In a ruined city, a lone warrior protects the last glimmer of hope.",
-      "genre": "Action",
-      "year": 2018,
       "duration_sec": 195,
-      "color": "#1f1f2a",
-      "relevant_ad_category": "thrill_seeker",
-      "license_expected": "CC BY 4.0"
+      "retired_reason": "Too short (< 10 min)"
     },
     {
       "id": "agent_327",
-      "url": "https://www.youtube.com/watch?v=ld8cr6Fikc0",
+      "url": "https://archive.org/download/agent327operationbarbershop/agent327-1080.mp4",
       "title": "Agent 327: Operation Barbershop",
-      "tagline": "A Dutch secret agent goes undercover in a suspiciously busy barbershop.",
-      "genre": "Action",
-      "year": 2017,
       "duration_sec": 225,
-      "color": "#2a1f10",
-      "relevant_ad_category": "investigative_viewer",
-      "license_expected": "CC BY 3.0"
+      "retired_reason": "Too short (< 10 min)"
     },
     {
       "id": "caminandes_llamigos",
       "url": "https://archive.org/download/CaminandesLlamigos/Caminandes_%20Llamigos-1080p.mp4",
       "title": "Caminandes: Llamigos",
-      "tagline": "A llama on the Patagonian steppe versus one very determined cactus berry.",
-      "genre": "Nature",
-      "year": 2013,
       "duration_sec": 147,
-      "color": "#4a6b3a",
-      "relevant_ad_category": "content_chameleon",
-      "license_expected": "CC BY 3.0"
+      "retired_reason": "Too short (< 10 min)"
     }
   ]
 }

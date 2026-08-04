@@ -43,21 +43,22 @@ python scripts/download_all.py --force    # re-download even if file exists
 
 ### Content catalogue
 
-| ID | Title | Genre | Viewer profile | Source |
-|---|---|---|---|---|
-| `big_buck_bunny` | Big Buck Bunny | Animated Comedy | content_chameleon | Google sample bucket |
-| `elephant_dream` | Elephant's Dream | Sci-Fi Animation | intellectual_explorer | Google sample bucket |
-| `sintel` | Sintel | Fantasy Drama | investigative_viewer | Google sample bucket |
-| `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | intellectual_explorer | Google sample bucket |
-| `plan_9` | Plan 9 from Outer Space | Cult Horror | content_chameleon | Internet Archive |
-| `night_of_living_dead` | Night of the Living Dead | Horror | thrill_seeker | Internet Archive |
-| `decay_cern` | Decay | Horror · Thriller | investigative_viewer | Internet Archive |
-| `charge_blender` | Charge | Sci-Fi Action | thrill_seeker | YouTube (CC BY 4.0) |
-| `coffee_run` | Coffee Run | Comedy Animation | content_chameleon | YouTube (CC BY 4.0) |
-| `spring_blender` | Spring | Travel · Nature | intellectual_explorer | YouTube (CC BY 4.0) |
-| `hero_blender` | Hero | Action | thrill_seeker | YouTube (CC BY 4.0) |
-| `agent_327` | Agent 327: Operation Barbershop | Spy Thriller | investigative_viewer | YouTube (CC BY 3.0) |
-| `caminandes_llamigos` | Caminandes: Llamigos | Nature Comedy | content_chameleon | Internet Archive (CC BY 3.0) |
+All clips are 10–15 minutes. Titles under 10 min have been retired.
+
+| ID | Title | Genre | Duration | Viewer profile | Source |
+|---|---|---|---|---|---|
+| `big_buck_bunny` | Big Buck Bunny | Animated Comedy | 10:35 | content_chameleon | Internet Archive (CC BY 3.0) |
+| `elephant_dream` | Elephant's Dream | Sci-Fi Animation | 10:54 | intellectual_explorer | Internet Archive (CC BY 2.5) |
+| `sintel` | Sintel | Fantasy Drama | 14:48 | investigative_viewer | Internet Archive (CC BY 3.0) |
+| `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | 12:14 | intellectual_explorer | Internet Archive (CC BY 3.0) |
+| `cosmos_laundromat` | Cosmos Laundromat | Sci-Fi · Fantasy | 12:11 | intellectual_explorer | Internet Archive (CC BY 4.0) |
+| `sprite_fright` | Sprite Fright | Horror · Comedy | 10:30 | thrill_seeker | YouTube (CC BY 4.0) |
+| `plan_9` | Plan 9 from Outer Space | Cult Horror | 15:00 | content_chameleon | Internet Archive (PD) |
+| `night_of_living_dead` | Night of the Living Dead | Horror | 15:00 | thrill_seeker | Internet Archive (PD) |
+| `decay_cern` | Decay | Horror · Thriller | 15:00 | investigative_viewer | Internet Archive (CC BY-NC 3.0) |
+| `doa_1950` | D.O.A. | Crime · Noir | 15:00 | investigative_viewer | Internet Archive (PD) |
+| `teenagers_outer_space` | Teenagers from Outer Space | Sci-Fi · Horror | 15:00 | thrill_seeker | Internet Archive (PD) |
+| `little_shop_horrors` | The Little Shop of Horrors | Horror · Comedy | 15:00 | content_chameleon | Internet Archive (PD) |
 
 To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run `python scripts/fetch_cc_videos.py --verify-only` to confirm the license, then paste the catalogue snippet into `config/experiment.json` and add the ID to the relevant `rows`.
 
