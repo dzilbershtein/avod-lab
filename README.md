@@ -51,7 +51,7 @@ All clips are 10–15 minutes. Titles under 10 min have been retired.
 | `elephant_dream` | Elephant's Dream | Sci-Fi Animation | 10:54 | intellectual_explorer | Internet Archive (CC BY 2.5) |
 | `sintel` | Sintel | Fantasy Drama | 14:48 | investigative_viewer | Internet Archive (CC BY 3.0) |
 | `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | 12:14 | intellectual_explorer | Internet Archive (CC BY 3.0) |
-| `cosmos_laundromat` | Cosmos Laundromat | Sci-Fi · Fantasy | 12:11 | intellectual_explorer | Internet Archive (CC BY 4.0) |
+| `pioneer_one` | Pioneer One (Ep. 1) | Sci-Fi Drama | 15:00 | intellectual_explorer | Internet Archive (CC BY-NC-SA 3.0) |
 | `sprite_fright` | Sprite Fright | Horror · Comedy | 10:30 | thrill_seeker | YouTube (CC BY 4.0) |
 | `plan_9` | Plan 9 from Outer Space | Cult Horror | 15:00 | content_chameleon | Internet Archive (PD) |
 | `night_of_living_dead` | Night of the Living Dead | Horror | 15:00 | thrill_seeker | Internet Archive (PD) |

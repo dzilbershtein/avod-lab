@@ -13,7 +13,7 @@
       "content_chameleon": "Comedy, family, nature, variety, lifestyle — relevant synthetic ads: COMFYHOME, FUNSTREAM / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, TRUEVIEW, NEWSDESK",
       "investigative_viewer": "Drama, thriller, crime, society, news — relevant synthetic ads: TRUEVIEW, NEWSDESK / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM"
     },
-    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, date_with_your_family, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, local_demo, mdn_flower, spring_blender, subaru_outback, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
+    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, local_demo, mdn_flower, spring_blender, subaru_outback, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
   },
   "catalog": {
     "hero": "big_buck_bunny",
@@ -541,13 +541,29 @@
         "source_url": "https://archive.org/download/the-little-shop-of-horrors-1960-colorized/The%20Little%20Shop%20Of%20Horrors%201960%20%28Colorized%29.mp4",
         "license": "public_domain",
         "source": "archive_org_pd"
+      },
+      "pioneer_one": {
+        "id": "pioneer_one",
+        "title": "Pioneer One",
+        "tagline": "A spacecraft descends over Montana. Federal agents investigate — and find evidence of a Soviet space programme no one has ever heard of.",
+        "genre": "Sci-Fi Drama",
+        "year": 2010,
+        "duration_sec": 1800,
+        "color": "#0a1a2e",
+        "relevant_ad_category": "intellectual_explorer",
+        "poster": "https://archive.org/services/img/PioneerOneS01E01720pHD",
+        "video_url": "/static/content/pioneer_one.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/PioneerOneS01E01720pHD/Pioneer.One.S01E01.REFIX.720p.x264-VODO.mp4",
+        "license": "CC BY-NC-SA 3.0",
+        "source": "archive_org_cc"
       }
     },
     "rows": [
       {
         "name": "Featured",
         "title_ids": [
-          "cosmos_laundromat",
+          "pioneer_one",
           "sintel",
           "big_buck_bunny",
           "doa_1950",
@@ -570,7 +586,7 @@
         "title_ids": [
           "elephant_dream",
           "tears_of_steel",
-          "cosmos_laundromat"
+          "pioneer_one"
         ]
       },
       {
@@ -596,7 +612,6 @@
           "elephant_dream",
           "sintel",
           "tears_of_steel",
-          "cosmos_laundromat",
           "sprite_fright"
         ]
       }
