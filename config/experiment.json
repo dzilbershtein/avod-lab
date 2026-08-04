@@ -13,7 +13,7 @@
       "content_chameleon": "Comedy, family, nature, variety, lifestyle — relevant synthetic ads: COMFYHOME, FUNSTREAM / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, TRUEVIEW, NEWSDESK",
       "investigative_viewer": "Drama, thriller, crime, society, news — relevant synthetic ads: TRUEVIEW, NEWSDESK / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM"
     },
-    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, local_demo, mdn_flower, spring_blender, subaru_outback, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
+    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, decay_cern, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, little_shop_horrors, local_demo, mdn_flower, night_of_living_dead, plan_9, spring_blender, subaru_outback, teenagers_outer_space, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
   },
   "catalog": {
     "hero": "big_buck_bunny",
@@ -557,6 +557,198 @@
         "source_url": "https://archive.org/download/PioneerOneS01E01720pHD/Pioneer.One.S01E01.REFIX.720p.x264-VODO.mp4",
         "license": "CC BY-NC-SA 3.0",
         "source": "archive_org_cc"
+      },
+      "captain_kidd": {
+        "id": "captain_kidd",
+        "title": "Captain Kidd",
+        "tagline": "A treacherous pirate navigates plunder, betrayal, and a deadly game of wits on the high seas.",
+        "genre": "Action · Adventure",
+        "year": 1945,
+        "duration_sec": 900,
+        "color": "#1a2a3a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "https://archive.org/services/img/CaptainKidd1945",
+        "video_url": "/static/content/captain_kidd.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/CaptainKidd1945/Captain%20Kidd%20(1945).mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "jackie_robinson": {
+        "id": "jackie_robinson",
+        "title": "The Jackie Robinson Story",
+        "tagline": "The true story of baseball's first Black major-league player — told with Jackie Robinson playing himself.",
+        "genre": "Drama · Sports",
+        "year": 1950,
+        "duration_sec": 900,
+        "color": "#1a1a3a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "https://archive.org/services/img/Jackie_Robinson_Story_The",
+        "video_url": "/static/content/jackie_robinson.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/Jackie_Robinson_Story_The/jrs_512kb.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "hemo_magnificent": {
+        "id": "hemo_magnificent",
+        "title": "Hemo the Magnificent",
+        "tagline": "Frank Capra's Emmy-winning animated documentary follows a drop of blood on a journey through the human body.",
+        "genre": "Science · Documentary",
+        "year": 1957,
+        "duration_sec": 900,
+        "color": "#2a1a1a",
+        "relevant_ad_category": "intellectual_explorer",
+        "poster": "",
+        "video_url": "/static/content/hemo_magnificent.mp4",
+        "fallback_urls": [],
+        "source_url": "https://www.youtube.com/watch?v=08QDu2pGtkc",
+        "license": "public_domain",
+        "source": "youtube_pd"
+      },
+      "unchained_goddess": {
+        "id": "unchained_goddess",
+        "title": "The Unchained Goddess",
+        "tagline": "Frank Capra's landmark science film on the mystery of weather — including an early on-screen warning about climate change.",
+        "genre": "Science · Documentary",
+        "year": 1958,
+        "duration_sec": 900,
+        "color": "#1a2a3a",
+        "relevant_ad_category": "intellectual_explorer",
+        "poster": "",
+        "video_url": "/static/content/unchained_goddess.mp4",
+        "fallback_urls": [],
+        "source_url": "https://www.youtube.com/watch?v=sqClSPWVnNE",
+        "license": "public_domain",
+        "source": "youtube_pd"
+      },
+      "his_girl_friday": {
+        "id": "his_girl_friday",
+        "title": "His Girl Friday",
+        "tagline": "A fast-talking editor will do anything to keep his star reporter — his ex-wife — from quitting for a quiet life.",
+        "genre": "Screwball Comedy",
+        "year": 1940,
+        "duration_sec": 900,
+        "color": "#3a2a1a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "https://archive.org/services/img/his-girl-friday-1940_202109",
+        "video_url": "/static/content/his_girl_friday.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/his-girl-friday-1940_202109/His%20Girl%20Friday%20(1940).ia.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "jack_beanstalk": {
+        "id": "jack_beanstalk",
+        "title": "Jack and the Beanstalk",
+        "tagline": "Abbott and Costello in a slapstick retelling of the classic fairy tale — with songs, giants, and a magic beanstalk.",
+        "genre": "Family · Comedy",
+        "year": 1952,
+        "duration_sec": 900,
+        "color": "#1a3a2a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "https://archive.org/services/img/jack-and-the-beanstalk-1952-hd",
+        "video_url": "/static/content/jack_beanstalk.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/jack-and-the-beanstalk-1952-hd/Jack%20And%20The%20Beanstalk%201952%20HD.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "detour_1945": {
+        "id": "detour_1945",
+        "title": "Detour",
+        "tagline": "A hitchhiker's fateful ride sets off a chain of fatal coincidences he cannot escape.",
+        "genre": "Crime · Noir",
+        "year": 1945,
+        "duration_sec": 900,
+        "color": "#1a1a1a",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "https://archive.org/services/img/detour1945HD",
+        "video_url": "/static/content/detour_1945.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/detour1945HD/Detour.1945.1080p.BluRay.x264-[YTS.AM].mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "suddenly_1954": {
+        "id": "suddenly_1954",
+        "title": "Suddenly",
+        "tagline": "A gang of assassins seizes a small-town house to set up a clean shot at the President — and one man stands between them and history.",
+        "genre": "Crime · Thriller",
+        "year": 1954,
+        "duration_sec": 900,
+        "color": "#1a1a2a",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "https://archive.org/services/img/Suddenly_1954",
+        "video_url": "/static/content/suddenly_1954.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/Suddenly_1954/Suddenly_1954.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "blood_on_sun": {
+        "id": "blood_on_sun",
+        "title": "Blood on the Sun",
+        "tagline": "An American journalist in 1920s Tokyo stumbles onto Japan's secret plan for world domination — and must expose it before it's too late.",
+        "genre": "Action · Thriller",
+        "year": 1945,
+        "duration_sec": 900,
+        "color": "#2a1a1a",
+        "relevant_ad_category": "thrill_seeker",
+        "poster": "https://archive.org/services/img/BloodOnTheSun1945JAMESCAGNEY",
+        "video_url": "/static/content/blood_on_sun.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/BloodOnTheSun1945JAMESCAGNEY/Blood%20On%20The%20Sun%20(1945)%20JAMES%20CAGNEY.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "inspector_general": {
+        "id": "inspector_general",
+        "title": "The Inspector General",
+        "tagline": "Danny Kaye plays a bumbling medicine-show assistant mistaken for the feared Inspector General — and has to play along.",
+        "genre": "Musical Comedy",
+        "year": 1949,
+        "duration_sec": 900,
+        "color": "#3a1a2a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "https://archive.org/services/img/TheInspectorGeneral720p1949",
+        "video_url": "/static/content/inspector_general.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/TheInspectorGeneral720p1949/TheInspectorGeneral720p.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "jigsaw_1949": {
+        "id": "jigsaw_1949",
+        "title": "Jigsaw",
+        "tagline": "A crusading DA takes on a hate group — only to find they've planted a spy in his inner circle.",
+        "genre": "Crime · Drama",
+        "year": 1949,
+        "duration_sec": 900,
+        "color": "#1a1a2a",
+        "relevant_ad_category": "investigative_viewer",
+        "poster": "https://archive.org/services/img/Jigsaw720p1949",
+        "video_url": "/static/content/jigsaw_1949.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/Jigsaw720p1949/Jigsaw720p.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
+      },
+      "pied_piper": {
+        "id": "pied_piper",
+        "title": "The Pied Piper of Hamelin",
+        "tagline": "Van Johnson stars in this Technicolor adaptation of the classic tale of a magical piper who rids a town of rats — and what happens when the town refuses to pay.",
+        "genre": "Family · Fantasy",
+        "year": 1957,
+        "duration_sec": 900,
+        "color": "#3a2a1a",
+        "relevant_ad_category": "content_chameleon",
+        "poster": "https://archive.org/services/img/The_Pied_Piper_of_Hamelin",
+        "video_url": "/static/content/pied_piper.mp4",
+        "fallback_urls": [],
+        "source_url": "https://archive.org/download/The_Pied_Piper_of_Hamelin/pied_512kb.mp4",
+        "license": "public_domain",
+        "source": "archive_org_pd"
       }
     },
     "rows": [
@@ -566,43 +758,50 @@
           "pioneer_one",
           "sintel",
           "big_buck_bunny",
+          "captain_kidd",
+          "his_girl_friday",
           "doa_1950",
-          "elephant_dream",
-          "night_of_living_dead",
-          "little_shop_horrors",
-          "tears_of_steel"
+          "hemo_magnificent",
+          "jackie_robinson"
         ]
       },
       {
-        "name": "Action & Horror",
+        "name": "Action & Thrills",
         "title_ids": [
-          "sprite_fright",
-          "teenagers_outer_space",
-          "night_of_living_dead"
+          "captain_kidd",
+          "blood_on_sun",
+          "jackie_robinson",
+          "sprite_fright"
         ]
       },
       {
-        "name": "Sci-Fi & Travel",
+        "name": "Science & Discovery",
         "title_ids": [
+          "pioneer_one",
           "elephant_dream",
           "tears_of_steel",
-          "pioneer_one"
+          "hemo_magnificent",
+          "unchained_goddess"
         ]
       },
       {
         "name": "Comedy & Family",
         "title_ids": [
-          "big_buck_bunny",
-          "little_shop_horrors",
-          "plan_9"
+          "his_girl_friday",
+          "jack_beanstalk",
+          "inspector_general",
+          "pied_piper",
+          "big_buck_bunny"
         ]
       },
       {
-        "name": "Drama & Thriller",
+        "name": "Crime & Drama",
         "title_ids": [
-          "sintel",
+          "detour_1945",
+          "suddenly_1954",
+          "jigsaw_1949",
           "doa_1950",
-          "decay_cern"
+          "sintel"
         ]
       },
       {

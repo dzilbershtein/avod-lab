@@ -53,12 +53,21 @@ All clips are 10–15 minutes. Titles under 10 min have been retired.
 | `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | 12:14 | intellectual_explorer | Internet Archive (CC BY 3.0) |
 | `pioneer_one` | Pioneer One (Ep. 1) | Sci-Fi Drama | 15:00 | intellectual_explorer | Internet Archive (CC BY-NC-SA 3.0) |
 | `sprite_fright` | Sprite Fright | Horror · Comedy | 10:30 | thrill_seeker | YouTube (CC BY 4.0) |
-| `plan_9` | Plan 9 from Outer Space | Cult Horror | 15:00 | content_chameleon | Internet Archive (PD) |
-| `night_of_living_dead` | Night of the Living Dead | Horror | 15:00 | thrill_seeker | Internet Archive (PD) |
-| `decay_cern` | Decay | Horror · Thriller | 15:00 | investigative_viewer | Internet Archive (CC BY-NC 3.0) |
 | `doa_1950` | D.O.A. | Crime · Noir | 15:00 | investigative_viewer | Internet Archive (PD) |
-| `teenagers_outer_space` | Teenagers from Outer Space | Sci-Fi · Horror | 15:00 | thrill_seeker | Internet Archive (PD) |
-| `little_shop_horrors` | The Little Shop of Horrors | Horror · Comedy | 15:00 | content_chameleon | Internet Archive (PD) |
+| `captain_kidd` | Captain Kidd | Action · Adventure | 15:00 | thrill_seeker | Internet Archive (PD) |
+| `jackie_robinson` | The Jackie Robinson Story | Drama · Sports | 15:00 | thrill_seeker | Internet Archive (PD) |
+| `blood_on_sun` | Blood on the Sun | Action · Thriller | 15:00 | thrill_seeker | Internet Archive (PD) |
+| `hemo_magnificent` | Hemo the Magnificent | Science · Documentary | 15:00 | intellectual_explorer | YouTube (PD) |
+| `unchained_goddess` | The Unchained Goddess | Science · Documentary | 15:00 | intellectual_explorer | YouTube (PD) |
+| `his_girl_friday` | His Girl Friday | Screwball Comedy | 15:00 | content_chameleon | Internet Archive (PD) |
+| `jack_beanstalk` | Jack and the Beanstalk | Family · Comedy | 15:00 | content_chameleon | Internet Archive (PD) |
+| `inspector_general` | The Inspector General | Musical Comedy | 15:00 | content_chameleon | Internet Archive (PD) |
+| `pied_piper` | The Pied Piper of Hamelin | Family · Fantasy | 15:00 | content_chameleon | Internet Archive (PD) |
+| `detour_1945` | Detour | Crime · Noir | 15:00 | investigative_viewer | Internet Archive (PD) |
+| `suddenly_1954` | Suddenly | Crime · Thriller | 15:00 | investigative_viewer | Internet Archive (PD) |
+| `jigsaw_1949` | Jigsaw | Crime · Drama | 15:00 | investigative_viewer | Internet Archive (PD) |
+
+**Inactive titles** (in catalog but not shown in any row): `plan_9`, `night_of_living_dead`, `decay_cern`, `teenagers_outer_space`, `little_shop_horrors` — horror/B-movie content de-prioritised to balance the library.
 
 To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run `python scripts/fetch_cc_videos.py --verify-only` to confirm the license, then paste the catalogue snippet into `config/experiment.json` and add the ID to the relevant `rows`.
 
