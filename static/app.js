@@ -123,7 +123,19 @@
   });
 
   $("back-to-browse").addEventListener("click", () => {
-    window.experiment.Player.teardown("back_button");
+    const Player = window.experiment.Player;
+    if (Player && !Player.canLeave()) {
+      // An ad has already started — participant must complete this title.
+      const msg = document.getElementById("player-status") ||
+        (() => { const d = document.createElement("div"); d.id = "player-status"; document.getElementById("player-wrap").appendChild(d); return d; })();
+      msg.dataset.kind = "info";
+      msg.textContent = "Please finish watching — you can return to the catalogue once the ad is done.";
+      msg.classList.remove("hidden");
+      setTimeout(() => msg.classList.add("hidden"), 4000);
+      Session.log("back_blocked", { reason: "ad_in_progress" });
+      return;
+    }
+    Player.teardown("back_button");
     show("browse");
     Session.log("back_to_browse", {});
   });

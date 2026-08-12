@@ -73,12 +73,14 @@ To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run
 
 ### Viewer profile ad categories
 
-Ad relevance is determined by matching a title's `relevant_ad_category` to the category of synthetic ads:
+Every title carries a `relevant_ad_category` field using one of four **viewer-profile labels**. The player uses this field to pick synthetic ads from `config/ad_library.json`: the *relevant* arm selects an ad whose `category` matches the title's profile; the *irrelevant* arm selects one that does not.
+
+**Single taxonomy:** all active titles and all synthetic ads use the same four labels. Never tag a title with a product label (`electronics_tech`, `automotive`, `food_beverage`) — those labels exist only on archived/retired ad assets and have no matching synthetic ads, so the relevance manipulation would silently fall back to a random ad.
 
 | Profile | Content genres | Relevant synthetic ads |
 |---|---|---|
-| `thrill_seeker` | Action, horror, sports, superhero | ENERGYBLAST, BATTLECAST |
-| `intellectual_explorer` | Sci-Fi, fantasy, travel, science | MINDSPAN, WANDERSCOUT |
+| `thrill_seeker` | Action, adventure, sports | ENERGYBLAST, BATTLECAST |
+| `intellectual_explorer` | Sci-Fi, science, travel | MINDSPAN, WANDERSCOUT |
 | `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM |
 | `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK |
 
