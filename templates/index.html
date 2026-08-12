@@ -57,13 +57,15 @@
 
       <div id="banner" class="hidden"></div>
 
-      <!-- A4 user-initiated CTA -->
+      <!-- A3 user-initiated CTA -->
       <button id="ad-prompt" type="button" class="hidden"></button>
-    </div>
 
-    <div class="player-actions">
-      <button id="play-pause" type="button">Play</button>
-      <span id="time-readout">0:00 / 0:00</span>
+      <!-- Content controls overlay -->
+      <div id="player-controls">
+        <button id="play-pause" type="button">&#9654;</button>
+        <progress id="seek-bar" value="0" max="1"></progress>
+        <span id="time-readout">0:00 / 0:00</span>
+      </div>
     </div>
   </section>
 

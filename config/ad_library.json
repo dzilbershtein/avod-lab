@@ -7,24 +7,24 @@
   },
   "categories": [
     {
-      "id": "food_beverage",
-      "label": "Food & Beverage",
-      "description": "Snacks, drinks, restaurants. Typical mainstream advertising target."
+      "id": "thrill_seeker",
+      "label": "Thrill Seeker",
+      "description": "Action, horror, sports, gaming, superhero content. Relevant ads: energy, gaming, sports brands."
     },
     {
-      "id": "automotive",
-      "label": "Automotive",
-      "description": "Cars, trucks, accessories. High-involvement, high-budget category."
+      "id": "intellectual_explorer",
+      "label": "Intellectual Explorer",
+      "description": "Sci-fi, fantasy, travel, documentary, science content. Relevant ads: travel booking, educational streaming."
     },
     {
-      "id": "electronics_tech",
-      "label": "Electronics & Tech",
-      "description": "Consumer electronics, software, streaming devices."
+      "id": "content_chameleon",
+      "label": "Content Chameleon",
+      "description": "Comedy, family, nature, lifestyle, variety content. Relevant ads: home/lifestyle, family entertainment."
     },
     {
-      "id": "public_service",
-      "label": "Public Service",
-      "description": "Non-commercial PSAs. Useful as a non-product-promotion contrast."
+      "id": "investigative_viewer",
+      "label": "Investigative Viewer",
+      "description": "Drama, thriller, crime, true crime, society, news content. Relevant ads: news, true crime streaming."
     }
   ],
   "ads": [
@@ -35,10 +35,11 @@
       "duration_sec": 56,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/Coke_Commercial/Coke_Commercial_512kb.mp4",
+      "video_url": "/static/ads/fb_coke_1954.mp4",
       "fallback_urls": [],
       "click_url": "https://www.coca-cola.com",
-      "default_banner": "You're seeing this beverage ad because it matches the category of the show."
+      "default_banner": "You're seeing this beverage ad because it matches the category of the show.",
+      "source_url": "https://archive.org/download/Coke_Commercial/Coke_Commercial_512kb.mp4"
     },
     {
       "id": "fb_jello",
@@ -47,10 +48,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/ctvc/ctvc_JELLO_512kb.mp4",
+      "video_url": "/static/ads/fb_jello.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "You're seeing this ad because it matches the category of the show."
+      "default_banner": "You're seeing this ad because it matches the category of the show.",
+      "source_url": "https://archive.org/download/ctvc/ctvc_JELLO_512kb.mp4"
     },
     {
       "id": "fb_lipton",
@@ -59,10 +61,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/ctvc/ctvc_LIPTON_512kb.mp4",
+      "video_url": "/static/ads/fb_lipton.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch lifestyle content, we picked this for you."
+      "default_banner": "Because you watch lifestyle content, we picked this for you.",
+      "source_url": "https://archive.org/download/ctvc/ctvc_LIPTON_512kb.mp4"
     },
     {
       "id": "fb_folgers",
@@ -71,12 +74,12 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/USATVCommercialCollection/1984%20-%20Folgers%20in%20Your%20Cup.mp4",
+      "video_url": "/static/ads/fb_folgers.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because viewers like you enjoy this category."
+      "default_banner": "Because viewers like you enjoy this category.",
+      "source_url": "https://archive.org/download/USATVCommercialCollection/1984%20-%20Folgers%20in%20Your%20Cup.mp4"
     },
-
     {
       "id": "auto_bullrun_promo",
       "category": "automotive",
@@ -84,12 +87,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1966_Ford_Mustang_full_line_512kb.mp4",
-      "fallback_urls": [
-        "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1969_Plymouth_Roadrunner_512kb.mp4"
-      ],
+      "video_url": "/static/ads/auto_bullrun_promo.mp4",
+      "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch action content, we picked this for you."
+      "default_banner": "Because you watch action content, we picked this for you.",
+      "source_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1966_Ford_Mustang_full_line_512kb.mp4"
     },
     {
       "id": "auto_plymouth_roadrunner",
@@ -98,10 +100,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1969_Plymouth_Roadrunner_512kb.mp4",
+      "video_url": "/static/ads/auto_plymouth_roadrunner.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Recommended because you watch automotive features."
+      "default_banner": "Recommended because you watch automotive features.",
+      "source_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1969_Plymouth_Roadrunner_512kb.mp4"
     },
     {
       "id": "auto_dodge_charger",
@@ -110,10 +113,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1966_Dodge_Charger_The_Dodge_Rebellion_512kb.mp4",
+      "video_url": "/static/ads/auto_dodge_charger.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch driving content."
+      "default_banner": "Because you watch driving content.",
+      "source_url": "https://archive.org/download/Car_Commericals_1966-1970/Commercial_-_1966_Dodge_Charger_The_Dodge_Rebellion_512kb.mp4"
     },
     {
       "id": "auto_vw_411",
@@ -122,12 +126,12 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/USATVCommercialCollection/1968%20-%20Volkswagon%20411%20-%20King%20Kong.mp4",
+      "video_url": "/static/ads/auto_vw_411.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Recommended based on your viewing history."
+      "default_banner": "Recommended based on your viewing history.",
+      "source_url": "https://archive.org/download/USATVCommercialCollection/1968%20-%20Volkswagon%20411%20-%20King%20Kong.mp4"
     },
-
     {
       "id": "tech_blazes",
       "category": "electronics_tech",
@@ -135,10 +139,11 @@
       "duration_sec": 15,
       "source": "google_sample_bucket",
       "license": "google_sample_bucket",
-      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "video_url": "/static/ads/tech_blazes.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "You're seeing this ad because it matches the category of the show."
+      "default_banner": "You're seeing this ad because it matches the category of the show.",
+      "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
     },
     {
       "id": "tech_escapes",
@@ -147,10 +152,11 @@
       "duration_sec": 15,
       "source": "google_sample_bucket",
       "license": "google_sample_bucket",
-      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "video_url": "/static/ads/tech_escapes.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you stream a lot of video, we picked this for you."
+      "default_banner": "Because you stream a lot of video, we picked this for you.",
+      "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
     },
     {
       "id": "tech_nintendo_gameboy",
@@ -159,10 +165,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/USATVCommercialCollection/1989%20-%20Nintendo%20Gameboy%20%28First%20Commercial%21%29.mp4",
+      "video_url": "/static/ads/tech_nintendo_gameboy.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Recommended because of your viewing on this device."
+      "default_banner": "Recommended because of your viewing on this device.",
+      "source_url": "https://archive.org/download/USATVCommercialCollection/1989%20-%20Nintendo%20Gameboy%20%28First%20Commercial%21%29.mp4"
     },
     {
       "id": "tech_intel_pentium2",
@@ -171,12 +178,12 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/IntelAdvertCollection/1990s%20Commercial%20-%20Intel%20Pentium%20II%20-processing-%20Baseball.mp4",
+      "video_url": "/static/ads/tech_intel_pentium2.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you use technology products, we picked this for you."
+      "default_banner": "Because you use technology products, we picked this for you.",
+      "source_url": "https://archive.org/download/IntelAdvertCollection/1990s%20Commercial%20-%20Intel%20Pentium%20II%20-processing-%20Baseball.mp4"
     },
-
     {
       "id": "psa_fire_escape",
       "category": "public_service",
@@ -184,10 +191,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/FireEscapePlanPsa_512kb.mp4",
+      "video_url": "/static/ads/psa_fire_escape.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "A public-safety message."
+      "default_banner": "A public-safety message.",
+      "source_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/FireEscapePlanPsa_512kb.mp4"
     },
     {
       "id": "psa_blood_pressure",
@@ -196,10 +204,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/HighBloodPressurePsa_512kb.mp4",
+      "video_url": "/static/ads/psa_blood_pressure.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "A public-health message."
+      "default_banner": "A public-health message.",
+      "source_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/HighBloodPressurePsa_512kb.mp4"
     },
     {
       "id": "psa_fda_poison",
@@ -208,10 +217,11 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/FdaPoisonPsa_512kb.mp4",
+      "video_url": "/static/ads/psa_fda_poison.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "A public-safety message."
+      "default_banner": "A public-safety message.",
+      "source_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/FdaPoisonPsa_512kb.mp4"
     },
     {
       "id": "psa_arthritis_bing",
@@ -220,18 +230,18 @@
       "duration_sec": 15,
       "source": "archive_org",
       "license": "public_domain",
-      "video_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/Arthritis1972PsaWithBingCrosby_512kb.mp4",
+      "video_url": "/static/ads/psa_arthritis_bing.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "A public-interest message."
+      "default_banner": "A public-interest message.",
+      "source_url": "https://archive.org/download/AssortedPublicServiceAnnouncements_599/Arthritis1972PsaWithBingCrosby_512kb.mp4"
     },
-
     {
       "id": "ad_relevant_screentime",
       "category": "electronics_tech",
       "title": "SCREENTIME — streaming service (synthetic, relevant)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_relevant_screentime.mp4",
       "fallback_urls": [],
@@ -243,7 +253,7 @@
       "category": "electronics_tech",
       "title": "ARCADEMAX — gaming platform (synthetic, relevant)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_relevant_arcademax.mp4",
       "fallback_urls": [],
@@ -255,7 +265,7 @@
       "category": "food_beverage",
       "title": "CRUNCHPOP — cereal (synthetic, irrelevant)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_irrelevant_crunchpop.mp4",
       "fallback_urls": [],
@@ -267,20 +277,19 @@
       "category": "public_service",
       "title": "HOMESAFE — home insurance (synthetic, irrelevant)",
       "duration_sec": 15,
-      "source": "synthetic_psa",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_irrelevant_homesafe.mp4",
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "A message from our sponsors."
     },
-
     {
       "id": "ad_relevant_neonflix",
       "category": "electronics_tech",
       "title": "NEONFLIX — movie streaming (synthetic, relevant, backup)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_relevant_neonflix.mp4",
       "fallback_urls": [],
@@ -292,7 +301,7 @@
       "category": "electronics_tech",
       "title": "PIXELQUEST — adventure gaming (synthetic, relevant, backup)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_relevant_pixelquest.mp4",
       "fallback_urls": [],
@@ -304,7 +313,7 @@
       "category": "food_beverage",
       "title": "FRESHMINT — oral care (synthetic, irrelevant, backup)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_irrelevant_freshmint.mp4",
       "fallback_urls": [],
@@ -316,20 +325,19 @@
       "category": "public_service",
       "title": "BUILDRIGHT — power tools (synthetic, irrelevant)",
       "duration_sec": 15,
-      "source": "synthetic_psa",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_irrelevant_buildright.mp4",
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "A message from our sponsors."
     },
-
     {
       "id": "ad_auto_drivepro",
       "category": "automotive",
       "title": "DRIVEPRO — GPS navigation app (synthetic)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_auto_drivepro.mp4",
       "fallback_urls": [],
@@ -341,12 +349,108 @@
       "category": "automotive",
       "title": "SPEEDLANE — electric vehicle brand (synthetic)",
       "duration_sec": 15,
-      "source": "synthetic",
+      "source": "retired_synthetic",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_auto_speedlane.mp4",
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "Recommended based on the automotive content you watch."
+    },
+    {
+      "id": "ad_thrill_energyblast",
+      "category": "thrill_seeker",
+      "title": "ENERGYBLAST — sports energy drink (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_energyblast.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch action content, we picked this for you."
+    },
+    {
+      "id": "ad_thrill_battlecast",
+      "category": "thrill_seeker",
+      "title": "BATTLECAST — esports streaming platform (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_battlecast.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch action and gaming content, we picked this for you."
+    },
+    {
+      "id": "ad_intel_mindspan",
+      "category": "intellectual_explorer",
+      "title": "MINDSPAN — documentary streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_mindspan.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch exploratory content, we picked this for you."
+    },
+    {
+      "id": "ad_intel_wanderscout",
+      "category": "intellectual_explorer",
+      "title": "WANDERSCOUT — adventure travel booking (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_wanderscout.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch travel and sci-fi content, we picked this for you."
+    },
+    {
+      "id": "ad_chame_comfyhome",
+      "category": "content_chameleon",
+      "title": "COMFYHOME — home décor and lifestyle (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_comfyhome.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch family and lifestyle content, we picked this for you."
+    },
+    {
+      "id": "ad_chame_funstream",
+      "category": "content_chameleon",
+      "title": "FUNSTREAM — family entertainment streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_funstream.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch comedy and family content, we picked this for you."
+    },
+    {
+      "id": "ad_invest_trueview",
+      "category": "investigative_viewer",
+      "title": "TRUEVIEW — true crime and drama streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_trueview.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch drama and thriller content, we picked this for you."
+    },
+    {
+      "id": "ad_invest_newsdesk",
+      "category": "investigative_viewer",
+      "title": "NEWSDESK — news and current affairs (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_newsdesk.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch news and documentary content, we picked this for you."
     }
   ]
 }

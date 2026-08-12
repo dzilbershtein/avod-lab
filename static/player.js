@@ -25,8 +25,11 @@
   const adCountdown = $("ad-countdown");
   const adSkipBtn = $("ad-skip");
   const banner = $("banner");
+  const playerControls = $("player-controls");
   const playPauseBtn = $("play-pause");
+  const seekBar = $("seek-bar");
   const timeReadout = $("time-readout");
+  const backBtn = $("back-to-browse");
   const nowWatching = $("now-watching");
   const adPrompt = $("ad-prompt"); // user_initiated CTA — may be absent in legacy templates
 
@@ -60,6 +63,7 @@
   let postroll = null;     // A0 control: plays after content ends, before "done" view
   let userInitiated = null; // A3: clickable prompt; ad plays only on click
   let userInitiatedFired = false;
+  let adStartedInTitle = false; // reset per title; true once any ad begins playing
   let userInitiatedPromptShown = false;   // true once prompt is actually visible
   let userInitiatedPromptStartSec = null; // resolved from prompt_start_at_frac
   let currentAd = null;
@@ -140,6 +144,10 @@
   }
 
   const Player = {
+    canLeave() {
+      // Free to leave before any ad plays in this title; locked in once ad starts.
+      return !adStartedInTitle;
+    },
     openTitle(titleId) {
       const { cfg, Session, show } = window.experiment;
       const title = cfg.catalog.titles[titleId];
@@ -190,6 +198,7 @@
       userInitiatedFired = false;
       userInitiatedPromptShown = false;
       userInitiatedPromptStartSec = null;
+      adStartedInTitle = false;
       activeTitle = null;
     },
   };
@@ -204,6 +213,8 @@
     content._urlIndex = 0;
     loadCurrentContentUrl();
     content.classList.remove("hidden");
+    seekBar.value = 0;
+    timeReadout.textContent = "0:00 / 0:00";
 
     // Bucket placements into their respective trigger paths.
     // Resolve ad_relevance slots (category-matched to this title) and any
@@ -294,8 +305,9 @@
       if (content.paused) playContent();
       else content.pause();
     });
-    content.addEventListener("play", () => (playPauseBtn.textContent = "Pause"));
-    content.addEventListener("pause", () => (playPauseBtn.textContent = "Play"));
+    content.addEventListener("play", () => (playPauseBtn.innerHTML = "&#9646;&#9646;"));
+    content.addEventListener("pause", () => (playPauseBtn.innerHTML = "&#9654;"));
+
   }
 
   function titleId() {
@@ -326,6 +338,9 @@
 
   function updateReadout() {
     timeReadout.textContent = `${formatTime(content.currentTime)} / ${formatTime(content.duration)}`;
+    if (isFinite(content.duration) && content.duration > 0) {
+      seekBar.value = content.currentTime / content.duration;
+    }
   }
 
   function formatTime(s) {
@@ -472,6 +487,7 @@
     // "30-second ad" wording is enforced regardless of asset length.
     adDurationCap =
       typeof ad.duration_target_sec === "number" ? ad.duration_target_sec : null;
+    adStartedInTitle = true;
     Session.log("ad_start", {
       ad_id: ad.id,
       placement: ad.placement,
@@ -490,6 +506,7 @@
 
     content.pause();
     content.classList.add("hidden");
+    playerControls.classList.add("hidden");
 
     // Build an ad URL chain — primary + ad.fallback_urls if present.
     const adChain = [ad.url, ...(ad.fallback_urls || [])].filter(Boolean);
@@ -663,6 +680,7 @@
     adVideo.pause();
     adVideo.removeAttribute("src");
     adVideo.classList.add("hidden");
+    playerControls.classList.remove("hidden");
     currentAd = null;
     adDurationCap = null;
   }
