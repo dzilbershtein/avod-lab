@@ -54,10 +54,11 @@
   }
 
   // state
-  let sessionVideoCount = 0; // incremented each time a title is opened; drives ad_pool rotation
-  // Locked in on first ad resolution for the session so all videos in one
-  // session see the same relevance arm. null = not yet determined.
+  let sessionVideoCount = 0;    // incremented each time a title is opened; drives ad_pool rotation
+  // Both locked in on first ad resolution so all videos in one session share
+  // the same relevance arm and the same random creative-rotation starting point.
   let sessionAdRelevance = null;
+  let sessionCreativeOffset = null; // random offset added to sessionVideoCount before pool index
 
   let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
   let preroll = null;
@@ -82,8 +83,10 @@
   //              cfg.resolved_ad_relevance (set in /api/session/start response).
   //              Falls back to a client-side coin flip locked for the session
   //              if the server value is not yet available (page-load preview).
-  // Cycles through the filtered pool using sessionVideoCount so each new
-  // title play gets a different ad from the same relevance category.
+  // Picks a synthetic ad from the relevance-filtered pool. The index combines
+  // sessionVideoCount (rotates across titles in one session) and
+  // sessionCreativeOffset (randomised once per session so different participants
+  // in the same cell don't all start at pool[0] — avoids creative-confound).
   function resolveAdByRelevance(slot, title) {
     if (!slot || !slot.ad_relevance) return slot;
     let relevance = slot.ad_relevance;
@@ -99,6 +102,10 @@
         relevance = sessionAdRelevance;
       }
     }
+    // Randomise the starting position in the pool once per session.
+    if (sessionCreativeOffset === null) {
+      sessionCreativeOffset = Math.floor(Math.random() * 997); // large prime keeps distribution flat
+    }
     const lib = ((window.experiment.cfg._ad_library || {}).ads || []);
     const titleCat = (title && title.relevant_ad_category) || null;
     const synthetic = lib.filter((a) => a.source === "synthetic");
@@ -106,7 +113,7 @@
       ? synthetic.filter((a) => a.category === titleCat)
       : synthetic.filter((a) => a.category !== titleCat);
     if (pool.length === 0) pool = synthetic; // fallback: any synthetic ad
-    const entry = pool[sessionVideoCount % pool.length];
+    const entry = pool[(sessionCreativeOffset + sessionVideoCount) % pool.length];
     const resolved = {
       id: entry.id,
       url: entry.video_url,
