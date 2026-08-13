@@ -21,7 +21,8 @@
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
- *   Skip intention        : 1 item
+ *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator + relevance manip check)
+ *   Skip intention           : 1 item
  *   Perceived control     : 5-point item, A3 manipulation check only
  */
 
@@ -142,6 +143,9 @@
         title: "About the ad (continued)",
         intro: "Please rate your agreement.\n(1 = Strongly disagree  ·  7 = Strongly agree)",
         items: [
+          L7("rel_1", "The advertised product was relevant to the video I watched."),
+          L7("rel_2", "The ad fit well with the content I chose."),
+          L7("rel_3", "It made sense to show this particular ad with this video."),
           L7("skip_1", "If I could have skipped this ad, I would have."),
           ATT("attn_post", 5),
         ],

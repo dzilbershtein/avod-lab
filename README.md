@@ -308,12 +308,18 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 | `plat_att_2` | Semantic diff | Unfavourable ← 1–7 → Favourable |
 | `plat_att_3` | Semantic diff | Untrustworthy ← 1–7 → Trustworthy |
 
-**Page 4 — Skip intention**
+**Page 4 — Perceived ad-content fit + skip intention**
+*(1 = Strongly disagree, 7 = Strongly agree)*
 
-| Item ID | Statement |
-|---------|-----------|
-| `skip_1` | If I could have skipped this ad, I would have. |
-| `attn_post` | **Attention check** — select "Somewhat agree" (5) |
+| Item ID | Statement | Role |
+|---------|-----------|------|
+| `rel_1` | The advertised product was relevant to the video I watched. | H3b/H3c mediator; relevance manipulation check |
+| `rel_2` | The ad fit well with the content I chose. | H3b/H3c mediator |
+| `rel_3` | It made sense to show this particular ad with this video. | H3b/H3c mediator |
+| `skip_1` | If I could have skipped this ad, I would have. | Skip intention |
+| `attn_post` | **Attention check** — select "Somewhat agree" (5) | — |
+
+Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. The relevance manipulation check is a t-test of this index between the relevant and irrelevant arms (relevant arm should score higher).
 
 **Page 5 — Manipulation checks** *(condition-dependent)*
 
