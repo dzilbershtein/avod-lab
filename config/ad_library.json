@@ -451,6 +451,54 @@
       "fallback_urls": [],
       "click_url": "",
       "default_banner": "Because you watch news and documentary content, we picked this for you."
+    },
+    {
+      "id": "ad_thrill_rushzone",
+      "category": "thrill_seeker",
+      "title": "RUSHZONE — extreme sports streaming (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_rushzone.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch action and sports content, we picked this for you."
+    },
+    {
+      "id": "ad_intel_staratlas",
+      "category": "intellectual_explorer",
+      "title": "STARATLAS — astronomy and space exploration app (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_staratlas.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch science and documentary content, we picked this for you."
+    },
+    {
+      "id": "ad_chame_petpals",
+      "category": "content_chameleon",
+      "title": "PETPALS — pet care and lifestyle (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_petpals.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch family and lifestyle content, we picked this for you."
+    },
+    {
+      "id": "ad_invest_casefile",
+      "category": "investigative_viewer",
+      "title": "CASEFILE — true crime and investigation podcast (synthetic)",
+      "duration_sec": 15,
+      "source": "synthetic",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_casefile.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch documentary and investigative content, we picked this for you."
     }
   ]
 }
