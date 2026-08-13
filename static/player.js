@@ -31,7 +31,8 @@
   const timeReadout = $("time-readout");
   const backBtn = $("back-to-browse");
   const nowWatching = $("now-watching");
-  const adPrompt = $("ad-prompt"); // user_initiated CTA — may be absent in legacy templates
+  const adPrompt = $("ad-prompt");       // Exp-2 B-series user-initiated CTA
+  const timingChoice = $("timing-choice"); // A3 viewer-chosen timing gate
 
   // Lazy-created status banner so the participant sees real errors instead
   // of a black box.
@@ -61,8 +62,9 @@
   let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
   let preroll = null;
   let postroll = null;     // A0 control: plays after content ends, before "done" view
-  let userInitiated = null; // A3: clickable prompt; ad plays only on click
+  let userInitiated = null; // Exp-2 B-series: clickable prompt
   let userInitiatedFired = false;
+  let userChoice = null;   // A3: gate resolved into a concrete placement on choice
   let adStartedInTitle = false; // reset per title; true once any ad begins playing
   let userInitiatedPromptShown = false;   // true once prompt is actually visible
   let userInitiatedPromptStartSec = null; // resolved from prompt_start_at_frac
@@ -162,8 +164,13 @@
       show("stage");
       setStatus(null);
       setupContent(title);
-      if (preroll) playAd(preroll);
-      else playContent();
+      if (userChoice) {
+        showTimingChoice();
+      } else if (preroll) {
+        playAd(preroll);
+      } else {
+        playContent();
+      }
     },
 
     teardown(reason) {
@@ -198,8 +205,10 @@
       userInitiatedFired = false;
       userInitiatedPromptShown = false;
       userInitiatedPromptStartSec = null;
+      userChoice = null;
       adStartedInTitle = false;
       activeTitle = null;
+      if (timingChoice) timingChoice.classList.add("hidden");
     },
   };
   window.experiment.Player = Player;
@@ -227,6 +236,7 @@
     postroll = resolveSlot(ads.find((a) => a.placement === "postroll") || null);
     userInitiated = resolveSlot(ads.find((a) => a.placement === "user_initiated") || null);
     userInitiatedFired = false;
+    userChoice = resolveSlot(ads.find((a) => a.placement === "user_choice") || null);
     queue = ads
       .filter((a) => a.placement === "midroll" || a.placement === "overlay")
       .map((a) => ({ ...resolveSlot(a), fired: false }));
@@ -415,7 +425,53 @@
     }
   }
 
-  // ------------------------------------------------------ user-initiated (A3 / Exp-2 B-series)
+  // ------------------------------------------------------ viewer-chosen timing (A3)
+  // Presents the three-button gate before playback begins. Once the participant
+  // clicks, the slot is re-dispatched as a concrete preroll/midroll/postroll so
+  // all downstream scheduling logic is reused verbatim. Choice is locked for
+  // the title session (the gate is hidden and userChoice cleared on dispatch).
+  function showTimingChoice() {
+    const { Session } = window.experiment;
+    const slot = userChoice;
+    if (!slot || !timingChoice) return;
+    timingChoice.classList.remove("hidden");
+
+    timingChoice.querySelectorAll("button[data-choice]").forEach((btn) => {
+      btn.onclick = () => {
+        const choice = btn.dataset.choice; // "preroll" | "midroll" | "postroll"
+        timingChoice.classList.add("hidden");
+        userChoice = null; // lock — no re-choosing
+
+        Session.log("ad_timing_chosen", {
+          choice,
+          title_id: titleId(),
+          ad_id: slot.id || null,
+          effective_relevance: slot.effective_relevance || null,
+        });
+
+        if (choice === "preroll") {
+          preroll = { ...slot, placement: "preroll" };
+          playAd(preroll);
+        } else if (choice === "midroll") {
+          const midSlot = {
+            ...slot,
+            placement: "midroll",
+            start_at_frac: slot.midroll_start_at_frac ?? 0.5,
+            fired: false,
+          };
+          queue.push(midSlot);
+          resolveQueueTimings(); // re-resolve now that metadata may be available
+          playContent();
+        } else {
+          // postroll
+          postroll = { ...slot, placement: "postroll" };
+          playContent();
+        }
+      };
+    });
+  }
+
+  // ------------------------------------------------------ user-initiated (Exp-2 B-series)
   function setupUserInitiatedPrompt(ad) {
     if (!adPrompt) return;
     if (!ad) {

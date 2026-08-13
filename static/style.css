@@ -299,6 +299,47 @@ button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2p
   margin-right: 2px;
 }
 
+/* A3 — timing-choice gate: fullscreen overlay shown before playback starts */
+#timing-choice {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 12, 0.92);
+  z-index: 5;
+  gap: 24px;
+  padding: 32px;
+  text-align: center;
+}
+#timing-choice p {
+  font-size: 17px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.6;
+}
+.timing-choice-btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.timing-choice-btns button {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 13px 26px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.timing-choice-btns button:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
 #ad-controls {
   position: absolute;
   top: 12px;

@@ -99,7 +99,7 @@ Experiment 1 is a **4 × 2 between-subjects design**: four ad placement conditio
 | A0   | Post-roll (control)  | `/?cond=A0` | Ad after clip; baseline |
 | A1   | Forced pre-roll      | `/?cond=A1` | Ad before clip; shallow interruption |
 | A2   | Forced mid-roll      | `/?cond=A2` | Ad at midpoint; deep interruption |
-| A3   | User-initiated       | `/?cond=A3` | Persistent "Watch an ad" button throughout playback |
+| A3   | Viewer-chosen timing | `/?cond=A3` | Participant chooses when their one 15s ad plays (before / middle / after) |
 
 **Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using balanced minimisation. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the viewer profile of the specific video the participant chose.
 
@@ -153,26 +153,30 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 8 | *(A0)* Watch clip to end | 15-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
 | 8 | *(A1)* Click Play | 15-second pre-roll plays first; countdown visible; ad ends; content begins |
 | 8 | *(A2)* Watch to midpoint | Content pauses; 15-second mid-roll plays; content resumes |
-| 8 | *(A3)* Start clip | "Watch an ad" button is visible immediately in the top-left of the player; click it at any point → ad plays; button disappears after click |
-| 9 | Ad completes → post-survey appears | Page counter shows "1 / 5" |
+| 8 | *(A3)* Open title | Timing-choice gate appears over the player (before playback starts); click one of the three buttons → gate hides, ad plays at chosen moment, content plays around it |
+| 9 | Ad completes → post-survey appears | Page counter shows "1 / 5"; A3 verify the chosen timing fired correctly |
 | 10 | Complete **Intrusiveness** page | 7 × 7-point items |
 | 11 | Complete **Irritation** page | 5 × 7-point items |
 | 12 | Complete **Attitudes** page | Satisfaction + 3 ad-attitude + 3 platform-attitude semantic differentials |
-| 13 | Complete **Purchase / skip** page | 3 PI items + skip item + attention check (select "Somewhat agree" = 5) |
+| 13 | Complete **Skip intention** page | Skip item + attention check (select "Somewhat agree" = 5) |
 | 14 | Complete **Manipulation checks** page | A3: control item; all: ad-seen + prior-exposure |
 | 15 | Click **Submit** | Debriefing screen appears |
 | 16 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
 
-### 3. Decline path — A3 only
+### 3. Timing-choice gate — A3
 
 ```
 http://localhost:8000/?cond=A3
 ```
 
-1. Complete pre-survey and start the video.
-2. The "Watch an ad" button is visible immediately — **do not click it** — let the video finish.
-3. Verify the admin panel shows an `ad_prompt_declined` event in the session drill-down.
-4. Post-survey should still appear and be completable.
+1. Complete the pre-survey and click a title.
+2. Verify the timing-choice gate appears over the player (before any content starts).
+3. Click each option in separate runs and confirm:
+   - **Before the video** → 15s ad plays first, then content starts
+   - **In the middle** → content plays to ~50%, pauses, ad plays, content resumes
+   - **After the video** → content plays to end, then ad plays
+4. Confirm `ad_timing_chosen` event appears in the admin drill-down with the correct `choice` value.
+5. Confirm the post-survey appears after the ad completes in all three paths.
 
 ### 4. Attention check verification
 
@@ -220,9 +224,8 @@ Events logged per session:
 | `content_play` / `content_pause` / `content_seek` | Playback events |
 | `content_ended` | Main clip finished |
 | `ad_start` / `ad_end` | Ad playback — payload includes `ad_id`, `category`, `effective_relevance` |
-| `ad_prompt_shown` | A3 prompt appeared |
-| `ad_prompt_clicked` | A3 prompt clicked |
-| `ad_prompt_declined` | A3 prompt shown but never clicked |
+| `ad_timing_chosen` | A3: participant picked a timing (payload: `choice` = preroll / midroll / postroll) |
+| `ad_prompt_shown` / `ad_prompt_clicked` / `ad_prompt_declined` | Exp-2 B-series user-initiated CTA events |
 | `ad_schedule_resolved` | Mid-roll/overlay timing computed |
 | `banner_shown` / `banner_hidden` / `banner_click` | Explanation/sponsor banner |
 | `page_unload` | Browser tab closed / navigated away |
@@ -305,13 +308,10 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 | `plat_att_2` | Semantic diff | Unfavourable ← 1–7 → Favourable |
 | `plat_att_3` | Semantic diff | Untrustworthy ← 1–7 → Trustworthy |
 
-**Page 4 — Purchase & skip intention**
+**Page 4 — Skip intention**
 
 | Item ID | Statement |
 |---------|-----------|
-| `pi_1` | I would consider purchasing the product advertised. |
-| `pi_2` | I am interested in the product advertised. |
-| `pi_3` | It is likely that I would buy the product advertised. |
 | `skip_1` | If I could have skipped this ad, I would have. |
 | `attn_post` | **Attention check** — select "Somewhat agree" (5) |
 
@@ -319,7 +319,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 | Item ID | Conditions | Type | Question |
 |---------|------------|------|----------|
-| `manip_control` | A3 only | Likert-5 | To what extent did you feel in control of when you watched the ad? |
+| `manip_control` | A3 only | Likert-5 | To what extent did you feel in control of when the ad played? |
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
 

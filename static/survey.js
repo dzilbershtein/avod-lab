@@ -21,7 +21,6 @@
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
- *   Purchase intention    : 3 items
  *   Skip intention        : 1 item
  *   Perceived control     : 5-point item, A3 manipulation check only
  */
@@ -139,13 +138,10 @@
         ],
       },
       {
-        id: "purchase_skip",
-        title: "About the product",
+        id: "skip_intention",
+        title: "About the ad (continued)",
         intro: "Please rate your agreement.\n(1 = Strongly disagree  ·  7 = Strongly agree)",
         items: [
-          L7("pi_1",   "I would consider purchasing the product advertised."),
-          L7("pi_2",   "I am interested in the product advertised."),
-          L7("pi_3",   "It is likely that I would buy the product advertised."),
           L7("skip_1", "If I could have skipped this ad, I would have."),
           ATT("attn_post", 5),
         ],
@@ -163,7 +159,7 @@
     const items = [];
     if (condition === "A3") {
       items.push(L5("manip_control",
-        "To what extent did you feel in control of when you watched the ad?"));
+        "To what extent did you feel in control of when the ad played?"));
     }
     items.push(
       RDO("manip_ad_seen",

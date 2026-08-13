@@ -816,7 +816,7 @@
       }
     ]
   },
-  "_conditions_notes": "Each session is assigned one of four ad conditions (A0\u2013A3) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0\u20131.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 15-second spec is enforced regardless of the underlying asset length.",
+  "_conditions_notes": "Each session is assigned one of four ad conditions (A0\u2013A3) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated, user_choice) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0\u20131.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 15-second spec is enforced regardless of the underlying asset length. The `user_choice` placement (A3) presents a three-button gate before playback; the chosen timing is re-dispatched to the existing preroll/midroll/postroll scheduling. `midroll_start_at_frac` sets where the midroll fires if midroll is chosen.",
   "condition_assignment_mode": "balanced",
   "active_condition": "A0",
   "random_pool": [
@@ -872,12 +872,13 @@
       ]
     },
     "A3": {
-      "label": "User-initiated",
-      "description": "Content plays normally; a persistent button visible from the start lets the viewer voluntarily watch a 15-second ad at any point. No bonus or reward is offered. The ad plays only if the viewer clicks. Non-clickers are retained for stated-preference analysis.",
+      "label": "Viewer-chosen timing",
+      "description": "The viewer is told they will see one 15s ad and chooses when it plays: before, in the middle, or after the clip. Playback is gated on the choice; every participant sees exactly one ad.",
       "ads": [
         {
-          "placement": "user_initiated",
-          "prompt_text": "Watch an ad",
+          "placement": "user_choice",
+          "choice_options": ["preroll", "midroll", "postroll"],
+          "midroll_start_at_frac": 0.5,
           "ad_relevance": "balanced",
           "duration_target_sec": 15,
           "skippable_after_sec": null

@@ -57,7 +57,17 @@
 
       <div id="banner" class="hidden"></div>
 
-      <!-- A3 user-initiated CTA -->
+      <!-- A3 viewer-chosen timing gate (shown before playback, hidden once choice is made) -->
+      <div id="timing-choice" class="hidden">
+        <p>You will see one short ad during this video.<br>When would you like it to play?</p>
+        <div class="timing-choice-btns">
+          <button data-choice="preroll">Before the video</button>
+          <button data-choice="midroll">In the middle</button>
+          <button data-choice="postroll">After the video</button>
+        </div>
+      </div>
+
+      <!-- Exp-2 B-series user-initiated CTA (not used in Exp-1) -->
       <button id="ad-prompt" type="button" class="hidden"></button>
 
       <!-- Content controls overlay -->
