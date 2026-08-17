@@ -25,7 +25,7 @@ http://localhost:8000/admin?token=dev-admin-token
 All video files are excluded from git. Before running the server, generate synthetic ads and download content:
 
 ```bash
-# 1. Generate 18 synthetic ad MP4s (requires Pillow + ffmpeg)
+# 1. Generate 12 synthetic ad MP4s (requires Pillow + ffmpeg)
 python scripts/generate_ads.py
 
 # 2. Download all content and non-synthetic ad videos
@@ -49,7 +49,7 @@ All clips are 10–15 minutes. Titles under 10 min have been retired.
 |---|---|---|---|---|---|
 | `big_buck_bunny` | Big Buck Bunny | Animated Comedy | 10:35 | content_chameleon | Internet Archive (CC BY 3.0) |
 | `elephant_dream` | Elephant's Dream | Sci-Fi Animation | 10:54 | intellectual_explorer | Internet Archive (CC BY 2.5) |
-| `sintel` | Sintel | Fantasy Drama | 14:48 | investigative_viewer | Internet Archive (CC BY 3.0) |
+| `sintel` | Sintel | Fantasy Drama | 14:48 | intellectual_explorer | Internet Archive (CC BY 3.0) |
 | `tears_of_steel` | Tears of Steel | Sci-Fi Thriller | 12:14 | intellectual_explorer | Internet Archive (CC BY 3.0) |
 | `pioneer_one` | Pioneer One (Ep. 1) | Sci-Fi Drama | 15:00 | intellectual_explorer | Internet Archive (CC BY-NC-SA 3.0) |
 | `sprite_fright` | Sprite Fright | Horror · Comedy | 10:30 | thrill_seeker | YouTube (CC BY 4.0) |
@@ -79,10 +79,10 @@ Every title carries a `relevant_ad_category` field using one of four **viewer-pr
 
 | Profile | Content genres | Relevant synthetic ads |
 |---|---|---|
-| `thrill_seeker` | Action, adventure, sports | ENERGYBLAST, BATTLECAST |
-| `intellectual_explorer` | Sci-Fi, science, travel | MINDSPAN, WANDERSCOUT |
-| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM |
-| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK |
+| `thrill_seeker` | Action, adventure, sports, horror | ENERGYBLAST, BATTLECAST, RUSHZONE |
+| `intellectual_explorer` | Sci-Fi, fantasy, science, travel | MINDSPAN, WANDERSCOUT, STARATLAS |
+| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM, PETPALS |
+| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK, CASEFILE |
 
 ---
 
@@ -98,10 +98,56 @@ Experiment 1 is a **4 × 2 between-subjects design**: four ad placement conditio
 |------|-------|-----|-------------|
 | A0   | Post-roll (control)  | `/?cond=A0` | Ad after clip; baseline |
 | A1   | Forced pre-roll      | `/?cond=A1` | Ad before clip; shallow interruption |
-| A2   | Forced mid-roll      | `/?cond=A2` | Ad at midpoint; deep interruption |
-| A3   | Viewer-chosen timing | `/?cond=A3` | Participant chooses when their one 15s ad plays (before / middle / after) |
+| A2   | Forced mid-roll      | `/?cond=A2` | Ad at midpoint (50% of clip duration); deep interruption |
+| A3   | Viewer-chosen timing | `/?cond=A3` | Timing gate blocks playback; participant picks before / middle / after; exactly one ad |
 
-**Ad relevance assignment (Exp 1 only).** Within each placement condition the server independently assigns every new session to either the *relevant* or *irrelevant* arm using balanced minimisation. The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is then picked at play time to match (or mismatch) the viewer profile of the specific video the participant chose.
+### A3 — viewer-chosen timing: full flow
+
+**1 — Ad resolved before the gate opens.** When the session config is loaded, `resolveAdByRelevance()` immediately picks a concrete creative from the ad pool (using `sessionCreativeOffset` for randomisation) and stores it as `userChoice`. The participant never sees this step.
+
+**2 — Participant clicks a title.** Instead of the normal play path, `showTimingChoice()` is called. A fullscreen overlay appears over the player:
+
+> *You will see one short ad during this video. When would you like it to play?*
+> **Before the video** · **In the middle** · **After the video**
+
+A `timing_gate_shown` event is logged at this moment (enables deliberation-latency computation).
+
+**3 — Participant picks.** The choice is locked immediately (`userChoice` cleared, overlay hidden). An `ad_timing_chosen` event is logged with `{ choice, ad_id, effective_relevance }`. Deliberation latency = `ts(ad_timing_chosen) − ts(timing_gate_shown)`.
+
+The slot is re-dispatched into the same machinery used by A0–A2:
+
+| Choice | Dispatch |
+|---|---|
+| Before the video | `preroll = { ...slot, placement: "preroll" }` → `playAd()` → content follows |
+| In the middle | `{ ...slot, placement: "midroll", start_at_frac: 0.5 }` pushed to queue → `playContent()` → pauses at 50% |
+| After the video | `postroll = { ...slot, placement: "postroll" }` → `playContent()` → ad on `content_ended` |
+
+**4 — Post-survey.** Identical to A0–A2 plus one additional item on page 5: `manip_control` — *"To what extent did you feel in control of when the ad played?"* (5-point scale, A3 only).
+
+### Condition and relevance assignment
+
+Assignment happens in two phases separated by an HTTP round-trip:
+
+**Phase 1 — page load (`GET /`).** `load_config()` runs without a database connection. It cannot query cell counts, so it falls back to a random draw from `random_pool`. This provisional config is embedded in the page HTML and used only for initial rendering. It is **not** the locked assignment.
+
+**Phase 2 — session start (`POST /api/session/start`).** The client calls this immediately on page load (before the participant interacts). `load_config()` now runs with the database and performs two sequential minimisation steps:
+
+**Step A — timing condition.** Counts completed sessions per code in `random_pool`, finds the minimum, and randomly picks among all tied minimums (standard minimisation).
+
+**Step B — relevance arm.** Within the just-chosen condition, counts `relevant` vs `irrelevant` sessions, picks the minimum. This keeps all eight (condition × relevance) cells near-equal.
+
+Both are written to `sessions` in one INSERT. The full resolved config is returned to the client, which discards the provisional page config and uses this response for the rest of the session.
+
+| `condition_source` value | Meaning |
+|---|---|
+| `balanced` | Normal minimisation assignment |
+| `override` | `?cond=` URL parameter used (filter from analysis) |
+| `random` | DB unavailable at assignment time (should not occur in production) |
+| `fixed` | `condition_assignment_mode = "fixed"` in config |
+
+**Race condition note.** Two simultaneous `session_start` calls can both read the same counts before either INSERT commits, landing in the same arm. This self-corrects at scale and is inherent to minimisation without row-level locking. It is not a concern at the target sample size (N = 1000).
+
+**Ad relevance assignment (Exp 1 only).** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the viewer profile of the specific video the participant chose.
 
 ### Experiment 2 — condition URLs
 
@@ -147,7 +193,7 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 2 | Click **Begin** | Pre-survey appears; page counter shows "1 / 3" |
 | 3 | Complete **Demographics** page | Age, gender, VOD frequency — all required; "Next" blocked if any missing |
 | 4 | Complete **Persuasion knowledge** page | 3 × 7-point Likert items |
-| 5 | Complete **Privacy concern** page | 6 × IUIPC items + 1 attention check (select "Agree" = 6) |
+| 5 | Complete **Privacy concern** page | 9 × IUIPC items (3 per subscale) + 1 attention check (select "Agree" = 6) |
 | 6 | Browse screen appears | Hero tile and catalogue rows visible |
 | 7 | Click a title | Player screen opens; "Now watching" label correct |
 | 8 | *(A0)* Watch clip to end | 15-second post-roll ad plays; countdown visible; ad ends; post-survey appears |
@@ -224,7 +270,8 @@ Events logged per session:
 | `content_play` / `content_pause` / `content_seek` | Playback events |
 | `content_ended` | Main clip finished |
 | `ad_start` / `ad_end` | Ad playback — payload includes `ad_id`, `category`, `effective_relevance` |
-| `ad_timing_chosen` | A3: participant picked a timing (payload: `choice` = preroll / midroll / postroll) |
+| `timing_gate_shown` | A3: timing-choice gate displayed (start of deliberation window) |
+| `ad_timing_chosen` | A3: participant picked a timing (payload: `choice` = preroll / midroll / postroll); latency = this ts − `timing_gate_shown` ts |
 | `ad_prompt_shown` / `ad_prompt_clicked` / `ad_prompt_declined` | Exp-2 B-series user-initiated CTA events |
 | `ad_schedule_resolved` | Mid-roll/overlay timing computed |
 | `banner_shown` / `banner_hidden` / `banner_click` | Explanation/sponsor banner |
@@ -255,17 +302,20 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 | `pk_2` | When I see an ad, I can tell it is designed to persuade me. |
 | `pk_3` | I understand the techniques that advertisers use to influence people. |
 
-**Page 3 — Privacy concern / IUIPC short form**
-*(Malhotra et al. 2004; 1 = Strongly disagree, 7 = Strongly agree)*
+**Page 3 — Privacy concern / IUIPC**
+*(Malhotra et al. 2004; 3 items per subscale; 1 = Strongly disagree, 7 = Strongly agree)*
 
 | Item ID | Subscale | Statement |
 |---------|----------|-----------|
 | `iuipc_col_1` | Collection | It bothers me to give personal information to so many online companies. |
 | `iuipc_col_2` | Collection | I am concerned that online companies are collecting too much personal information about me. |
+| `iuipc_col_3` | Collection | When online companies ask me for personal information, I sometimes think twice before providing it. |
 | `iuipc_ctl_1` | Control | Online companies should be required to get my permission before using my personal information for any purpose. |
 | `iuipc_ctl_2` | Control | I want to have complete control over what online companies do with my personal information. |
+| `iuipc_ctl_3` | Control | Consumer online privacy is really a matter of consumers' right to exercise control over how their information is collected, used, and shared. |
 | `iuipc_awa_1` | Awareness | Online companies should clearly disclose how they use the personal information they collect from me. |
 | `iuipc_awa_2` | Awareness | I am usually aware of whether or not an online company is collecting information about me. |
+| `iuipc_awa_3` | Awareness | It is very important to me to be aware of what online companies do with my personal information. |
 | `attn_pre` | — | **Attention check** — select "Agree" (6) |
 
 ---
@@ -390,7 +440,7 @@ avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── config/
 │   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
-│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 18 synthetic ads
+│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 12 synthetic ads (3 per category)
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
@@ -405,7 +455,7 @@ avod-lab/
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    ├── generate_ads.py         Renders 18 synthetic ad MP4s via Pillow + ffmpeg
+    ├── generate_ads.py         Renders 12 synthetic ad MP4s via Pillow + ffmpeg (3 per viewer profile)
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
     ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
     └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
