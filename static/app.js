@@ -146,6 +146,14 @@
     Session.log("done_back_to_browse", {});
   });
 
+  $("submit-comment").addEventListener("click", () => {
+    const text = ($("debrief-comment").value || "").trim();
+    Session.log("debrief_comment", { text });
+    $("submit-comment").disabled = true;
+    const sent = $("comment-sent");
+    if (sent) sent.style.display = "inline";
+  });
+
   window.addEventListener("beforeunload", () => {
     Session.log("page_unload", {});
   });

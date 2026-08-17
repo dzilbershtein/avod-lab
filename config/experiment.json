@@ -1,17 +1,17 @@
 {
   "condition_label": "phase2b-default",
   "study_title": "AVOD-Lab",
-  "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one or two short ads, just like a real streaming service. Please keep this tab focused.",
+  "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one short ad. Please keep this tab focused.",
   "_notes": {
     "video_sources": "All active titles are self-hosted at /static/content/<id>.mp4 (run python scripts/download_content.py to populate). Titles still pointing to external URLs are not yet downloaded.",
     "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s.",
     "content_duration": "All clips are trimmed to 15 minutes (900 s) at download time. Clips shorter than 15 min play to their natural end.",
     "viewer_profile_categories": "4 profiles drive ad relevance. Each title's relevant_ad_category matches one profile; the player picks relevant synthetic ads (category matches) or irrelevant ones (category does not match).",
     "genre_to_ad_category": {
-      "thrill_seeker": "Action, horror, superhero, sports \u2014 relevant synthetic ads: ENERGYBLAST, BATTLECAST / irrelevant: MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM, TRUEVIEW, NEWSDESK",
-      "intellectual_explorer": "Sci-Fi, fantasy, travel, science \u2014 relevant synthetic ads: MINDSPAN, WANDERSCOUT / irrelevant: ENERGYBLAST, BATTLECAST, COMFYHOME, FUNSTREAM, TRUEVIEW, NEWSDESK",
-      "content_chameleon": "Comedy, family, nature, variety, lifestyle \u2014 relevant synthetic ads: COMFYHOME, FUNSTREAM / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, TRUEVIEW, NEWSDESK",
-      "investigative_viewer": "Drama, thriller, crime, society, news \u2014 relevant synthetic ads: TRUEVIEW, NEWSDESK / irrelevant: ENERGYBLAST, BATTLECAST, MINDSPAN, WANDERSCOUT, COMFYHOME, FUNSTREAM"
+      "thrill_seeker": "Action, horror, superhero, sports \u2014 relevant synthetic ads: ENERGYBLAST, BATTLECAST, RUSHZONE / irrelevant: all intellectual_explorer, content_chameleon, investigative_viewer ads",
+      "intellectual_explorer": "Sci-Fi, fantasy, travel, science \u2014 relevant synthetic ads: MINDSPAN, WANDERSCOUT, STARATLAS / irrelevant: all thrill_seeker, content_chameleon, investigative_viewer ads",
+      "content_chameleon": "Comedy, family, nature, variety, lifestyle \u2014 relevant synthetic ads: COMFYHOME, FUNSTREAM, PETPALS / irrelevant: all thrill_seeker, intellectual_explorer, investigative_viewer ads",
+      "investigative_viewer": "Drama, thriller, crime, society, news \u2014 relevant synthetic ads: TRUEVIEW, NEWSDESK, CASEFILE / irrelevant: all thrill_seeker, intellectual_explorer, content_chameleon ads"
     },
     "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, decay_cern, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, little_shop_horrors, local_demo, mdn_flower, night_of_living_dead, plan_9, spring_blender, subaru_outback, teenagers_outer_space, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
   },
@@ -68,7 +68,7 @@
         "year": 2010,
         "duration_sec": 888,
         "color": "#6b3f3a",
-        "relevant_ad_category": "investigative_viewer",
+        "relevant_ad_category": "intellectual_explorer",
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
         "video_url": "/static/content/sintel.mp4",
         "fallback_urls": [],
@@ -500,7 +500,7 @@
         "tagline": "A man walks into a police station to report a murder \u2014 his own. He has 24 hours to find his killer.",
         "genre": "Crime \u00b7 Noir",
         "year": 1950,
-        "duration_sec": 4980,
+        "duration_sec": 900,
         "color": "#1a1a1a",
         "relevant_ad_category": "investigative_viewer",
         "poster": "https://archive.org/services/img/D.o.a.VideoQualityUpgrade",
@@ -548,7 +548,7 @@
         "tagline": "A spacecraft descends over Montana. Federal agents investigate \u2014 and find evidence of a Soviet space programme no one has ever heard of.",
         "genre": "Sci-Fi Drama",
         "year": 2010,
-        "duration_sec": 1800,
+        "duration_sec": 900,
         "color": "#0a1a2e",
         "relevant_ad_category": "intellectual_explorer",
         "poster": "https://archive.org/services/img/PioneerOneS01E01720pHD",
@@ -775,9 +775,10 @@
         ]
       },
       {
-        "name": "Science & Discovery",
+        "name": "Sci-Fi & Fantasy",
         "title_ids": [
           "pioneer_one",
+          "sintel",
           "elephant_dream",
           "tears_of_steel",
           "hemo_magnificent",
@@ -800,8 +801,7 @@
           "detour_1945",
           "suddenly_1954",
           "jigsaw_1949",
-          "doa_1950",
-          "sintel"
+          "doa_1950"
         ]
       },
       {

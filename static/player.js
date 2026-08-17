@@ -442,6 +442,11 @@
     const slot = userChoice;
     if (!slot || !timingChoice) return;
     timingChoice.classList.remove("hidden");
+    Session.log("timing_gate_shown", {
+      title_id: titleId(),
+      ad_id: slot.id || null,
+      effective_relevance: slot.effective_relevance || null,
+    });
 
     timingChoice.querySelectorAll("button[data-choice]").forEach((btn) => {
       btn.onclick = () => {
