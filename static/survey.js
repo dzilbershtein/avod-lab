@@ -17,7 +17,7 @@
  * -----------
  *   Persuasion knowledge  : 3 items adapted from Friestad & Wright (1994) /
  *                           Jung et al. (2019)
- *   IUIPC (short form)    : 6 items from Malhotra et al. (2004)
+ *   IUIPC                 : 9 items from Malhotra et al. (2004), 3 per subscale
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
@@ -81,14 +81,20 @@
           "It bothers me to give personal information to so many online companies."),
         L7("iuipc_col_2",
           "I am concerned that online companies are collecting too much personal information about me."),
+        L7("iuipc_col_3",
+          "When online companies ask me for personal information, I sometimes think twice before providing it."),
         L7("iuipc_ctl_1",
           "Online companies should be required to get my permission before using my personal information for any purpose."),
         L7("iuipc_ctl_2",
           "I want to have complete control over what online companies do with my personal information."),
+        L7("iuipc_ctl_3",
+          "Consumer online privacy is really a matter of consumers' right to exercise control over how their information is collected, used, and shared."),
         L7("iuipc_awa_1",
           "Online companies should clearly disclose how they use the personal information they collect from me."),
         L7("iuipc_awa_2",
           "I am usually aware of whether or not an online company is collecting information about me."),
+        L7("iuipc_awa_3",
+          "It is very important to me to be aware of what online companies do with my personal information."),
         ATT("attn_pre", 6),
       ],
     },
