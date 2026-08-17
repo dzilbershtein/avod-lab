@@ -11,7 +11,18 @@
       <h1>Session {{ session['id'][:8] }}…</h1>
       <p>
         <a href="{{ url_for('admin', token=token) }}">&larr; All sessions</a>
-        &nbsp;·&nbsp; Condition: <code>{{ session['condition_label'] }}</code>
+        &nbsp;·&nbsp;
+        {% if session['condition'] %}
+          <code>{{ session['condition'] }}</code>
+          {% if session['condition_label'] %}
+            <span style="color:var(--muted);font-size:13px;">{{ session['condition_label'] }}</span>
+          {% endif %}
+        {% else %}
+          <code>{{ session['condition_label'] }}</code>
+        {% endif %}
+        {% if session['ad_relevance_arm'] %}
+          &nbsp;·&nbsp; Arm: <code>{{ session['ad_relevance_arm'] }}</code>
+        {% endif %}
         &nbsp;·&nbsp; Created: {{ session['created_at'] }}
       </p>
     </header>

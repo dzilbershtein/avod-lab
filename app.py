@@ -430,7 +430,8 @@ def admin():
     _require_admin()
     db = get_db()
     sessions = db.execute(
-        "SELECT id, created_at, condition_label, condition, condition_source, user_agent, "
+        "SELECT id, created_at, condition_label, condition, condition_source, "
+        "ad_relevance_arm, user_agent, "
         "(SELECT COUNT(*) FROM events e WHERE e.session_id = s.id) AS n_events "
         "FROM sessions s ORDER BY created_at DESC LIMIT 200"
     ).fetchall()
@@ -441,6 +442,18 @@ def admin():
     exp1_pool = [c for c in cfg.get("random_pool", []) if c in conditions_meta]
     cell_counts = _count_condition_assignments(exp1_pool, db) if exp1_pool else {}
 
+    # 8-cell breakdown: condition × ad_relevance_arm.
+    cell8_counts: dict[tuple, int] = {}
+    if exp1_pool:
+        placeholders = ",".join("?" * len(exp1_pool))
+        for row in db.execute(
+            f"SELECT condition, ad_relevance_arm, COUNT(*) AS n FROM sessions "
+            f"WHERE condition IN ({placeholders}) AND ad_relevance_arm IS NOT NULL "
+            f"GROUP BY condition, ad_relevance_arm",
+            exp1_pool,
+        ).fetchall():
+            cell8_counts[(row["condition"], row["ad_relevance_arm"])] = row["n"]
+
     return render_template(
         "admin.html",
         sessions=sessions,
@@ -448,6 +461,7 @@ def admin():
         conditions_meta=conditions_meta,
         exp1_pool=exp1_pool,
         cell_counts=cell_counts,
+        cell8_counts=cell8_counts,
     )
 
 
@@ -473,7 +487,7 @@ def admin_export_csv():
     _require_admin()
     db = get_db()
     rows = db.execute(
-        "SELECT e.session_id, s.condition, s.condition_label, "
+        "SELECT e.session_id, s.condition, s.ad_relevance_arm, s.condition_label, "
         "       e.ts_server, e.ts_client, e.kind, e.payload "
         "FROM events e JOIN sessions s ON s.id = e.session_id "
         "ORDER BY e.session_id, e.id ASC"
@@ -481,13 +495,14 @@ def admin_export_csv():
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(
-        ["session_id", "condition", "condition_label",
+        ["session_id", "condition", "ad_relevance_arm", "condition_label",
          "ts_server", "ts_client", "kind", "payload"]
     )
     for r in rows:
         writer.writerow(
-            [r["session_id"], r["condition"], r["condition_label"],
-             r["ts_server"], r["ts_client"], r["kind"], r["payload"]]
+            [r["session_id"], r["condition"], r["ad_relevance_arm"],
+             r["condition_label"], r["ts_server"], r["ts_client"],
+             r["kind"], r["payload"]]
         )
     return Response(
         buf.getvalue(),

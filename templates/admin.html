@@ -44,7 +44,7 @@
 
       <!-- Cell balance (Experiment 1) -->
       <div class="admin-card">
-        <h2>Experiment 1 — cell balance</h2>
+        <h2>Experiment 1 — timing balance (4 conditions)</h2>
         {% set total = cell_counts.values() | sum %}
         {% if exp1_pool %}
           {% for code in exp1_pool %}
@@ -70,6 +70,34 @@
           </p>
         {% else %}
           <p style="color:var(--muted);font-size:13px;">No conditions configured in random_pool.</p>
+        {% endif %}
+
+        <!-- 8-cell breakdown -->
+        {% if exp1_pool and cell8_counts %}
+        <h2 style="margin-top:22px;">8-cell breakdown (timing × relevance)</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;color:var(--muted);padding:3px 8px 6px 0;">Condition</th>
+              <th style="text-align:right;color:var(--muted);padding:3px 8px 6px;">Relevant</th>
+              <th style="text-align:right;color:var(--muted);padding:3px 0 6px;">Irrelevant</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for code in exp1_pool %}
+            {% set rel = cell8_counts.get((code, 'relevant'), 0) %}
+            {% set irr = cell8_counts.get((code, 'irrelevant'), 0) %}
+            <tr style="border-top:1px solid #2a2a31;">
+              <td style="padding:5px 8px 5px 0;"><span class="cond-code">{{ code }}</span></td>
+              <td style="text-align:right;padding:5px 8px;">{{ rel }}</td>
+              <td style="text-align:right;padding:5px 0;">{{ irr }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <p style="margin:10px 0 0;font-size:11px;color:var(--muted);">
+          Target: 125 per cell. Sessions without a relevance arm (e.g. override runs) are excluded.
+        </p>
         {% endif %}
       </div>
 
@@ -112,6 +140,7 @@
           <th>Session</th>
           <th>Created</th>
           <th>Condition</th>
+          <th>Arm</th>
           <th>Source</th>
           <th>UA</th>
           <th># events</th>
@@ -121,6 +150,7 @@
       {% for s in sessions %}
         {% set cond_code = s['condition'] %}
         {% set src       = s['condition_source'] or '' %}
+        {% set arm       = s['ad_relevance_arm'] or '' %}
         <tr>
           <td><a href="{{ url_for('admin_session', sid=s['id'], token=token) }}">{{ s['id'][:8] }}&hellip;</a></td>
           <td>{{ s['created_at'] }}</td>
@@ -133,6 +163,11 @@
               {% endif %}
             {% else %}
               <span style="color:var(--muted);font-size:12px;">{{ s['condition_label'] }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if arm %}
+              <span class="source-badge source-{{ arm }}">{{ arm }}</span>
             {% endif %}
           </td>
           <td>
