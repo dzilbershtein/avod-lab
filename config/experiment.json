@@ -1180,7 +1180,7 @@
           "duration_target_sec": 15,
           "skippable_after_sec": null,
           "banner": {
-            "show": true,
+            "show": false,
             "text": "Why this ad? This ad was selected based on what you watch on this platform.",
             "show_at_ad_sec": 0,
             "hide_at_ad_sec": 15
@@ -1199,7 +1199,7 @@
           "duration_target_sec": 15,
           "skippable_after_sec": null,
           "banner": {
-            "show": true,
+            "show": false,
             "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",
             "show_at_ad_sec": 0,
             "hide_at_ad_sec": 15
@@ -1238,7 +1238,7 @@
           "duration_target_sec": 15,
           "skippable_after_sec": null,
           "banner": {
-            "show": true,
+            "show": false,
             "text": "Why this ad? This ad was selected based on what you watch on this platform.",
             "show_at_ad_sec": 0,
             "hide_at_ad_sec": 15
@@ -1259,7 +1259,7 @@
           "duration_target_sec": 15,
           "skippable_after_sec": null,
           "banner": {
-            "show": true,
+            "show": false,
             "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",
             "show_at_ad_sec": 0,
             "hide_at_ad_sec": 15
