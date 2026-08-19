@@ -21,9 +21,10 @@
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
- *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator + relevance manip check)
+ *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
  *   Skip intention           : 1 item
- *   Perceived control     : 5-point item, A3 manipulation check only
+ *   Perceived control        : 5-point item, A3 manipulation check only
+ *   Relevance manipulation check : 1 item (manip_relevance; page 5, all conditions)
  */
 
 (() => {
@@ -177,7 +178,9 @@
         ["Yes, and I watched it", "Yes, but I did not pay much attention to it", "No"]),
       RDO("manip_prior_ad",
         "Had you seen this specific advertisement before today?",
-        ["Yes", "No", "Not sure"])
+        ["Yes", "No", "Not sure"]),
+      L7("manip_relevance",
+        "The ad appeared to be chosen based on the type of video I watched.")
     );
     return items;
   }

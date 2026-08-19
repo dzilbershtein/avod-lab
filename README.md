@@ -385,6 +385,9 @@ Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. T
 | `manip_control` | A3 only | Likert-5 | To what extent did you feel in control of when the ad played? |
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
+| `manip_relevance` | All | Likert-7 | The ad appeared to be chosen based on the type of video I watched. |
+
+`manip_relevance` is the relevance manipulation check. It is distinct from `rel_1`–`rel_3` (which measure perceived ad-content fit as a mediator): this item asks whether the participant perceived the *matching mechanism* rather than product-level fit. The manipulation succeeds if `manip_relevance` scores significantly higher in the relevant arm than in the irrelevant arm (independent-samples *t*-test, one-tailed).
 
 ---
 
