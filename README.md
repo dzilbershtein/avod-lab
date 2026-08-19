@@ -25,8 +25,13 @@ http://localhost:8000/admin?token=dev-admin-token
 All video files are excluded from git. Before running the server, generate synthetic ads and download content:
 
 ```bash
-# 1. Generate 12 synthetic ad MP4s (requires Pillow + ffmpeg)
-python scripts/generate_ads.py
+# 1. Generate synthetic ad MP4s (requires Pillow + ffmpeg)
+python scripts/generate_ads.py       # v1 — 12 ads, original set
+python scripts/generate_ads_v2.py    # v2 — 12 ads, richer visuals
+python scripts/generate_ads_v3.py    # v3 — 12 ads, content-library targeted (recommended)
+
+# Generate a single ad (any script supports --only)
+python scripts/generate_ads_v3.py --only ad_intel_horizon ad_thrill_torque
 
 # 2. Download all content and non-synthetic ad videos
 #    (requires yt-dlp + ffmpeg on PATH)
@@ -77,12 +82,14 @@ Every title carries a `relevant_ad_category` field using one of four **viewer-pr
 
 **Single taxonomy:** all active titles and all synthetic ads use the same four labels. Never tag a title with a product label (`electronics_tech`, `automotive`, `food_beverage`) — those labels exist only on archived/retired ad assets and have no matching synthetic ads, so the relevance manipulation would silently fall back to a random ad.
 
-| Profile | Content genres | Relevant synthetic ads |
-|---|---|---|
-| `thrill_seeker` | Action, adventure, sports, horror | ENERGYBLAST, BATTLECAST, RUSHZONE |
-| `intellectual_explorer` | Sci-Fi, fantasy, science, travel | MINDSPAN, WANDERSCOUT, STARATLAS |
-| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM, PETPALS |
-| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK, CASEFILE |
+| Profile | Content genres | v1 ads | v3 ads (content-targeted) |
+|---|---|---|---|
+| `thrill_seeker` | Action, adventure, sports, horror | ENERGYBLAST, BATTLECAST, RUSHZONE | GRAVECREST (horror), TORQUE (cars/outdoors), VANGUARD (adventure) |
+| `intellectual_explorer` | Sci-Fi, fantasy, science, travel | MINDSPAN, WANDERSCOUT, STARATLAS | CURIOSITY (science/nature), HORIZON (sci-fi/fantasy), TERRA (nature/travel) |
+| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM, PETPALS | TOONBOX (animation), STAGECRAFT (classic film), PANTRY (food/grocery) |
+| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK, CASEFILE | NOCTURNE (noir), DEADLINES (journalism), CASEROOM (true crime) |
+
+The active ad set is controlled by `synthetic_ad_version` in `config/experiment.json` (`"v1"`, `"v2"`, or `"v3"`). v3 ads are designed to maximise tag-Jaccard overlap with the specific content in the library.
 
 ---
 
@@ -403,7 +410,7 @@ Each ad slot in a condition carries an `ad_relevance` field:
 | `"relevant"` | Always show an ad matching the video's viewer profile (Exp 2 / B conditions) |
 | `"irrelevant"` | Always show an ad that does not match the video's viewer profile |
 
-The video → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four viewer profile IDs (`thrill_seeker`, `intellectual_explorer`, `content_chameleon`, `investigative_viewer`). Synthetic ads must also exist as MP4 files in `static/ads/` (run `python scripts/generate_ads.py` to regenerate).
+The video → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four viewer profile IDs (`thrill_seeker`, `intellectual_explorer`, `content_chameleon`, `investigative_viewer`). Synthetic ads must also exist as MP4 files in `static/ads/` (run the matching generation script to regenerate). The active set is selected by `"synthetic_ad_version"` in `experiment.json`.
 
 ---
 
@@ -421,8 +428,8 @@ Mount `data/` on a persistent volume (SQLite). For high concurrency, swap to Pos
 The server does not need internet access at runtime. All `video_url` fields point to `/static/content/<id>.mp4` or `/static/ads/<id>.mp4`. Populate these before deployment:
 
 ```bash
-python scripts/generate_ads.py    # synthetic ads
-python scripts/download_all.py    # content + non-synthetic ads
+python scripts/generate_ads_v3.py  # recommended synthetic ads (content-targeted)
+python scripts/download_all.py     # content + non-synthetic ads
 ```
 
 Then copy the `static/` tree to the server. No outbound requests are made during participant sessions.
@@ -455,7 +462,10 @@ avod-lab/
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    ├── generate_ads.py         Renders 12 synthetic ad MP4s via Pillow + ffmpeg (3 per viewer profile)
+    ├── generate_ads.py         v1 — 12 synthetic ads (Pillow + ffmpeg, 3 per viewer profile)
+    ├── generate_ads_v2.py      v2 — 12 synthetic ads with richer visuals and glow text
+    ├── generate_ads_v3.py      v3 — 12 synthetic ads designed for this content library (recommended)
+    ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by all ad generators
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
     ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
     └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles

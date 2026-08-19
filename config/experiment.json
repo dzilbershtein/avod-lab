@@ -8,10 +8,10 @@
     "content_duration": "All clips are trimmed to 15 minutes (900 s) at download time. Clips shorter than 15 min play to their natural end.",
     "viewer_profile_categories": "4 profiles drive ad relevance. Each title's relevant_ad_category matches one profile; the player picks relevant synthetic ads (category matches) or irrelevant ones (category does not match).",
     "genre_to_ad_category": {
-      "thrill_seeker": "Action, horror, superhero, sports \u2014 relevant synthetic ads: ENERGYBLAST, BATTLECAST, RUSHZONE / irrelevant: all intellectual_explorer, content_chameleon, investigative_viewer ads",
-      "intellectual_explorer": "Sci-Fi, fantasy, travel, science \u2014 relevant synthetic ads: MINDSPAN, WANDERSCOUT, STARATLAS / irrelevant: all thrill_seeker, content_chameleon, investigative_viewer ads",
-      "content_chameleon": "Comedy, family, nature, variety, lifestyle \u2014 relevant synthetic ads: COMFYHOME, FUNSTREAM, PETPALS / irrelevant: all thrill_seeker, intellectual_explorer, investigative_viewer ads",
-      "investigative_viewer": "Drama, thriller, crime, society, news \u2014 relevant synthetic ads: TRUEVIEW, NEWSDESK, CASEFILE / irrelevant: all thrill_seeker, intellectual_explorer, content_chameleon ads"
+      "thrill_seeker": "Action, horror, superhero, sports — relevant synthetic ads: ENERGYBLAST, BATTLECAST, RUSHZONE / irrelevant: all intellectual_explorer, content_chameleon, investigative_viewer ads",
+      "intellectual_explorer": "Sci-Fi, fantasy, travel, science — relevant synthetic ads: MINDSPAN, WANDERSCOUT, STARATLAS / irrelevant: all thrill_seeker, content_chameleon, investigative_viewer ads",
+      "content_chameleon": "Comedy, family, nature, variety, lifestyle — relevant synthetic ads: COMFYHOME, FUNSTREAM, PETPALS / irrelevant: all thrill_seeker, intellectual_explorer, investigative_viewer ads",
+      "investigative_viewer": "Drama, thriller, crime, society, news — relevant synthetic ads: TRUEVIEW, NEWSDESK, CASEFILE / irrelevant: all thrill_seeker, intellectual_explorer, content_chameleon ads"
     },
     "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, decay_cern, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, little_shop_horrors, local_demo, mdn_flower, night_of_living_dead, plan_9, spring_blender, subaru_outback, teenagers_outer_space, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
   },
@@ -21,7 +21,7 @@
       "local_demo": {
         "id": "local_demo",
         "title": "AVOD-Lab Demo (Local)",
-        "tagline": "A bundled 30-second clip that always works \u2014 no internet required. Try this first if you are testing the setup.",
+        "tagline": "A bundled 30-second clip that always works — no internet required. Try this first if you are testing the setup.",
         "genre": "Demo",
         "year": 2026,
         "duration_sec": 30,
@@ -30,12 +30,17 @@
         "video_url": "/static/content/sample_demo.mp4",
         "fallback_urls": [],
         "license": "generated_locally",
-        "relevant_ad_category": "content_chameleon"
+        "relevant_ad_category": "content_chameleon",
+        "context_tags": [
+          "animation",
+          "comedy",
+          "family"
+        ]
       },
       "big_buck_bunny": {
         "id": "big_buck_bunny",
         "title": "Big Buck Bunny",
-        "tagline": "A gentle giant rabbit finally snaps \u2014 and three bullying rodents won't know what hit them.",
+        "tagline": "A gentle giant rabbit finally snaps — and three bullying rodents won't know what hit them.",
         "genre": "Animated Comedy",
         "year": 2008,
         "duration_sec": 596,
@@ -44,7 +49,14 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
         "video_url": "/static/content/big_buck_bunny.mp4",
         "fallback_urls": [],
-        "source_url": "https://archive.org/download/Sintel_201709/Big%20Buck%20Bunny.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Big%20Buck%20Bunny.mp4",
+        "context_tags": [
+          "animation",
+          "comedy",
+          "family",
+          "nature",
+          "action"
+        ]
       },
       "elephant_dream": {
         "id": "elephant_dream",
@@ -58,7 +70,13 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
         "video_url": "/static/content/elephant_dream.mp4",
         "fallback_urls": [],
-        "source_url": "https://archive.org/download/Sintel_201709/Elephants%20Dream.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Elephants%20Dream.mp4",
+        "context_tags": [
+          "animation",
+          "sci-fi",
+          "adventure",
+          "technology"
+        ]
       },
       "sintel": {
         "id": "sintel",
@@ -72,12 +90,18 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
         "video_url": "/static/content/sintel.mp4",
         "fallback_urls": [],
-        "source_url": "https://archive.org/download/Sintel_201709/Sintel.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Sintel.mp4",
+        "context_tags": [
+          "animation",
+          "fantasy",
+          "drama",
+          "adventure"
+        ]
       },
       "tears_of_steel": {
         "id": "tears_of_steel",
         "title": "Tears of Steel",
-        "tagline": "Warriors from the future travel back in time to stop the machines \u2014 but the cost may be everything.",
+        "tagline": "Warriors from the future travel back in time to stop the machines — but the cost may be everything.",
         "genre": "Sci-Fi Thriller",
         "year": 2012,
         "duration_sec": 734,
@@ -86,7 +110,14 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
         "video_url": "/static/content/tears_of_steel.mp4",
         "fallback_urls": [],
-        "source_url": "https://archive.org/download/Sintel_201709/Tears%20of%20Steel.mp4"
+        "source_url": "https://archive.org/download/Sintel_201709/Tears%20of%20Steel.mp4",
+        "context_tags": [
+          "sci-fi",
+          "action",
+          "thriller",
+          "technology",
+          "drama"
+        ]
       },
       "for_bigger_blazes": {
         "id": "for_bigger_blazes",
@@ -100,7 +131,11 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
         "video_url": "/static/content/for_bigger_blazes.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "context_tags": [
+          "technology",
+          "streaming"
+        ]
       },
       "for_bigger_escapes": {
         "id": "for_bigger_escapes",
@@ -114,7 +149,12 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
         "video_url": "/static/content/for_bigger_escapes.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        "context_tags": [
+          "travel",
+          "adventure",
+          "streaming"
+        ]
       },
       "for_bigger_fun": {
         "id": "for_bigger_fun",
@@ -128,7 +168,12 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
         "video_url": "/static/content/for_bigger_fun.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        "context_tags": [
+          "family",
+          "comedy",
+          "streaming"
+        ]
       },
       "for_bigger_joyrides": {
         "id": "for_bigger_joyrides",
@@ -142,7 +187,12 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
         "video_url": "/static/content/for_bigger_joyrides.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+        "context_tags": [
+          "cars",
+          "adventure",
+          "action"
+        ]
       },
       "for_bigger_meltdowns": {
         "id": "for_bigger_meltdowns",
@@ -156,7 +206,11 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
         "video_url": "/static/content/for_bigger_meltdowns.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        "context_tags": [
+          "comedy",
+          "food"
+        ]
       },
       "subaru_outback": {
         "id": "subaru_outback",
@@ -170,7 +224,13 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
         "video_url": "/static/content/subaru_outback.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+        "context_tags": [
+          "cars",
+          "adventure",
+          "outdoors",
+          "documentary"
+        ]
       },
       "volkswagen_gti": {
         "id": "volkswagen_gti",
@@ -184,7 +244,12 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
         "video_url": "/static/content/volkswagen_gti.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+        "context_tags": [
+          "cars",
+          "action",
+          "documentary"
+        ]
       },
       "we_are_going_on_bullrun": {
         "id": "we_are_going_on_bullrun",
@@ -198,7 +263,13 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
         "video_url": "/static/content/we_are_going_on_bullrun.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+        "context_tags": [
+          "cars",
+          "action",
+          "adventure",
+          "sports"
+        ]
       },
       "what_car_can_you_get": {
         "id": "what_car_can_you_get",
@@ -212,13 +283,18 @@
         "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
         "video_url": "/static/content/what_car_can_you_get.mp4",
         "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4"
+        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+        "context_tags": [
+          "cars",
+          "comedy",
+          "documentary"
+        ]
       },
       "plan_9": {
         "id": "plan_9",
         "title": "Plan 9 from Outer Space",
-        "tagline": "Aliens implement Plan 9 \u2014 resurrecting the Earth's dead \u2014 to stop humanity. The cult classic that earned a Golden Turkey.",
-        "genre": "Sci-Fi \u00b7 B&W",
+        "tagline": "Aliens implement Plan 9 — resurrecting the Earth's dead — to stop humanity. The cult classic that earned a Golden Turkey.",
+        "genre": "Sci-Fi · B&W",
         "year": 1959,
         "duration_sec": 4700,
         "color": "#1f1f29",
@@ -227,7 +303,13 @@
         "video_url": "/static/content/plan_9.mp4",
         "fallback_urls": [],
         "license": "CC0 / public domain",
-        "source_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4"
+        "source_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
+        "context_tags": [
+          "sci-fi",
+          "horror",
+          "comedy",
+          "space"
+        ]
       },
       "night_of_living_dead": {
         "id": "night_of_living_dead",
@@ -242,13 +324,18 @@
         "video_url": "/static/content/night_of_living_dead.mp4",
         "fallback_urls": [],
         "license": "Public Domain Mark 1.0",
-        "source_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4"
+        "source_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
+        "context_tags": [
+          "horror",
+          "thriller",
+          "action"
+        ]
       },
       "mdn_flower": {
         "id": "mdn_flower",
         "title": "Flower",
         "tagline": "A short, hypnotic time-lapse of a flower blooming.",
-        "genre": "Nature \u00b7 Short",
+        "genre": "Nature · Short",
         "year": 2020,
         "duration_sec": 30,
         "color": "#3a6b3a",
@@ -257,13 +344,17 @@
         "video_url": "/static/content/mdn_flower.mp4",
         "fallback_urls": [],
         "license": "CC0 (Mozilla shared-assets)",
-        "source_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4"
+        "source_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4",
+        "context_tags": [
+          "nature",
+          "science"
+        ]
       },
       "tv_jellyfish": {
         "id": "tv_jellyfish",
         "title": "Jellyfish",
-        "tagline": "Slow-motion jellyfish drifting through a tank \u2014 a colour-test reference clip.",
-        "genre": "Nature \u00b7 Short",
+        "tagline": "Slow-motion jellyfish drifting through a tank — a colour-test reference clip.",
+        "genre": "Nature · Short",
         "year": 2019,
         "duration_sec": 30,
         "color": "#2a4a6b",
@@ -272,13 +363,17 @@
         "video_url": "/static/content/tv_jellyfish.mp4",
         "fallback_urls": [],
         "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4"
+        "source_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4",
+        "context_tags": [
+          "nature",
+          "science"
+        ]
       },
       "tv_bbb_demo": {
         "id": "tv_bbb_demo",
         "title": "Big Buck Bunny (1080p demo)",
         "tagline": "A 30-second 1080p H.264 sample from the test-videos.co.uk reference set.",
-        "genre": "Animation \u00b7 Short",
+        "genre": "Animation · Short",
         "year": 2019,
         "duration_sec": 30,
         "color": "#7d5f3a",
@@ -287,13 +382,17 @@
         "video_url": "/static/content/tv_bbb_demo.mp4",
         "fallback_urls": [],
         "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4"
+        "source_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4",
+        "context_tags": [
+          "animation",
+          "comedy"
+        ]
       },
       "tv_sintel_demo": {
         "id": "tv_sintel_demo",
         "title": "Sintel (1080p demo)",
         "tagline": "A 30-second 1080p H.264 sample of the Blender open movie Sintel.",
-        "genre": "Animation \u00b7 Short",
+        "genre": "Animation · Short",
         "year": 2019,
         "duration_sec": 30,
         "color": "#6b4d3a",
@@ -302,13 +401,17 @@
         "video_url": "/static/content/tv_sintel_demo.mp4",
         "fallback_urls": [],
         "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4"
+        "source_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4",
+        "context_tags": [
+          "animation",
+          "fantasy"
+        ]
       },
       "date_with_your_family": {
         "id": "date_with_your_family",
         "title": "A Date with Your Family",
-        "tagline": "A 1950 etiquette short following an American family through their evening meal \u2014 roles, table manners, and pleasant dinner conversation. Narrated by Hugh Beaumont.",
-        "genre": "Educational \u00b7 Short",
+        "tagline": "A 1950 etiquette short following an American family through their evening meal — roles, table manners, and pleasant dinner conversation. Narrated by Hugh Beaumont.",
+        "genre": "Educational · Short",
         "year": 1950,
         "duration_sec": 600,
         "color": "#5a3e28",
@@ -317,13 +420,19 @@
         "video_url": "/static/content/date_with_your_family.mp4",
         "fallback_urls": [],
         "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4"
+        "source_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4",
+        "context_tags": [
+          "family",
+          "comedy",
+          "education",
+          "drama"
+        ]
       },
       "foundation_foods": {
         "id": "foundation_foods",
         "title": "Foundation Foods",
         "tagline": "A 1951 Avis Films nutrition short teaching children the seven food groups through the Brown family's daily meals.",
-        "genre": "Educational \u00b7 Short",
+        "genre": "Educational · Short",
         "year": 1951,
         "duration_sec": 660,
         "color": "#3a5c2c",
@@ -332,13 +441,19 @@
         "video_url": "/static/content/foundation_foods.mp4",
         "fallback_urls": [],
         "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4"
+        "source_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4",
+        "context_tags": [
+          "education",
+          "food",
+          "family",
+          "science"
+        ]
       },
       "uncle_jim_dairy": {
         "id": "uncle_jim_dairy",
         "title": "Uncle Jim's Dairy Farm",
         "tagline": "A 1963 National Dairy Council film in which city children visit their uncle's farm and discover how milk gets from cow to table.",
-        "genre": "Educational \u00b7 Short",
+        "genre": "Educational · Short",
         "year": 1963,
         "duration_sec": 729,
         "color": "#4a6b3a",
@@ -347,14 +462,20 @@
         "video_url": "/static/content/uncle_jim_dairy.mp4",
         "fallback_urls": [],
         "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4"
+        "source_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4",
+        "context_tags": [
+          "education",
+          "family",
+          "food",
+          "nature"
+        ]
       },
       "_cc_note": "Entries with source=youtube_cc require `python scripts/download_content.py`. Entries with source=archive_org_cc can also be fetched by the same script. All clips trimmed to 5 min (300 s) at download time.",
       "decay_cern": {
         "id": "decay_cern",
         "title": "Decay",
         "tagline": "When experiments at CERN go wrong, zombie physicists stalk the tunnels beneath Geneva. A horror film made by actual PhD students on site.",
-        "genre": "Horror \u00b7 Thriller",
+        "genre": "Horror · Thriller",
         "year": 2012,
         "duration_sec": 4560,
         "color": "#1a1a2e",
@@ -364,7 +485,13 @@
         "fallback_urls": [],
         "license": "CC BY-NC 3.0",
         "source": "archive_org_cc",
-        "source_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4"
+        "source_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4",
+        "context_tags": [
+          "horror",
+          "thriller",
+          "science",
+          "technology"
+        ]
       },
       "charge_blender": {
         "id": "charge_blender",
@@ -380,7 +507,13 @@
         "fallback_urls": [],
         "license": "CC BY 4.0",
         "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk"
+        "source_url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk",
+        "context_tags": [
+          "sci-fi",
+          "action",
+          "technology",
+          "thriller"
+        ]
       },
       "coffee_run": {
         "id": "coffee_run",
@@ -396,13 +529,18 @@
         "fallback_urls": [],
         "license": "CC BY 4.0",
         "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=ir6LpkXfbHE"
+        "source_url": "https://www.youtube.com/watch?v=ir6LpkXfbHE",
+        "context_tags": [
+          "comedy",
+          "animation",
+          "food"
+        ]
       },
       "spring_blender": {
         "id": "spring_blender",
         "title": "Spring",
         "tagline": "A shepherd and his dog make one last journey through the Italian hills at the end of the season.",
-        "genre": "Travel \u00b7 Nature",
+        "genre": "Travel · Nature",
         "year": 2019,
         "duration_sec": 468,
         "color": "#2c4a1e",
@@ -412,7 +550,13 @@
         "fallback_urls": [],
         "license": "CC BY 4.0",
         "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=WhWc3b3KhnY"
+        "source_url": "https://www.youtube.com/watch?v=WhWc3b3KhnY",
+        "context_tags": [
+          "travel",
+          "nature",
+          "drama",
+          "outdoors"
+        ]
       },
       "hero_blender": {
         "id": "hero_blender",
@@ -428,7 +572,12 @@
         "fallback_urls": [],
         "license": "CC BY 4.0",
         "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=pKmSdY56VtY"
+        "source_url": "https://www.youtube.com/watch?v=pKmSdY56VtY",
+        "context_tags": [
+          "action",
+          "drama",
+          "adventure"
+        ]
       },
       "agent_327": {
         "id": "agent_327",
@@ -444,7 +593,13 @@
         "fallback_urls": [],
         "license": "CC BY 3.0",
         "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=ld8cr6Fikc0"
+        "source_url": "https://www.youtube.com/watch?v=ld8cr6Fikc0",
+        "context_tags": [
+          "comedy",
+          "thriller",
+          "action",
+          "investigation"
+        ]
       },
       "caminandes_llamigos": {
         "id": "caminandes_llamigos",
@@ -460,13 +615,19 @@
         "fallback_urls": [],
         "license": "CC BY 3.0",
         "source": "youtube_cc",
-        "source_url": "https://archive.org/download/CaminandesLlamigos/Caminandes_%20Llamigos-1080p.mp4"
+        "source_url": "https://archive.org/download/CaminandesLlamigos/Caminandes_%20Llamigos-1080p.mp4",
+        "context_tags": [
+          "animation",
+          "comedy",
+          "nature",
+          "adventure"
+        ]
       },
       "cosmos_laundromat": {
         "id": "cosmos_laundromat",
         "title": "Cosmos Laundromat",
-        "tagline": "A suicidal sheep on a desolate island meets a mysterious man who offers him a second chance \u2014 at a price.",
-        "genre": "Sci-Fi \u00b7 Fantasy",
+        "tagline": "A suicidal sheep on a desolate island meets a mysterious man who offers him a second chance — at a price.",
+        "genre": "Sci-Fi · Fantasy",
         "year": 2015,
         "duration_sec": 732,
         "color": "#1a1040",
@@ -476,13 +637,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/CosmosLaundromatFirstCycle/Cosmos%20Laundromat%20-%20First%20Cycle%20%281080p%29.mp4",
         "license": "CC BY 4.0",
-        "source": "archive_org_cc"
+        "source": "archive_org_cc",
+        "context_tags": [
+          "sci-fi",
+          "fantasy",
+          "drama",
+          "space"
+        ]
       },
       "sprite_fright": {
         "id": "sprite_fright",
         "title": "Sprite Fright",
-        "tagline": "Teenagers trekking through an isolated forest disturb peaceful mushroom creatures \u2014 with chaotic consequences.",
-        "genre": "Horror \u00b7 Comedy",
+        "tagline": "Teenagers trekking through an isolated forest disturb peaceful mushroom creatures — with chaotic consequences.",
+        "genre": "Horror · Comedy",
         "year": 2021,
         "duration_sec": 630,
         "color": "#1a2e1a",
@@ -492,13 +659,19 @@
         "fallback_urls": [],
         "source_url": "https://www.youtube.com/watch?v=_cMxraX_5RE",
         "license": "CC BY 4.0",
-        "source": "youtube_cc"
+        "source": "youtube_cc",
+        "context_tags": [
+          "horror",
+          "comedy",
+          "action",
+          "nature"
+        ]
       },
       "doa_1950": {
         "id": "doa_1950",
         "title": "D.O.A.",
-        "tagline": "A man walks into a police station to report a murder \u2014 his own. He has 24 hours to find his killer.",
-        "genre": "Crime \u00b7 Noir",
+        "tagline": "A man walks into a police station to report a murder — his own. He has 24 hours to find his killer.",
+        "genre": "Crime · Noir",
         "year": 1950,
         "duration_sec": 900,
         "color": "#1a1a1a",
@@ -508,13 +681,20 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/D.o.a.VideoQualityUpgrade/D.o.a.VideoQualityUpgrade.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "crime",
+          "noir",
+          "thriller",
+          "investigation",
+          "drama"
+        ]
       },
       "teenagers_outer_space": {
         "id": "teenagers_outer_space",
         "title": "Teenagers from Outer Space",
-        "tagline": "An alien fleet arrives on Earth to use it as a breeding ground \u2014 only one young alien dares to resist.",
-        "genre": "Sci-Fi \u00b7 Horror",
+        "tagline": "An alien fleet arrives on Earth to use it as a breeding ground — only one young alien dares to resist.",
+        "genre": "Sci-Fi · Horror",
         "year": 1959,
         "duration_sec": 5160,
         "color": "#0a1a0a",
@@ -524,13 +704,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/TeenagersFromOuterSpace_1959/TeenagersFromOuterSpace.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "sci-fi",
+          "horror",
+          "space",
+          "action"
+        ]
       },
       "little_shop_horrors": {
         "id": "little_shop_horrors",
         "title": "The Little Shop of Horrors",
-        "tagline": "A hapless florist's assistant nurtures a mysterious plant with an insatiable appetite \u2014 for human flesh.",
-        "genre": "Horror \u00b7 Comedy",
+        "tagline": "A hapless florist's assistant nurtures a mysterious plant with an insatiable appetite — for human flesh.",
+        "genre": "Horror · Comedy",
         "year": 1960,
         "duration_sec": 4320,
         "color": "#1a2a0a",
@@ -540,12 +726,17 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/the-little-shop-of-horrors-1960-colorized/The%20Little%20Shop%20Of%20Horrors%201960%20%28Colorized%29.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "horror",
+          "comedy",
+          "food"
+        ]
       },
       "pioneer_one": {
         "id": "pioneer_one",
         "title": "Pioneer One",
-        "tagline": "A spacecraft descends over Montana. Federal agents investigate \u2014 and find evidence of a Soviet space programme no one has ever heard of.",
+        "tagline": "A spacecraft descends over Montana. Federal agents investigate — and find evidence of a Soviet space programme no one has ever heard of.",
         "genre": "Sci-Fi Drama",
         "year": 2010,
         "duration_sec": 900,
@@ -556,13 +747,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/PioneerOneS01E01720pHD/Pioneer.One.S01E01.REFIX.720p.x264-VODO.mp4",
         "license": "CC BY-NC-SA 3.0",
-        "source": "archive_org_cc"
+        "source": "archive_org_cc",
+        "context_tags": [
+          "sci-fi",
+          "drama",
+          "investigation",
+          "technology"
+        ]
       },
       "captain_kidd": {
         "id": "captain_kidd",
         "title": "Captain Kidd",
         "tagline": "A treacherous pirate navigates plunder, betrayal, and a deadly game of wits on the high seas.",
-        "genre": "Action \u00b7 Adventure",
+        "genre": "Action · Adventure",
         "year": 1945,
         "duration_sec": 900,
         "color": "#1a2a3a",
@@ -572,13 +769,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/CaptainKidd1945/Captain%20Kidd%20(1945).mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "action",
+          "adventure",
+          "thriller"
+        ]
       },
       "jackie_robinson": {
         "id": "jackie_robinson",
         "title": "The Jackie Robinson Story",
-        "tagline": "The true story of baseball's first Black major-league player \u2014 told with Jackie Robinson playing himself.",
-        "genre": "Drama \u00b7 Sports",
+        "tagline": "The true story of baseball's first Black major-league player — told with Jackie Robinson playing himself.",
+        "genre": "Drama · Sports",
         "year": 1950,
         "duration_sec": 900,
         "color": "#1a1a3a",
@@ -588,13 +790,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/Jackie_Robinson_Story_The/jrs_512kb.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "sports",
+          "drama",
+          "documentary"
+        ]
       },
       "hemo_magnificent": {
         "id": "hemo_magnificent",
         "title": "Hemo the Magnificent",
         "tagline": "Frank Capra's Emmy-winning animated documentary follows a drop of blood on a journey through the human body.",
-        "genre": "Science \u00b7 Documentary",
+        "genre": "Science · Documentary",
         "year": 1957,
         "duration_sec": 900,
         "color": "#2a1a1a",
@@ -604,13 +811,18 @@
         "fallback_urls": [],
         "source_url": "https://www.youtube.com/watch?v=08QDu2pGtkc",
         "license": "public_domain",
-        "source": "youtube_pd"
+        "source": "youtube_pd",
+        "context_tags": [
+          "science",
+          "documentary",
+          "education"
+        ]
       },
       "unchained_goddess": {
         "id": "unchained_goddess",
         "title": "The Unchained Goddess",
-        "tagline": "Frank Capra's landmark science film on the mystery of weather \u2014 including an early on-screen warning about climate change.",
-        "genre": "Science \u00b7 Documentary",
+        "tagline": "Frank Capra's landmark science film on the mystery of weather — including an early on-screen warning about climate change.",
+        "genre": "Science · Documentary",
         "year": 1958,
         "duration_sec": 900,
         "color": "#1a2a3a",
@@ -620,12 +832,18 @@
         "fallback_urls": [],
         "source_url": "https://www.youtube.com/watch?v=sqClSPWVnNE",
         "license": "public_domain",
-        "source": "youtube_pd"
+        "source": "youtube_pd",
+        "context_tags": [
+          "science",
+          "documentary",
+          "nature",
+          "education"
+        ]
       },
       "his_girl_friday": {
         "id": "his_girl_friday",
         "title": "His Girl Friday",
-        "tagline": "A fast-talking editor will do anything to keep his star reporter \u2014 his ex-wife \u2014 from quitting for a quiet life.",
+        "tagline": "A fast-talking editor will do anything to keep his star reporter — his ex-wife — from quitting for a quiet life.",
         "genre": "Screwball Comedy",
         "year": 1940,
         "duration_sec": 900,
@@ -636,13 +854,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/his-girl-friday-1940_202109/His%20Girl%20Friday%20(1940).ia.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "comedy",
+          "drama",
+          "thriller"
+        ]
       },
       "jack_beanstalk": {
         "id": "jack_beanstalk",
         "title": "Jack and the Beanstalk",
-        "tagline": "Abbott and Costello in a slapstick retelling of the classic fairy tale \u2014 with songs, giants, and a magic beanstalk.",
-        "genre": "Family \u00b7 Comedy",
+        "tagline": "Abbott and Costello in a slapstick retelling of the classic fairy tale — with songs, giants, and a magic beanstalk.",
+        "genre": "Family · Comedy",
         "year": 1952,
         "duration_sec": 900,
         "color": "#1a3a2a",
@@ -652,13 +875,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/jack-and-the-beanstalk-1952-hd/Jack%20And%20The%20Beanstalk%201952%20HD.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "family",
+          "comedy",
+          "fantasy"
+        ]
       },
       "detour_1945": {
         "id": "detour_1945",
         "title": "Detour",
         "tagline": "A hitchhiker's fateful ride sets off a chain of fatal coincidences he cannot escape.",
-        "genre": "Crime \u00b7 Noir",
+        "genre": "Crime · Noir",
         "year": 1945,
         "duration_sec": 900,
         "color": "#1a1a1a",
@@ -668,13 +896,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/detour1945HD/Detour.1945.1080p.BluRay.x264-[YTS.AM].mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "crime",
+          "noir",
+          "thriller",
+          "drama"
+        ]
       },
       "suddenly_1954": {
         "id": "suddenly_1954",
         "title": "Suddenly",
-        "tagline": "A gang of assassins seizes a small-town house to set up a clean shot at the President \u2014 and one man stands between them and history.",
-        "genre": "Crime \u00b7 Thriller",
+        "tagline": "A gang of assassins seizes a small-town house to set up a clean shot at the President — and one man stands between them and history.",
+        "genre": "Crime · Thriller",
         "year": 1954,
         "duration_sec": 900,
         "color": "#1a1a2a",
@@ -684,13 +918,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/Suddenly_1954/Suddenly_1954.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "crime",
+          "thriller",
+          "drama",
+          "investigation"
+        ]
       },
       "blood_on_sun": {
         "id": "blood_on_sun",
         "title": "Blood on the Sun",
-        "tagline": "An American journalist in 1920s Tokyo stumbles onto Japan's secret plan for world domination \u2014 and must expose it before it's too late.",
-        "genre": "Action \u00b7 Thriller",
+        "tagline": "An American journalist in 1920s Tokyo stumbles onto Japan's secret plan for world domination — and must expose it before it's too late.",
+        "genre": "Action · Thriller",
         "year": 1945,
         "duration_sec": 900,
         "color": "#2a1a1a",
@@ -700,12 +940,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/BloodOnTheSun1945JAMESCAGNEY/Blood%20On%20The%20Sun%20(1945)%20JAMES%20CAGNEY.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "action",
+          "thriller",
+          "investigation",
+          "drama"
+        ]
       },
       "inspector_general": {
         "id": "inspector_general",
         "title": "The Inspector General",
-        "tagline": "Danny Kaye plays a bumbling medicine-show assistant mistaken for the feared Inspector General \u2014 and has to play along.",
+        "tagline": "Danny Kaye plays a bumbling medicine-show assistant mistaken for the feared Inspector General — and has to play along.",
         "genre": "Musical Comedy",
         "year": 1949,
         "duration_sec": 900,
@@ -716,13 +962,18 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/TheInspectorGeneral720p1949/TheInspectorGeneral720p.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "comedy",
+          "music",
+          "family"
+        ]
       },
       "jigsaw_1949": {
         "id": "jigsaw_1949",
         "title": "Jigsaw",
-        "tagline": "A crusading DA takes on a hate group \u2014 only to find they've planted a spy in his inner circle.",
-        "genre": "Crime \u00b7 Drama",
+        "tagline": "A crusading DA takes on a hate group — only to find they've planted a spy in his inner circle.",
+        "genre": "Crime · Drama",
         "year": 1949,
         "duration_sec": 900,
         "color": "#1a1a2a",
@@ -732,13 +983,19 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/Jigsaw720p1949/Jigsaw720p.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "crime",
+          "drama",
+          "investigation",
+          "thriller"
+        ]
       },
       "pied_piper": {
         "id": "pied_piper",
         "title": "The Pied Piper of Hamelin",
-        "tagline": "Van Johnson stars in this Technicolor adaptation of the classic tale of a magical piper who rids a town of rats \u2014 and what happens when the town refuses to pay.",
-        "genre": "Family \u00b7 Fantasy",
+        "tagline": "Van Johnson stars in this Technicolor adaptation of the classic tale of a magical piper who rids a town of rats — and what happens when the town refuses to pay.",
+        "genre": "Family · Fantasy",
         "year": 1957,
         "duration_sec": 900,
         "color": "#3a2a1a",
@@ -748,7 +1005,13 @@
         "fallback_urls": [],
         "source_url": "https://archive.org/download/The_Pied_Piper_of_Hamelin/pied_512kb.mp4",
         "license": "public_domain",
-        "source": "archive_org_pd"
+        "source": "archive_org_pd",
+        "context_tags": [
+          "family",
+          "fantasy",
+          "music",
+          "adventure"
+        ]
       }
     },
     "rows": [
@@ -816,7 +1079,7 @@
       }
     ]
   },
-  "_conditions_notes": "Each session is assigned one of four ad conditions (A0\u2013A3) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated, user_choice) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0\u20131.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 15-second spec is enforced regardless of the underlying asset length. The `user_choice` placement (A3) presents a three-button gate before playback; the chosen timing is re-dispatched to the existing preroll/midroll/postroll scheduling. `midroll_start_at_frac` sets where the midroll fires if midroll is chosen.",
+  "_conditions_notes": "Each session is assigned one of four ad conditions (A0–A3) per the pre-registered protocol. `condition_assignment_mode` controls how conditions are picked: 'fixed' uses `active_condition` for every session (use for development); 'random' picks uniformly from `random_pool` on session start. The query parameter ?cond=A2 overrides for testing and is logged so the experimenter can spot accidental overrides. The chosen condition's `ads` array is exposed to the client at cfg.ads, and the player schedules each placement (preroll, midroll, postroll, overlay, user_initiated, user_choice) declaratively. Mid-roll/overlay start times can use `start_at_frac` (fraction of content duration, 0.0–1.0) and `start_at_cap_sec` (absolute cap so very long clips still get a mid-roll relatively early); the smaller resolved value wins. `duration_target_sec` hard-caps an ad's playback length so the 15-second spec is enforced regardless of the underlying asset length. The `user_choice` placement (A3) presents a three-button gate before playback; the chosen timing is re-dispatched to the existing preroll/midroll/postroll scheduling. `midroll_start_at_frac` sets where the midroll fires if midroll is chosen.",
   "condition_assignment_mode": "balanced",
   "active_condition": "A0",
   "random_pool": [
@@ -848,7 +1111,7 @@
     },
     "A1": {
       "label": "Forced pre-roll",
-      "description": "A 15-second non-skippable ad plays before the video begins. Playback is blocked until the ad completes. Goal interruption is shallow \u2014 the viewer has not yet initiated the content-consumption goal.",
+      "description": "A 15-second non-skippable ad plays before the video begins. Playback is blocked until the ad completes. Goal interruption is shallow — the viewer has not yet initiated the content-consumption goal.",
       "ads": [
         {
           "placement": "preroll",
@@ -860,7 +1123,7 @@
     },
     "A2": {
       "label": "Forced mid-roll",
-      "description": "A 15-second non-skippable ad interrupts playback at the midpoint of the clip. Goal interruption is deep \u2014 the viewer's ongoing narrative comprehension is halted at peak engagement.",
+      "description": "A 15-second non-skippable ad interrupts playback at the midpoint of the clip. Goal interruption is deep — the viewer's ongoing narrative comprehension is halted at peak engagement.",
       "ads": [
         {
           "placement": "midroll",
@@ -877,7 +1140,11 @@
       "ads": [
         {
           "placement": "user_choice",
-          "choice_options": ["preroll", "midroll", "postroll"],
+          "choice_options": [
+            "preroll",
+            "midroll",
+            "postroll"
+          ],
           "midroll_start_at_frac": 0.5,
           "ad_relevance": "balanced",
           "duration_target_sec": 15,
@@ -885,10 +1152,10 @@
         }
       ]
     },
-    "_exp2_notes": "Experiment 2 \u2014 3\u00d72 between-subjects (Explanation type E0/E1/E2 \u00d7 Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Conditions B0\u2013B5 replace the ad library reference with the same creative used in Exp 1; update library_ref to your actual 15-second consumer-electronics creative before running the main study. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
+    "_exp2_notes": "Experiment 2 — 3×2 between-subjects (Explanation type E0/E1/E2 × Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Conditions B0–B5 replace the ad library reference with the same creative used in Exp 1; update library_ref to your actual 15-second consumer-electronics creative before running the main study. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
     "B0": {
       "label": "Exp2: No explanation, Mid-roll",
-      "description": "Forced mid-roll, no ad explanation (E0\u00d7P1). Control cell for Experiment 2.",
+      "description": "Forced mid-roll, no ad explanation (E0×P1). Control cell for Experiment 2.",
       "ads": [
         {
           "placement": "midroll",
@@ -904,7 +1171,7 @@
     },
     "B1": {
       "label": "Exp2: Content-based explanation, Mid-roll",
-      "description": "Forced mid-roll with content-based explanation (E1\u00d7P1). Banner reads 'Why this ad? This ad was selected based on what you watch on this platform.'",
+      "description": "Forced mid-roll with content-based explanation (E1×P1). Banner reads 'Why this ad? This ad was selected based on what you watch on this platform.'",
       "ads": [
         {
           "placement": "midroll",
@@ -923,7 +1190,7 @@
     },
     "B2": {
       "label": "Exp2: Data-based explanation, Mid-roll",
-      "description": "Forced mid-roll with data-based explanation (E2\u00d7P1). Banner reads 'Why this ad? This ad was selected based on your browsing history and demographic profile.'",
+      "description": "Forced mid-roll with data-based explanation (E2×P1). Banner reads 'Why this ad? This ad was selected based on your browsing history and demographic profile.'",
       "ads": [
         {
           "placement": "midroll",
@@ -942,7 +1209,7 @@
     },
     "B3": {
       "label": "Exp2: No explanation, User-initiated",
-      "description": "User-initiated placement, no ad explanation (E0\u00d7P2). Prompt appears at midpoint.",
+      "description": "User-initiated placement, no ad explanation (E0×P2). Prompt appears at midpoint.",
       "ads": [
         {
           "placement": "user_initiated",
@@ -960,7 +1227,7 @@
     },
     "B4": {
       "label": "Exp2: Content-based explanation, User-initiated",
-      "description": "User-initiated placement with content-based explanation (E1\u00d7P2). Explanation banner shown during the ad if viewer clicks.",
+      "description": "User-initiated placement with content-based explanation (E1×P2). Explanation banner shown during the ad if viewer clicks.",
       "ads": [
         {
           "placement": "user_initiated",
@@ -981,7 +1248,7 @@
     },
     "B5": {
       "label": "Exp2: Data-based explanation, User-initiated",
-      "description": "User-initiated placement with data-based explanation (E2\u00d7P2). Explanation banner shown during the ad if viewer clicks.",
+      "description": "User-initiated placement with data-based explanation (E2×P2). Explanation banner shown during the ad if viewer clicks.",
       "ads": [
         {
           "placement": "user_initiated",
@@ -1000,5 +1267,6 @@
         }
       ]
     }
-  }
+  },
+  "synthetic_ad_version": "v1"
 }

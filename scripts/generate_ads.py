@@ -153,25 +153,135 @@ def pulse_rings(draw, cx, cy, t, acc, period=1.6, n=3, max_r=220):
             draw.ellipse([cx - r, cy - r, cx + r, cy + r], outline=(*acc, a), width=2)
 
 
-def render_and_encode(frames_fn, ad_id):
+# ---------------------------------------------------------------------------
+# Global visual enhancements (applied in render_and_encode)
+# ---------------------------------------------------------------------------
+
+_VIGNETTE: "Image | None" = None
+
+
+def _build_vignette(strength: float = 0.62) -> "Image":
+    vig = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    px = vig.load()
+    for y in range(H):
+        for x in range(W):
+            dx = (x - W / 2) / (W / 2)
+            dy = (y - H / 2) / (H / 2)
+            d = min(math.sqrt(dx * dx + dy * dy), 1.4143) / 1.4143
+            a = int(255 * strength * d ** 2.4)
+            px[x, y] = (0, 0, 0, min(a, 255))
+    return vig
+
+
+def apply_vignette(img: "Image") -> "Image":
+    global _VIGNETTE
+    if _VIGNETTE is None:
+        print("  precomputing vignette …")
+        _VIGNETTE = _build_vignette()
+    return Image.alpha_composite(img.convert("RGBA"), _VIGNETTE)
+
+
+def apply_grain(img: "Image", fi: int, strength: int = 18) -> "Image":
+    grain = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    rng = random.Random(fi * 7919 + 31337)
+    px = grain.load()
+    for _ in range(2000):
+        gx = rng.randint(0, W - 1)
+        gy = rng.randint(0, H - 1)
+        a = rng.randint(3, strength)
+        v = rng.randint(160, 255)
+        px[gx, gy] = (v, v, v, a)
+    return Image.alpha_composite(img.convert("RGBA"), grain)
+
+
+def brand_badge(draw, char: str, cx: int, cy: int, acc, t_local: float) -> None:
+    r = 34
+    badge_a = clamp(ease_out(min(t_local / 1.5, 1.0)) * 190)
+    if badge_a < 5:
+        return
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                 fill=(*acc, badge_a // 3), outline=(*acc, badge_a), width=3)
+    fn = try_font(30)
+    text_center(draw, char, cx, cy, fn, (255, 255, 255, badge_a))
+
+
+def scan_sweep(draw, t: float, scene_start: float, acc, width: int = 55) -> None:
+    sweep_x = int(((t - scene_start) / 5.0) * W * 1.8 - W * 0.4)
+    for sx in range(max(0, sweep_x - width), min(W, sweep_x)):
+        a = int(28 * (1 - abs(sx - sweep_x) / width))
+        draw.line([(sx, 0), (sx, H)], fill=(*acc, a))
+
+
+def cta_glow(draw, cx: int, cy: int, t: float, acc) -> None:
+    pulse_rings(draw, cx, cy, t, acc, period=1.2, n=2, max_r=130)
+    shim_prog = ((t - 10) % 1.4) / 1.4
+    shim_x = int(cx - 200 + shim_prog * 420)
+    for sx in range(max(cx - 200, shim_x - 35), min(cx + 200, shim_x + 1)):
+        a = int(45 * (1 - abs(sx - shim_x) / 35))
+        draw.line([(sx, cy - 32), (sx, cy + 32)], fill=(255, 255, 255, a))
+
+
+def render_and_encode(frames_fn, ad_id: str,
+                      accent=(100, 160, 255), brand_char: str = "A",
+                      category: str = "") -> None:
     tmp = tempfile.mkdtemp(prefix=f"ad_{ad_id}_")
     try:
         print(f"  rendering {TOTAL_FRAMES} frames …")
         for fi in range(TOTAL_FRAMES):
             t = fi / FPS
             img = frames_fn(fi, t)
+
+            # ── global enhancements ──────────────────────────────────────────
+            img = apply_grain(img, fi)
+            img = apply_vignette(img)
+
+            # Breathing accent tint (very subtle, 0–10 alpha)
+            breath_a = int(5 + 5 * math.sin(t * 0.45))
+            tint = Image.new("RGBA", (W, H), (*accent, breath_a))
+            img = Image.alpha_composite(img.convert("RGBA"), tint)
+
+            # Scene-2 horizontal scan sweep (t 5–10)
+            if 5.0 <= t < 10.0:
+                sw_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                scan_sweep(ImageDraw.Draw(sw_ov), t, 5.0, accent)
+                img = Image.alpha_composite(img.convert("RGBA"), sw_ov)
+
+            # Badge + CTA glow overlay (scenes 2 & 3)
+            if t >= 5.0:
+                badge_ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+                bd = ImageDraw.Draw(badge_ov)
+                brand_badge(bd, brand_char, W - 72, 58, accent, t - 5.0)
+                if t >= 10.0:
+                    cta_glow(bd, W // 2, H - 82, t, accent)
+                img = Image.alpha_composite(img.convert("RGBA"), badge_ov)
+            # ────────────────────────────────────────────────────────────────
+
             img.convert("RGB").save(os.path.join(tmp, f"f{fi:04d}.png"))
+
+        # Audio
+        audio_path = None
+        if category:
+            try:
+                import sys as _sys
+                _sys.path.insert(0, os.path.dirname(__file__))
+                from ad_audio import synthesize_audio, write_wav, SAMPLE_RATE
+                print("  synthesizing audio …")
+                samples = synthesize_audio(category, DURATION)
+                audio_path = os.path.join(tmp, "audio.wav")
+                write_wav(samples, SAMPLE_RATE, audio_path)
+            except Exception as exc:
+                print(f"  audio skipped ({exc})")
+                audio_path = None
+
         out_path = os.path.join(OUT_DIR, f"{ad_id}.mp4")
-        cmd = [
-            "ffmpeg", "-y",
-            "-framerate", str(FPS),
-            "-i", os.path.join(tmp, "f%04d.png"),
-            "-c:v", "libx264",
-            "-pix_fmt", "yuv420p",
-            "-crf", "22",
-            "-movflags", "+faststart",
-            out_path,
-        ]
+        cmd = ["ffmpeg", "-y", "-framerate", str(FPS),
+               "-i", os.path.join(tmp, "f%04d.png")]
+        if audio_path:
+            cmd += ["-i", audio_path]
+        cmd += ["-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "22"]
+        if audio_path:
+            cmd += ["-c:a", "aac", "-b:a", "128k"]
+        cmd += ["-movflags", "+faststart", out_path]
         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         print(f"  → {out_path}")
     finally:
@@ -2161,27 +2271,28 @@ def casefile_frame(fi, t):
 
 
 ADS = [
+    # (ad_id, frame_fn, accent_rgb, brand_initial, category)
     # thrill_seeker
-    ("ad_thrill_energyblast", energyblast_frame),
-    ("ad_thrill_battlecast", battlecast_frame),
-    ("ad_thrill_rushzone", rushzone_frame),
+    ("ad_thrill_energyblast", energyblast_frame, (255, 40, 60),   "E", "thrill_seeker"),
+    ("ad_thrill_battlecast",  battlecast_frame,  (0, 220, 200),   "B", "thrill_seeker"),
+    ("ad_thrill_rushzone",    rushzone_frame,    (255, 90, 0),    "R", "thrill_seeker"),
     # intellectual_explorer
-    ("ad_intel_mindspan", mindspan_frame),
-    ("ad_intel_wanderscout", wanderscout_frame),
-    ("ad_intel_staratlas", staratlas_frame),
+    ("ad_intel_mindspan",     mindspan_frame,    (255, 185, 30),  "M", "intellectual_explorer"),
+    ("ad_intel_wanderscout",  wanderscout_frame, (40, 200, 140),  "W", "intellectual_explorer"),
+    ("ad_intel_staratlas",    staratlas_frame,   (140, 200, 255), "S", "intellectual_explorer"),
     # content_chameleon
-    ("ad_chame_comfyhome", comfyhome_frame),
-    ("ad_chame_funstream", funstream_frame),
-    ("ad_chame_petpals", petpals_frame),
+    ("ad_chame_comfyhome",    comfyhome_frame,   (74, 140, 90),   "C", "content_chameleon"),
+    ("ad_chame_funstream",    funstream_frame,   (255, 100, 65),  "F", "content_chameleon"),
+    ("ad_chame_petpals",      petpals_frame,     (255, 165, 35),  "P", "content_chameleon"),
     # investigative_viewer
-    ("ad_invest_trueview", trueview_frame),
-    ("ad_invest_newsdesk", newsdesk_frame),
-    ("ad_invest_casefile", casefile_frame),
+    ("ad_invest_trueview",    trueview_frame,    (180, 20, 30),   "T", "investigative_viewer"),
+    ("ad_invest_newsdesk",    newsdesk_frame,    (0, 80, 180),    "N", "investigative_viewer"),
+    ("ad_invest_casefile",    casefile_frame,    (200, 20, 30),   "C", "investigative_viewer"),
 ]
 
 if __name__ == "__main__":
     os.makedirs(OUT_DIR, exist_ok=True)
-    for ad_id, fn in ADS:
+    for ad_id, fn, accent, brand_char, category in ADS:
         print(f"\n=== {ad_id} ===")
-        render_and_encode(fn, ad_id)
+        render_and_encode(fn, ad_id, accent=accent, brand_char=brand_char, category=category)
     print("\nDone.")

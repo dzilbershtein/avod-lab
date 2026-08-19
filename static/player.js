@@ -108,11 +108,33 @@
     }
     const lib = ((window.experiment.cfg._ad_library || {}).ads || []);
     const titleCat = (title && title.relevant_ad_category) || null;
-    const synthetic = lib.filter((a) => a.source === "synthetic");
+    const adVersion = window.experiment.cfg.synthetic_ad_version || "v1";
+    const adSource = adVersion === "v3" ? "synthetic_v3"
+                   : adVersion === "v2" ? "synthetic_v2"
+                   : "synthetic";
+    const synthetic = lib.filter((a) => a.source === adSource);
     let pool = relevance === "relevant"
       ? synthetic.filter((a) => a.category === titleCat)
       : synthetic.filter((a) => a.category !== titleCat);
     if (pool.length === 0) pool = synthetic; // fallback: any synthetic ad
+
+    // For relevant ads: sort pool by tag overlap with the video, then rotate
+    // among the top-3 so participants get variety without losing relevance.
+    if (relevance === "relevant") {
+      const videoTags = (title && title.context_tags) || [];
+      if (videoTags.length > 0) {
+        const videoSet = new Set(videoTags);
+        pool = pool.slice().sort((a, b) => {
+          const simA = (a.context_tags || []).filter(t => videoSet.has(t)).length /
+                       (new Set([...videoTags, ...(a.context_tags || [])]).size || 1);
+          const simB = (b.context_tags || []).filter(t => videoSet.has(t)).length /
+                       (new Set([...videoTags, ...(b.context_tags || [])]).size || 1);
+          return simB - simA;
+        });
+        pool = pool.slice(0, 3); // keep top-3 matches for rotation
+      }
+    }
+
     const entry = pool[(sessionCreativeOffset + sessionVideoCount) % pool.length];
     const resolved = {
       id: entry.id,
