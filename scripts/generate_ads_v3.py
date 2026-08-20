@@ -692,7 +692,6 @@ def torque_frame(fi, t):
         for _ in range(300):
             gx = rng.randint(0, W)
             gy = rng.randint(0, H)
-            draw.ellipse = d.ellipse
             d.ellipse([gx - 1, gy - 1, gx + 1, gy + 1],
                       fill=(80, 40, 10, 25))
         draw_speedometer(d, int(W * 0.68), H // 2, 70, acc, 220, needle_pos * 0.8)
