@@ -148,10 +148,11 @@
       effective_relevance: relevance,  // logged in ad_start payload
     };
     // Slot-level fields (placement, timing, banner, duration_target_sec, etc.) override.
-    // If the slot has no banner but the library entry has a default_banner, apply it.
+    // If the slot has no banner, store the library default_banner text but keep show: false
+    // so banners only appear when the slot config explicitly enables them (e.g. Exp 2 B conditions).
     if (!slot.banner && entry.default_banner) {
       resolved.banner = {
-        show: true,
+        show: false,
         text: entry.default_banner,
         show_at_ad_sec: 0,
         hide_at_ad_sec: entry.duration_sec || 12,
