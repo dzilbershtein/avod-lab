@@ -197,7 +197,7 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | # | Step | What to verify |
 |---|------|----------------|
 | 1 | Intro screen loads | Study title and intro text visible; "Begin" button present |
-| 2 | Click **Begin** | Pre-survey appears; page counter shows "1 / 3" |
+| 2 | Click **Begin** | Pre-survey appears; consent form shown first; page counter shows "1 / 4" |
 | 3 | Complete **Demographics** page | Age, gender, VOD frequency — all required; "Next" blocked if any missing |
 | 4 | Complete **Persuasion knowledge** page | 3 × 7-point Likert items |
 | 5 | Complete **Privacy concern** page | 9 × IUIPC items (3 per subscale) + 1 attention check (select "Agree" = 6) |
@@ -290,9 +290,23 @@ Events logged per session:
 
 The full battery is implemented in [`static/survey.js`](static/survey.js). Items are rendered in-browser; responses are logged as `survey_page` events.
 
-### Pre-exposure battery (3 pages)
+### Pre-exposure battery (4 pages)
 
-**Page 1 — Demographics**
+**Page 1 — Informed consent**
+
+Six required checkboxes and one optional checkbox. All required items must be ticked before the participant can advance. Responses are logged as `true`/`false`.
+
+| Item ID | Required | Statement |
+|---------|----------|-----------|
+| `consent_read` | Yes | I confirm that I have read and understood the information letter for this study (Version 1.0) … |
+| `consent_age` | Yes | I am at least 18 years of age. |
+| `consent_voluntary` | Yes | I understand that my participation is voluntary … |
+| `consent_data` | Yes | I consent to the collection and processing of the data … |
+| `consent_deletion` | Yes | I understand that I may request deletion of my data within 14 days … |
+| `consent_publication` | Yes | I consent to the anonymous publication of the research results … |
+| `consent_summary` | No | I would like to receive a plain-language summary of the research results … |
+
+**Page 2 — Demographics**
 
 | Item ID | Question | Type |
 |---------|----------|------|
@@ -300,7 +314,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 | `gender` | Gender | Radio (4 options) |
 | `vod_freq` | How often do you watch ad-supported streaming? | Radio (5 options) |
 
-**Page 2 — Persuasion knowledge**
+**Page 3 — Persuasion knowledge**
 *(Friestad & Wright 1994; Jung et al. 2019; 1 = Strongly disagree, 7 = Strongly agree)*
 
 | Item ID | Statement |
@@ -309,7 +323,7 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 | `pk_2` | When I see an ad, I can tell it is designed to persuade me. |
 | `pk_3` | I understand the techniques that advertisers use to influence people. |
 
-**Page 3 — Privacy concern / IUIPC**
+**Page 4 — Privacy concern / IUIPC**
 *(Malhotra et al. 2004; 3 items per subscale; 1 = Strongly disagree, 7 = Strongly agree)*
 
 | Item ID | Subscale | Statement |
