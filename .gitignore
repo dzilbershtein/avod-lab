@@ -13,6 +13,10 @@ data/*.sqlite
 # Generated synthetic ad videos — regenerate with scripts/generate_ads.py
 static/ads/*.mp4
 
+# Downloaded / trimmed content videos — regenerate with scripts/download_all.py / trim_content.py
+static/content/*.mp4
+static/content_short/*.mp4
+
 # OS
 .DS_Store
 

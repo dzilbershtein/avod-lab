@@ -46,6 +46,16 @@ python scripts/download_all.py --force    # re-download even if file exists
 
 `download_all.py` reads `source_url` from `config/experiment.json` and `config/ad_library.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**; ads are trimmed to **15 seconds**.
 
+To create shorter (≤11 min) copies without touching the originals:
+
+```bash
+python scripts/trim_content.py            # trim all active titles → static/content_short/
+python scripts/trim_content.py --force    # re-trim even if output exists
+python scripts/trim_content.py --trim-sec 600  # custom cap
+```
+
+Then switch `"content_version"` in `config/experiment.json` from `"full"` to `"short"`. The player will serve from `static/content_short/`; the full 15-min files in `static/content/` are preserved.
+
 ### Content catalogue
 
 All clips are 10–15 minutes. Titles under 10 min have been retired.
@@ -484,6 +494,7 @@ avod-lab/
     ├── generate_ads_v3.py      v3 — 12 synthetic ads designed for this content library (recommended)
     ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by all ad generators
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
+    ├── trim_content.py         Creates ≤11 min copies in static/content_short/ (originals untouched)
     ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
     └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
 ```

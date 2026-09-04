@@ -248,7 +248,13 @@
     const { cfg, Session } = window.experiment;
 
     // Build the URL chain: primary + fallbacks.
-    content._urlChain = [title.video_url, ...(title.fallback_urls || [])].filter(Boolean);
+    // When content_version is "short" the server serves trimmed (≤11 min) copies
+    // from /static/content_short/ instead of the full 15-min originals.
+    let primaryUrl = title.video_url || "";
+    if ((cfg.content_version || "full") === "short") {
+      primaryUrl = primaryUrl.replace("/static/content/", "/static/content_short/");
+    }
+    content._urlChain = [primaryUrl, ...(title.fallback_urls || [])].filter(Boolean);
     content._urlIndex = 0;
     loadCurrentContentUrl();
     content.classList.remove("hidden");
