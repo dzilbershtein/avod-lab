@@ -620,6 +620,39 @@ button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2p
   flex-shrink: 0;
 }
 
+/* ── Consent checkboxes ── */
+.checkbox-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.checkbox-option:last-child {
+  border-bottom: none;
+}
+.checkbox-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.checkbox-optional {
+  opacity: 0.72;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255,255,255,0.12);
+  border-bottom: none;
+}
+.survey-item.missing .checkbox-option {
+  color: #ff6b6b;
+}
+
 /* ── Number input ── */
 .number-input {
   display: block;

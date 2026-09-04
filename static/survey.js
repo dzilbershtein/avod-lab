@@ -21,6 +21,7 @@
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
+ *   Consent form             : 6 required + 1 optional checkbox (page 0 of pre-survey)
  *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
  *   Skip intention           : 1 item
  *   Perceived control        : 5-point item, A3 manipulation check only
@@ -32,10 +33,12 @@
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
-  const L7  = (id, label, extra = {}) => ({ id, type: "likert7", label, ...extra });
-  const L5  = (id, label)             => ({ id, type: "likert5", label });
-  const RDO = (id, label, options)    => ({ id, type: "radio",   label, options });
-  const SD  = (id, left, right, grp)  => ({ id, type: "semdiff", left, right, _group: grp || null });
+  const L7  = (id, label, extra = {}) => ({ id, type: "likert7",  label, ...extra });
+  const L5  = (id, label)             => ({ id, type: "likert5",  label });
+  const RDO = (id, label, options)    => ({ id, type: "radio",    label, options });
+  const SD  = (id, left, right, grp)  => ({ id, type: "semdiff",  left, right, _group: grp || null });
+  const CHK = (id, label)             => ({ id, type: "checkbox", label, _required: true });
+  const CHK_OPT = (id, label)         => ({ id, type: "checkbox", label, _required: false });
   const ATT = (id, correct)           => L7(id,
     `Attention check — please select "${LABELS7[correct - 1]}" (${correct}) to confirm you are reading carefully.`,
     { _attn: true, _correct: correct });
@@ -48,6 +51,27 @@
   // ── Pre-survey pages ────────────────────────────────────────────────────────
 
   const PRE_PAGES = [
+    {
+      id: "consent",
+      title: "Statement of Consent",
+      intro: "Designing Tolerable Ad Breaks: Placement, Relevance, and Explanatory Transparency in Ad-Supported Video Streaming · Maastricht University\n\nBefore participating, please confirm each of the following items by ticking the corresponding box. You will not be able to continue to the study until all required items are ticked.",
+      items: [
+        CHK("consent_read",
+          "I confirm that I have read and understood the information letter for this study (Version 1.0) and have had the opportunity to consider whether to participate."),
+        CHK("consent_age",
+          "I am at least 18 years of age."),
+        CHK("consent_voluntary",
+          "I understand that my participation is voluntary, and that I am free to withdraw at any time during the session by closing the browser tab, without giving a reason and without penalty."),
+        CHK("consent_data",
+          "I consent to the collection and processing of the data described in the information letter (my responses to the questionnaire and a record of my interactions with the streaming simulator), under the conditions described."),
+        CHK("consent_deletion",
+          "I understand that I may request deletion of my data within 14 days of participation by emailing the principal investigator, after which deletion is no longer technically possible."),
+        CHK("consent_publication",
+          "I consent to the anonymous publication of the research results, including possible deposit of fully anonymous data in a public scientific repository under a Creative Commons CC-BY 4.0 licence."),
+        CHK_OPT("consent_summary",
+          "I would like to receive a plain-language summary of the research results when they become available. (If ticked, you will be asked on the debriefing screen for an email address or Prolific opt-in.)"),
+      ],
+    },
     {
       id: "demographics",
       title: "Background questions",
@@ -268,6 +292,19 @@
       return wrap;
     }
 
+    if (item.type === "checkbox") {
+      const lbl = el("label", "checkbox-option" + (item._required ? "" : " checkbox-optional"));
+      const inp = document.createElement("input");
+      inp.type  = "checkbox";
+      inp.name  = item.id;
+      inp.id    = item.id;
+      if (responses[item.id] === true) inp.checked = true;
+      lbl.appendChild(inp);
+      lbl.appendChild(el("span", null, item.label));
+      wrap.appendChild(lbl);
+      return wrap;
+    }
+
     if (item.type === "radio") {
       wrap.appendChild(el("p", "survey-item-label", item.label));
       const opts = el("div", "radio-options");
@@ -293,6 +330,11 @@
 
   function collectPage(container, page, responses) {
     for (const item of page.items) {
+      if (item.type === "checkbox") {
+        const cb = container.querySelector(`input[name="${item.id}"]`);
+        if (cb) responses[item.id] = cb.checked;
+        continue;
+      }
       const checked = container.querySelector(`input[name="${item.id}"]:checked`);
       if (checked) {
         responses[item.id] = (item.type === "semdiff" ||
@@ -306,7 +348,10 @@
   function validatePage(container, page, responses) {
     const missing = [];
     for (const item of page.items) {
-      if (responses[item.id] == null) {
+      const isMissing = item.type === "checkbox"
+        ? (item._required && responses[item.id] !== true)
+        : (responses[item.id] == null);
+      if (isMissing) {
         missing.push(item.id);
         container.querySelector(`.survey-item[data-id="${item.id}"]`)
           ?.classList.add("missing");
