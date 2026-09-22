@@ -482,6 +482,69 @@ def admin_session(sid: str):
     )
 
 
+@app.get("/admin/export_surveys.csv")
+def admin_export_surveys_csv():
+    """One row per session with all survey answers as columns."""
+    _require_admin()
+    db = get_db()
+    sessions = db.execute(
+        "SELECT id, condition, ad_relevance_arm, condition_label, ts_created "
+        "FROM sessions ORDER BY ts_created ASC"
+    ).fetchall()
+
+    # Collect all survey payloads per session
+    survey_rows: dict[str, dict] = {}
+    for s in sessions:
+        sid = s["id"]
+        survey_rows[sid] = {
+            "session_id": sid,
+            "condition": s["condition"],
+            "ad_relevance_arm": s["ad_relevance_arm"],
+            "condition_label": s["condition_label"],
+            "ts_created": s["ts_created"],
+        }
+
+    events = db.execute(
+        "SELECT session_id, kind, payload FROM events "
+        "WHERE kind IN ('survey_submit','pre_survey_submit','post_survey_submit') "
+        "ORDER BY id ASC"
+    ).fetchall()
+
+    for ev in events:
+        sid = ev["session_id"]
+        if sid not in survey_rows:
+            continue
+        try:
+            data = json.loads(ev["payload"])
+            responses = data.get("responses", data)
+            if isinstance(responses, dict):
+                for k, v in responses.items():
+                    survey_rows[sid][k] = v
+        except (json.JSONDecodeError, AttributeError):
+            pass
+
+    if not survey_rows:
+        return Response("session_id\n", mimetype="text/csv",
+                        headers={"Content-Disposition": "attachment; filename=surveys.csv"})
+
+    # Build consistent column order: meta cols first, then all answer keys sorted
+    meta_cols = ["session_id", "condition", "ad_relevance_arm", "condition_label", "ts_created"]
+    answer_keys = sorted({k for row in survey_rows.values() for k in row if k not in meta_cols})
+    all_cols = meta_cols + answer_keys
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(all_cols)
+    for row in survey_rows.values():
+        writer.writerow([row.get(c, "") for c in all_cols])
+
+    return Response(
+        buf.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=surveys.csv"},
+    )
+
+
 @app.get("/admin/export.csv")
 def admin_export_csv():
     _require_admin()
