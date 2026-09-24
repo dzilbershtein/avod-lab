@@ -266,11 +266,17 @@ To verify ad relevance assignment, check the CSV export: the `ad_start` event fo
 
 ### 6. CSV export and event schema
 
+Two exports are available from the admin panel:
+
+| Link | URL | Contents |
+|---|---|---|
+| Download participants (CSV) | `/admin/export_participants.csv` | **One row per session** — condition, arm, behavioural columns (`title_watched`, `ad_id_shown`, `ad_skipped`, `watch_duration_sec`, `ad_view_duration_sec`) and all survey answers as flat columns. Ready for analysis without joins. |
+| Download raw events (CSV) | `/admin/export.csv` | One row per event — `session_id`, `condition`, `kind`, `payload` (JSON). Full audit trail. |
+
 ```
+http://localhost:8000/admin/export_participants.csv?token=dev-admin-token
 http://localhost:8000/admin/export.csv?token=dev-admin-token
 ```
-
-Key columns: `session_id`, `condition` (e.g. `A2`), `condition_label`, `ts_server`, `ts_client`, `kind`, `payload` (JSON).
 
 The `sessions` table also has an `ad_relevance_arm` column (`"relevant"` or `"irrelevant"`) that records the balanced assignment for Experiment 1.
 

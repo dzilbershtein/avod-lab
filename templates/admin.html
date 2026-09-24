@@ -35,9 +35,9 @@
     <header class="admin-header" style="margin-bottom:24px;">
       <h1 style="margin:0 0 6px;">AVOD-Lab — Admin</h1>
       <p style="margin:0;">
-        <a href="{{ url_for('admin_export_surveys_csv', token=token) }}">Download survey responses (CSV)</a>
+        <a href="{{ url_for('admin_export_participants_csv', token=token) }}">Download participants (CSV)</a>
         &nbsp;·&nbsp;
-        <a href="{{ url_for('admin_export_csv', token=token) }}">Download all events (CSV)</a>
+        <a href="{{ url_for('admin_export_csv', token=token) }}">Download raw events (CSV)</a>
       </p>
     </header>
 

@@ -482,9 +482,9 @@ def admin_session(sid: str):
     )
 
 
-@app.get("/admin/export_surveys.csv")
-def admin_export_surveys_csv():
-    """One row per session with all survey answers as columns."""
+@app.get("/admin/export_participants.csv")
+def admin_export_participants_csv():
+    """One row per session: metadata + key behavioural columns + all survey answers."""
     _require_admin()
     db = get_db()
     sessions = db.execute(
@@ -492,56 +492,74 @@ def admin_export_surveys_csv():
         "FROM sessions ORDER BY ts_created ASC"
     ).fetchall()
 
-    # Collect all survey payloads per session
-    survey_rows: dict[str, dict] = {}
+    rows: dict[str, dict] = {}
     for s in sessions:
         sid = s["id"]
-        survey_rows[sid] = {
+        rows[sid] = {
             "session_id": sid,
             "condition": s["condition"],
             "ad_relevance_arm": s["ad_relevance_arm"],
             "condition_label": s["condition_label"],
             "ts_created": s["ts_created"],
+            # behavioural columns filled below
+            "title_watched": "",
+            "ad_id_shown": "",
+            "ad_skipped": "",
+            "watch_duration_sec": "",
+            "ad_view_duration_sec": "",
         }
 
     events = db.execute(
-        "SELECT session_id, kind, payload FROM events "
-        "WHERE kind IN ('survey_submit','pre_survey_submit','post_survey_submit') "
-        "ORDER BY id ASC"
+        "SELECT session_id, kind, payload FROM events ORDER BY id ASC"
     ).fetchall()
 
     for ev in events:
         sid = ev["session_id"]
-        if sid not in survey_rows:
+        if sid not in rows:
             continue
+        kind = ev["kind"]
         try:
             data = json.loads(ev["payload"])
-            responses = data.get("responses", data)
+        except (json.JSONDecodeError, TypeError):
+            data = {}
+
+        if kind == "watch_start":
+            rows[sid]["title_watched"] = data.get("title_id", "")
+        elif kind == "watch_end":
+            rows[sid]["watch_duration_sec"] = data.get("elapsed_sec", "")
+        elif kind == "ad_start":
+            rows[sid]["ad_id_shown"] = data.get("ad_id", "")
+            rows[sid]["ad_skipped"] = False
+        elif kind == "ad_end":
+            rows[sid]["ad_view_duration_sec"] = data.get("elapsed_sec", "")
+        elif kind == "ad_prompt_declined":
+            rows[sid]["ad_skipped"] = True
+        elif kind == "survey_complete":
+            responses = data.get("all_responses", data.get("responses", {}))
             if isinstance(responses, dict):
                 for k, v in responses.items():
-                    survey_rows[sid][k] = v
-        except (json.JSONDecodeError, AttributeError):
-            pass
+                    rows[sid][k] = v
 
-    if not survey_rows:
+    if not rows:
         return Response("session_id\n", mimetype="text/csv",
-                        headers={"Content-Disposition": "attachment; filename=surveys.csv"})
+                        headers={"Content-Disposition": "attachment; filename=participants.csv"})
 
-    # Build consistent column order: meta cols first, then all answer keys sorted
-    meta_cols = ["session_id", "condition", "ad_relevance_arm", "condition_label", "ts_created"]
-    answer_keys = sorted({k for row in survey_rows.values() for k in row if k not in meta_cols})
-    all_cols = meta_cols + answer_keys
+    meta_cols = ["session_id", "condition", "ad_relevance_arm", "condition_label",
+                 "ts_created", "title_watched", "ad_id_shown", "ad_skipped",
+                 "watch_duration_sec", "ad_view_duration_sec"]
+    survey_keys = sorted({k for row in rows.values() for k in row if k not in meta_cols})
+    all_cols = meta_cols + survey_keys
 
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(all_cols)
-    for row in survey_rows.values():
+    for row in rows.values():
         writer.writerow([row.get(c, "") for c in all_cols])
 
     return Response(
         buf.getvalue(),
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=surveys.csv"},
+        headers={"Content-Disposition": "attachment; filename=participants.csv"},
     )
 
 
