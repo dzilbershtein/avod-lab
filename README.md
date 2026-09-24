@@ -12,6 +12,12 @@ pip install -r requirements.txt
 python app.py          # starts on http://localhost:8000
 ```
 
+To generate synthetic ads you also need Pillow (not required to run the server):
+
+```bash
+pip install Pillow
+```
+
 Admin panel (session list, cell balance, CSV export):
 
 ```
@@ -221,7 +227,7 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 10 | Complete **Intrusiveness** page | 7 × 7-point items |
 | 11 | Complete **Irritation** page | 5 × 7-point items |
 | 12 | Complete **Attitudes** page | Satisfaction + 3 ad-attitude + 3 platform-attitude semantic differentials |
-| 13 | Complete **Skip intention** page | Skip item + attention check (select "Somewhat agree" = 5) |
+| 13 | Complete **Perceived fit + skip intention** page | `rel_1`–`rel_3` (ad-content fit) + skip item + attention check (select "Somewhat agree" = 5) |
 | 14 | Complete **Manipulation checks** page | A3: control item; all: ad-seen + prior-exposure |
 | 15 | Click **Submit** | Debriefing screen appears |
 | 16 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
@@ -480,7 +486,7 @@ avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── config/
 │   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
-│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 12 synthetic ads (3 per category)
+│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 36 synthetic ads (12 per version × v1/v2/v3)
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
@@ -488,7 +494,9 @@ avod-lab/
 │   ├── browse.js               Catalogue / hero rendering
 │   ├── player.js               Video + ad scheduler + viewer-profile ad selection
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads.py)
-│   ├── content/                Content MP4s (gitignored — run download_all.py)
+│   ├── content/                Content MP4s, full length (gitignored — run download_all.py)
+│   ├── content_short/          Content MP4s, ≤11 min (gitignored — run trim_content.py)
+│   ├── posters/                Film poster JPEGs (committed; run download_posters.py to refresh)
 │   └── style.css               Dark-theme UI + survey form styles
 ├── templates/
 │   ├── index.html              Participant page (intro → surveys → browse → player)
@@ -501,6 +509,7 @@ avod-lab/
     ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by all ad generators
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
     ├── trim_content.py         Creates ≤11 min copies in static/content_short/ (originals untouched)
+    ├── download_posters.py     Fetches film poster JPEGs into static/posters/
     ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
     └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
 ```
