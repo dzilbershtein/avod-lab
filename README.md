@@ -52,7 +52,7 @@ python scripts/download_all.py --force    # re-download even if file exists
 
 `download_all.py` reads `source_url` from `config/experiment.json` and `config/ad_library.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**; ads are trimmed to **15 seconds**.
 
-To create shorter (≤11 min) copies without touching the originals:
+`"content_version"` in `config/experiment.json` is set to `"short"` by default — the player serves ≤11 min copies from `static/content_short/`. These are **not** created by `download_all.py`; generate them separately:
 
 ```bash
 python scripts/trim_content.py            # trim all active titles → static/content_short/
@@ -60,7 +60,7 @@ python scripts/trim_content.py --force    # re-trim even if output exists
 python scripts/trim_content.py --trim-sec 600  # custom cap
 ```
 
-Then switch `"content_version"` in `config/experiment.json` from `"full"` to `"short"`. The player will serve from `static/content_short/`; the full 15-min files in `static/content/` are preserved.
+The full 15-min files in `static/content/` are still downloaded by `download_all.py` and are left untouched. Set `"content_version"` back to `"full"` to serve those instead.
 
 ### Content catalogue
 
