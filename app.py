@@ -488,8 +488,8 @@ def admin_export_participants_csv():
     _require_admin()
     db = get_db()
     sessions = db.execute(
-        "SELECT id, condition, ad_relevance_arm, condition_label, ts_created "
-        "FROM sessions ORDER BY ts_created ASC"
+        "SELECT id, condition, ad_relevance_arm, condition_label, created_at "
+        "FROM sessions ORDER BY created_at ASC"
     ).fetchall()
 
     rows: dict[str, dict] = {}
@@ -500,7 +500,7 @@ def admin_export_participants_csv():
             "condition": s["condition"],
             "ad_relevance_arm": s["ad_relevance_arm"],
             "condition_label": s["condition_label"],
-            "ts_created": s["ts_created"],
+            "created_at": s["created_at"],
             # behavioural columns filled below
             "title_watched": "",
             "ad_id_shown": "",
@@ -526,12 +526,12 @@ def admin_export_participants_csv():
         if kind == "watch_start":
             rows[sid]["title_watched"] = data.get("title_id", "")
         elif kind == "watch_end":
-            rows[sid]["watch_duration_sec"] = data.get("elapsed_sec", "")
+            rows[sid]["watch_duration_sec"] = data.get("t_content", "")
         elif kind == "ad_start":
             rows[sid]["ad_id_shown"] = data.get("ad_id", "")
             rows[sid]["ad_skipped"] = False
         elif kind == "ad_end":
-            rows[sid]["ad_view_duration_sec"] = data.get("elapsed_sec", "")
+            rows[sid]["ad_view_duration_sec"] = data.get("t_ad", "")
         elif kind == "ad_prompt_declined":
             rows[sid]["ad_skipped"] = True
         elif kind == "survey_complete":
@@ -545,7 +545,7 @@ def admin_export_participants_csv():
                         headers={"Content-Disposition": "attachment; filename=participants.csv"})
 
     meta_cols = ["session_id", "condition", "ad_relevance_arm", "condition_label",
-                 "ts_created", "title_watched", "ad_id_shown", "ad_skipped",
+                 "created_at", "title_watched", "ad_id_shown", "ad_skipped",
                  "watch_duration_sec", "ad_view_duration_sec"]
     survey_keys = sorted({k for row in rows.values() for k in row if k not in meta_cols})
     all_cols = meta_cols + survey_keys
