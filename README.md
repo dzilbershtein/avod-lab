@@ -145,7 +145,7 @@ The slot is re-dispatched into the same machinery used by A0–A2:
 | In the middle | `{ ...slot, placement: "midroll", start_at_frac: 0.5 }` pushed to queue → `playContent()` → pauses at 50% |
 | After the video | `postroll = { ...slot, placement: "postroll" }` → `playContent()` → ad on `content_ended` |
 
-**4 — Post-survey.** Identical to A0–A2 plus one additional item on page 5: `manip_control` — *"To what extent did you feel in control of when the ad played?"* (5-point scale, A3 only).
+**4 — Post-survey.** Identical to A0–A2. Page 5 includes `ctrl_1`–`ctrl_3` (perceived control, 7-point Likert) in all conditions — A3 is expected to score higher on this index than A0–A2, since the timing gate gives participants an actual choice.
 
 ### Condition and relevance assignment
 
