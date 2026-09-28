@@ -228,7 +228,7 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 11 | Complete **Irritation** page | 5 × 7-point items |
 | 12 | Complete **Attitudes** page | Satisfaction + 3 ad-attitude + 3 platform-attitude semantic differentials |
 | 13 | Complete **Perceived fit + skip intention** page | `rel_1`–`rel_3` (ad-content fit) + skip item + attention check (select "Somewhat agree" = 5) |
-| 14 | Complete **Manipulation checks** page | A3: control item; all: ad-seen + prior-exposure |
+| 14 | Complete **Manipulation checks** page | All: `ctrl_1`–`ctrl_3` (perceived control) + ad-seen + prior-exposure + relevance |
 | 15 | Click **Submit** | Debriefing screen appears |
 | 16 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
 
@@ -414,14 +414,18 @@ Six required checkboxes and one optional checkbox. All required items must be ti
 
 Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. The relevance manipulation check is a t-test of this index between the relevant and irrelevant arms (relevant arm should score higher).
 
-**Page 5 — Manipulation checks** *(condition-dependent)*
+**Page 5 — Manipulation checks**
 
 | Item ID | Conditions | Type | Question |
 |---------|------------|------|----------|
-| `manip_control` | A3 only | Likert-5 | To what extent did you feel in control of when the ad played? |
+| `ctrl_1` | All | Likert-7 | I felt in control of when the ad played. |
+| `ctrl_2` | All | Likert-7 | It was up to me how the ad fit into my viewing. |
+| `ctrl_3` | All | Likert-7 | I had a say in how the advertising interrupted my video. |
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
 | `manip_relevance` | All | Likert-7 | The ad appeared to be chosen based on the type of video I watched. |
+
+`ctrl_1`–`ctrl_3` form a perceived-control index (mean; report Cronbach's α). They serve two roles: (1) **manipulation check** — A3 should score higher than A0–A2, confirming the viewer-chosen condition actually raised perceived control; (2) **mediator** — perceived control is the proposed mechanism linking timing condition to lower intrusion (H1a mediation path).
 
 `manip_relevance` is the relevance manipulation check. It is distinct from `rel_1`–`rel_3` (which measure perceived ad-content fit as a mediator): this item asks whether the participant perceived the *matching mechanism* rather than product-level fit. The manipulation succeeds if `manip_relevance` scores significantly higher in the relevant arm than in the irrelevant arm (independent-samples *t*-test, one-tailed).
 

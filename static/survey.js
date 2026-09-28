@@ -34,7 +34,6 @@
   // ── helpers ────────────────────────────────────────────────────────────────
 
   const L7  = (id, label, extra = {}) => ({ id, type: "likert7",  label, ...extra });
-  const L5  = (id, label)             => ({ id, type: "likert5",  label });
   const RDO = (id, label, options)    => ({ id, type: "radio",    label, options });
   const SD  = (id, left, right, grp)  => ({ id, type: "semdiff",  left, right, _group: grp || null });
   const CHK = (id, label)             => ({ id, type: "checkbox", label, _required: true });
@@ -125,9 +124,9 @@
     },
   ];
 
-  // ── Post-survey pages (condition-aware) ─────────────────────────────────────
+  // ── Post-survey pages ────────────────────────────────────────────────────────
 
-  function buildPostPages(condition) {
+  function buildPostPages() {
     return [
       {
         id: "intrusiveness",
@@ -185,18 +184,17 @@
         id: "manip_checks",
         title: "A few more questions",
         intro: null,
-        items: buildManipItems(condition),
+        items: buildManipItems(),
       },
     ];
   }
 
-  function buildManipItems(condition) {
+  function buildManipItems() {
     const items = [];
-    if (condition === "A3") {
-      items.push(L5("manip_control",
-        "To what extent did you feel in control of when the ad played?"));
-    }
     items.push(
+      L7("ctrl_1", "I felt in control of when the ad played."),
+      L7("ctrl_2", "It was up to me how the ad fit into my viewing."),
+      L7("ctrl_3", "I had a say in how the advertising interrupted my video."),
       RDO("manip_ad_seen",
         "Did you see an advertisement during or after the video clip?",
         ["Yes, and I watched it", "Yes, but I did not pay much attention to it", "No"]),
@@ -436,13 +434,12 @@
       });
     },
     openPost(onComplete) {
-      const cond = (window.experiment.cfg || {}).active_condition_resolved || null;
       runSurvey({
         bodyEl:     document.getElementById("post-survey-body"),
         backBtn:    document.getElementById("post-back"),
         nextBtn:    document.getElementById("post-next"),
         progressEl: document.getElementById("post-progress"),
-        pages:      buildPostPages(cond),
+        pages:      buildPostPages(),
         surveyId:   "post",
         onComplete,
       });

@@ -525,7 +525,7 @@ button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2p
   line-height: 1.5;
   color: var(--text);
 }
-.attn-check { color: #f0d060; font-style: italic; }
+.attn-check { color: var(--text); }
 
 /* ── 7-point / 5-point Likert ── */
 .likert-radios {
