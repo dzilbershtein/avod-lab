@@ -129,7 +129,7 @@
       const msg = document.getElementById("player-status") ||
         (() => { const d = document.createElement("div"); d.id = "player-status"; document.getElementById("player-wrap").appendChild(d); return d; })();
       msg.dataset.kind = "info";
-      msg.textContent = "Please finish watching — you can return to the catalogue once the ad is done.";
+      msg.textContent = "Please complete this video and the short survey first — the catalogue will be available again after.";
       msg.classList.remove("hidden");
       setTimeout(() => msg.classList.add("hidden"), 4000);
       Session.log("back_blocked", { reason: "ad_in_progress" });
