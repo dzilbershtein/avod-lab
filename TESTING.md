@@ -1,6 +1,10 @@
 # Testing pipeline — Experiment 1
 
-Manual QA checklist for verifying a build before running real participants. See [README.md](README.md) for setup, configuration, and the `?test=1` workflow for keeping test sessions out of production data.
+Manual QA checklist for verifying a build before running real participants. See [README.md](README.md) for setup and configuration.
+
+> **Always append `&test=1`** to the participant URLs below. It tags the session as test data so it stays out of the cell-balance panel and the CSV export — see [Testing without polluting production data](README.md#testing-without-polluting-production-data).
+>
+> **The one exception is [step 5](#5-cell-balance-check)**, which has to create untagged sessions because test sessions are deliberately excluded from the balance panel. Finish with [step 7](#7-clear-test-data-before-going-live) to wipe everything either way.
 
 ---
 
@@ -18,7 +22,7 @@ kill %1
 Run the following checklist for **each of A0–A3**. Open the URL in a fresh private/incognito window each time so you get a clean session.
 
 ```
-http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
+http://localhost:8000/?cond=A0&test=1   (repeat for A1, A2, A3)
 ```
 
 **Step-by-step checklist**
@@ -43,12 +47,12 @@ http://localhost:8000/?cond=A0   (repeat for A1, A2, A3)
 | 13 | Complete **Perceived fit + skip intention** page | `rel_1`–`rel_3` (ad-content fit) + skip item + attention check (select "Somewhat agree" = 5) |
 | 14 | Complete **Manipulation checks** page | All: `ctrl_1`–`ctrl_3` (perceived control) + ad-seen + prior-exposure + relevance |
 | 15 | Click **Submit** | Debriefing screen appears |
-| 16 | Admin panel | Session visible; condition code correct; `n_events` > 20 |
+| 16 | Admin panel | Session visible with a red **TEST** badge; condition code correct; `n_events` > 20 |
 
 ### 3. Timing-choice gate — A3
 
 ```
-http://localhost:8000/?cond=A3
+http://localhost:8000/?cond=A3&test=1
 ```
 
 1. Complete the pre-survey and click a title.
@@ -73,15 +77,27 @@ Participants who fail both checks should be flagged for exclusion per the pre-re
 
 ### 5. Cell balance check
 
-After running each of A0–A3 at least once:
-
 ```
 http://localhost:8000/admin?token=dev-admin-token
 ```
 
-The **Experiment 1 — cell balance** panel should show one session per condition and balanced percentages. The "Source" badge on each session should read **balanced** (or **override** if you used `?cond=`).
+**5a — confirm test sessions are excluded.** After the runs above, the admin page should show a red **TEST** badge on each of those sessions and a count in the header ("N test sessions excluded"). The **Experiment 1 — cell balance** panel should still read **0** for every condition — test sessions are filtered out of it on purpose, so that QA runs never skew assignment for real participants.
 
-To verify ad relevance assignment, check the CSV export: the `ad_start` event for each session should have `"effective_relevance": "relevant"` or `"effective_relevance": "irrelevant"` in the `payload` column. Across sessions in the same condition the counts should be roughly equal.
+**5b — confirm balance itself works.** This needs untagged sessions, so open the bare URL (no `?cond=`, no `&test=1`) four or more times in fresh private windows and click through to the browse screen:
+
+```
+http://localhost:8000/
+```
+
+Each load should be assigned by minimisation — the balance panel should fill up and spread across A0–A3 rather than piling into one arm, with the "Source" badge reading **balanced**. Then verify relevance assignment is also spread: the 8-cell breakdown should show both a relevant and an irrelevant count accumulating within each condition.
+
+For per-session detail, the raw event log records the resolved arm as `"effective_relevance"` in the `ad_start` payload:
+
+```
+http://localhost:8000/admin/export.csv?token=dev-admin-token
+```
+
+**These 5b sessions are real, untagged rows** — clear them in step 7 before recruiting.
 
 ### 6. CSV export and event schema
 
@@ -118,3 +134,19 @@ Events logged per session:
 | `ad_schedule_resolved` | Mid-roll/overlay timing computed |
 | `banner_shown` / `banner_hidden` / `banner_click` | Explanation/sponsor banner |
 | `page_unload` | Browser tab closed / navigated away |
+
+### 7. Clear test data before going live
+
+QA leaves two kinds of rows behind: the tagged ones from steps 2–4 and the untagged ones from step 5b. Wipe both so the study starts from an empty database:
+
+```bash
+python scripts/purge_sessions.py --all
+```
+
+Confirm it worked — the balance panel should read 0 across the board and the header should report no test sessions:
+
+```
+http://localhost:8000/admin?token=dev-admin-token
+```
+
+If you only want to drop the tagged QA runs and keep real data (i.e. you are testing *during* a live study), use `--test-only` instead.
