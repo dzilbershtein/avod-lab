@@ -298,15 +298,15 @@ To verify ad relevance assignment, check the CSV export: the `ad_start` event fo
 
 ### 6. CSV export and event schema
 
-Two exports are available from the admin panel:
-
-| Link | URL | Contents |
-|---|---|---|
-| Download participants (CSV) | `/admin/export_participants.csv` | **One row per session** — condition, arm, behavioural columns (`title_watched`, `ad_id_shown`, `ad_skipped`, `watch_duration_sec`, `ad_view_duration_sec`) and all survey answers as flat columns. Ready for analysis without joins. |
-| Download raw events (CSV) | `/admin/export.csv` | One row per event — `session_id`, `condition`, `kind`, `payload` (JSON). Full audit trail. |
+The admin panel links to a single export — **Download data (CSV)** — one row per session with condition, arm, behavioural columns (`title_watched`, `ad_id_shown`, `ad_skipped`, `watch_duration_sec`, `ad_view_duration_sec`) and all survey answers as flat columns. Ready for analysis without joins. Test sessions (`?test=1`) are excluded by default — see [Testing without polluting production data](#testing-without-polluting-production-data).
 
 ```
 http://localhost:8000/admin/export_participants.csv?token=dev-admin-token
+```
+
+A second, unlinked route dumps the full raw event log (one row per event — `session_id`, `condition`, `kind`, `payload` JSON) for debugging or auditing:
+
+```
 http://localhost:8000/admin/export.csv?token=dev-admin-token
 ```
 
