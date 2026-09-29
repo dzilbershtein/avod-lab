@@ -1,0 +1,5 @@
+# Asset-building dependencies — needed only on the machine where you generate
+# ads and download content, NOT on the study server.
+# Also requires ffmpeg + ffprobe on PATH.
+Pillow>=10.0
+yt-dlp>=2024.1.0

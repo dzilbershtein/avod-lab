@@ -108,11 +108,7 @@
     }
     const lib = ((window.experiment.cfg._ad_library || {}).ads || []);
     const titleCat = (title && title.relevant_ad_category) || null;
-    const adVersion = window.experiment.cfg.synthetic_ad_version || "v1";
-    const adSource = adVersion === "v3" ? "synthetic_v3"
-                   : adVersion === "v2" ? "synthetic_v2"
-                   : "synthetic";
-    const synthetic = lib.filter((a) => a.source === adSource);
+    const synthetic = lib.filter((a) => a.source === "synthetic_v3");
     let pool = relevance === "relevant"
       ? synthetic.filter((a) => a.category === titleCat)
       : synthetic.filter((a) => a.category !== titleCat);

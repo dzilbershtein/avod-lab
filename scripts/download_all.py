@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Download all content videos and ad videos to their local static/ paths.
+Download the catalogue's content videos to their local static/ paths.
 
 Usage:
   python scripts/download_all.py            # download everything missing
   python scripts/download_all.py --force    # re-download even if file exists
-  python scripts/download_all.py --content-only
-  python scripts/download_all.py --ads-only
   python scripts/download_all.py --ids big_buck_bunny sintel
 
-Content is trimmed to CONTENT_TRIM_SEC (900 s = 15 min).
-Ads are trimmed to AD_TRIM_SEC (30 s safety cap).
+Content is trimmed to CONTENT_TRIM_SEC (900 s = 15 min). Run
+scripts/trim_content.py afterwards to produce the ≤11 min copies the
+player actually serves.
+
+Ads are not downloaded — all ad creatives are generated locally by
+scripts/generate_ads_v3.py.
 
 Requirements: yt-dlp, ffmpeg (both must be on PATH)
 """
@@ -24,10 +26,8 @@ import tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXP_PATH = os.path.join(REPO, "config", "experiment.json")
-LIB_PATH = os.path.join(REPO, "config", "ad_library.json")
 
 CONTENT_TRIM_SEC = 900  # 15 minutes
-AD_TRIM_SEC = 15
 
 
 def run(*args, **kwargs):
@@ -123,50 +123,19 @@ def load_content_items(filter_ids=None):
     return items
 
 
-def load_ad_items(filter_ids=None):
-    with open(LIB_PATH) as f:
-        lib = json.load(f)
-
-    items = []
-    for ad in lib["ads"]:
-        aid = ad.get("id", "")
-        if ad.get("source") in ("synthetic", "synthetic_psa"):
-            continue
-        local_path = ad.get("video_url", "")
-        source_url = ad.get("source_url", "")
-        if not local_path.startswith("/static/") or not source_url:
-            continue
-        if filter_ids and aid not in filter_ids:
-            continue
-        items.append((aid, source_url, local_path))
-    return items
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--content-only", action="store_true")
-    parser.add_argument("--ads-only", action="store_true")
     parser.add_argument("--force", action="store_true", help="Re-download even if file exists")
     parser.add_argument("--ids", nargs="+", metavar="ID", help="Only download these IDs")
     args = parser.parse_args()
 
     filter_ids = set(args.ids) if args.ids else None
-    do_content = not args.ads_only
-    do_ads = not args.content_only
+    items = load_content_items(filter_ids)
+    print(f"\n=== Content videos ({len(items)}) — trimmed to {CONTENT_TRIM_SEC}s ===")
+    for item_id, source_url, local_path in items:
+        download_item(item_id, source_url, local_path, CONTENT_TRIM_SEC, force=args.force)
 
-    if do_content:
-        items = load_content_items(filter_ids)
-        print(f"\n=== Content videos ({len(items)}) — trimmed to {CONTENT_TRIM_SEC}s ===")
-        for item_id, source_url, local_path in items:
-            download_item(item_id, source_url, local_path, CONTENT_TRIM_SEC, force=args.force)
-
-    if do_ads:
-        items = load_ad_items(filter_ids)
-        print(f"\n=== Ad videos ({len(items)}) — trimmed to {AD_TRIM_SEC}s ===")
-        for item_id, source_url, local_path in items:
-            download_item(item_id, source_url, local_path, AD_TRIM_SEC, force=args.force)
-
-    print("\nDone.")
+    print("\nDone. Now run: python scripts/trim_content.py")
 
 
 if __name__ == "__main__":

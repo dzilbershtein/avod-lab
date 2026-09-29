@@ -2,6 +2,18 @@
 
 Browser-based AVOD stimulus platform for Experiment 1 (ad placement × ad relevance) and Experiment 2 (ad explanation × placement). Runs as a Flask app; logs every behavioural and survey event to SQLite.
 
+**Contents**
+
+- [Quick start](#quick-start)
+- [Content and ad videos](#content-and-ad-videos) — [catalogue](#content-catalogue) · [viewer profile ad categories](#viewer-profile-ad-categories)
+- [Conditions and assignment](#conditions-and-assignment) — Exp 1 / Exp 2 condition URLs, balanced minimisation
+- [Testing without polluting production data](#testing-without-polluting-production-data) — the `?test=1` flag
+- [Testing pipeline](#testing-pipeline--experiment-1) — manual QA checklist, in **[TESTING.md](TESTING.md)**
+- [Questionnaire — Experiment 1](#questionnaire--experiment-1) — full item battery
+- [Configuring conditions](#configuring-conditions)
+- [Deployment](#deployment)
+- [Project layout](#project-layout)
+
 ---
 
 ## Quick start
@@ -12,17 +24,25 @@ pip install -r requirements.txt
 python app.py          # starts on http://localhost:8000
 ```
 
-To generate synthetic ads you also need Pillow (not required to run the server):
-
-```bash
-pip install Pillow
-```
-
 Admin panel (session list, cell balance, CSV export):
 
 ```
 http://localhost:8000/admin?token=dev-admin-token
 ```
+
+`requirements.txt` is deliberately minimal — just Flask and gunicorn, which is all the **study server** ever needs.
+
+Building the video assets happens on your own machine and needs extra tooling, installed separately:
+
+```bash
+pip install -r requirements-build.txt   # Pillow + yt-dlp
+```
+
+| Tool | Needed by |
+|---|---|
+| `Pillow` | `generate_ads_v3.py` |
+| `ffmpeg` + `ffprobe` (on PATH) | `generate_ads_v3.py`, `download_all.py`, `trim_content.py` |
+| `yt-dlp` | `download_all.py` |
 
 ---
 
@@ -31,26 +51,21 @@ http://localhost:8000/admin?token=dev-admin-token
 All video files are excluded from git. Before running the server, generate synthetic ads and download content:
 
 ```bash
-# 1. Generate synthetic ad MP4s (requires Pillow + ffmpeg)
-python scripts/generate_ads.py       # v1 — 12 ads, original set
-python scripts/generate_ads_v2.py    # v2 — 12 ads, richer visuals
-python scripts/generate_ads_v3.py    # v3 — 12 ads, content-library targeted (recommended)
+# 1. Generate synthetic ad MP4s
+python scripts/generate_ads_v3.py    # 12 ads — 3 per viewer profile
 
-# Generate a single ad (any script supports --only)
+# Regenerate specific ads only
 python scripts/generate_ads_v3.py --only ad_intel_horizon ad_thrill_torque
 
-# 2. Download all content and non-synthetic ad videos
-#    (requires yt-dlp + ffmpeg on PATH)
+# 2. Download the catalogue's content videos
 python scripts/download_all.py
 
 # Download selectively
-python scripts/download_all.py --content-only
-python scripts/download_all.py --ads-only
-python scripts/download_all.py --ids big_buck_bunny sintel decay_cern
+python scripts/download_all.py --ids big_buck_bunny sintel
 python scripts/download_all.py --force    # re-download even if file exists
 ```
 
-`download_all.py` reads `source_url` from `config/experiment.json` and `config/ad_library.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**; ads are trimmed to **15 seconds**.
+`download_all.py` reads `source_url` from each active title in `config/experiment.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**. Ads are never downloaded — all 12 creatives are generated locally.
 
 `"content_version"` in `config/experiment.json` is set to `"short"` by default — the player serves ≤11 min copies from `static/content_short/`. These are **not** created by `download_all.py`; generate them separately:
 
@@ -64,9 +79,9 @@ The full 15-min files in `static/content/` are still downloaded by `download_all
 
 ### Content catalogue
 
-All clips are 10–15 minutes. Titles under 10 min have been retired.
+Titles under 10 min have been retired. **Source duration** below is the length as downloaded (capped at 15 min by `download_all.py`) — with `content_version: "short"` anything longer than 11:00 is truncated to 11:00 at playback.
 
-| ID | Title | Genre | Duration | Viewer profile | Source |
+| ID | Title | Genre | Source duration | Viewer profile | Source |
 |---|---|---|---|---|---|
 | `big_buck_bunny` | Big Buck Bunny | Animated Comedy | 10:35 | content_chameleon | Internet Archive (CC BY 3.0) |
 | `elephant_dream` | Elephant's Dream | Sci-Fi Animation | 10:54 | intellectual_explorer | Internet Archive (CC BY 2.5) |
@@ -90,26 +105,26 @@ All clips are 10–15 minutes. Titles under 10 min have been retired.
 
 **Inactive titles** (in catalog but not shown in any row): `plan_9`, `night_of_living_dead`, `decay_cern`, `teenagers_outer_space`, `little_shop_horrors` — horror/B-movie content de-prioritised to balance the library.
 
-To add CC YouTube content: add an entry to `scripts/cc_video_manifest.json`, run `python scripts/fetch_cc_videos.py --verify-only` to confirm the license, then paste the catalogue snippet into `config/experiment.json` and add the ID to the relevant `rows`.
+To add a title: add an entry under `catalog.titles` in `config/experiment.json` with a `source_url` (YouTube or direct HTTP), a `relevant_ad_category`, and `context_tags`; add its ID to the relevant `rows`; then run `download_all.py --ids <new_id>` followed by `trim_content.py --ids <new_id>`. Confirm the licence permits research reuse before adding it.
 
 ### Viewer profile ad categories
 
 Every title carries a `relevant_ad_category` field using one of four **viewer-profile labels**. The player uses this field to pick synthetic ads from `config/ad_library.json`: the *relevant* arm selects an ad whose `category` matches the title's profile; the *irrelevant* arm selects one that does not.
 
-**Single taxonomy:** all active titles and all synthetic ads use the same four labels. Never tag a title with a product label (`electronics_tech`, `automotive`, `food_beverage`) — those labels exist only on archived/retired ad assets and have no matching synthetic ads, so the relevance manipulation would silently fall back to a random ad.
+**Single taxonomy:** every title and every ad uses one of these four labels and nothing else. A title tagged with a label that no ad matches would leave the relevant pool empty, and the player would silently fall back to an arbitrary ad — quietly breaking the relevance manipulation.
 
-| Profile | Content genres | v1 ads | v3 ads (content-targeted) |
-|---|---|---|---|
-| `thrill_seeker` | Action, adventure, sports, horror | ENERGYBLAST, BATTLECAST, RUSHZONE | GRAVECREST (horror), TORQUE (cars/outdoors), VANGUARD (adventure) |
-| `intellectual_explorer` | Sci-Fi, fantasy, science, travel | MINDSPAN, WANDERSCOUT, STARATLAS | CURIOSITY (science/nature), HORIZON (sci-fi/fantasy), TERRA (nature/travel) |
-| `content_chameleon` | Comedy, family, nature, lifestyle | COMFYHOME, FUNSTREAM, PETPALS | TOONBOX (animation), STAGECRAFT (classic film), PANTRY (food/grocery) |
-| `investigative_viewer` | Drama, thriller, crime, news | TRUEVIEW, NEWSDESK, CASEFILE | NOCTURNE (noir), DEADLINES (journalism), CASEROOM (true crime) |
+| Profile | Content genres | Ads (3 per profile) |
+|---|---|---|
+| `thrill_seeker` | Action, adventure, sports, horror | GRAVECREST (horror), TORQUE (cars/outdoors), VANGUARD (adventure) |
+| `intellectual_explorer` | Sci-Fi, fantasy, science, travel | CURIOSITY (science/nature), HORIZON (sci-fi/fantasy), TERRA (nature/travel) |
+| `content_chameleon` | Comedy, family, nature, lifestyle | TOONBOX (animation), STAGECRAFT (classic film), PANTRY (food/grocery) |
+| `investigative_viewer` | Drama, thriller, crime, news | NOCTURNE (noir), DEADLINES (journalism), CASEROOM (true crime) |
 
-The active ad set is controlled by `synthetic_ad_version` in `config/experiment.json` (`"v1"`, `"v2"`, or `"v3"`). v3 ads are designed to maximise tag-Jaccard overlap with the specific content in the library.
+These 12 ads are the **v3 set** (`source: "synthetic_v3"` in `ad_library.json`), generated by `scripts/generate_ads_v3.py` and designed to maximise tag-Jaccard overlap with the specific content in the library. Earlier v1/v2 sets have been removed — v3 is the only synthetic set, and the player selects from it unconditionally.
 
 ---
 
-## Triggering conditions
+## Conditions and assignment
 
 Append `?cond=<code>` to any participant URL to override the balanced assignment. Use this for testing and for sending condition-specific Prolific links.
 
@@ -185,7 +200,7 @@ Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placem
 | B4   | Content-based explanation, User-initiated | `/?cond=B4` |
 | B5   | Data-based explanation, User-initiated    | `/?cond=B5` |
 
-> **Note.** Without `?cond=`, the server uses balanced minimisation to assign the least-filled arm from `random_pool` in `config/experiment.json`. For a live study, send each Prolific participant their condition-specific link; the override is logged in `condition_source = "override"`.
+> **Note.** Switch the active experiment by changing `random_pool` in `config/experiment.json` — see [Configuring conditions](#configuring-conditions).
 
 ---
 
@@ -366,29 +381,50 @@ Each ad slot in a condition carries an `ad_relevance` field:
 | `"relevant"` | Always show an ad matching the video's viewer profile (Exp 2 / B conditions) |
 | `"irrelevant"` | Always show an ad that does not match the video's viewer profile |
 
-The video → ad category mapping is set by `relevant_ad_category` on each title in the catalogue. To add or swap ad creatives, add an entry to `config/ad_library.json` and make sure its `category` matches one of the four viewer profile IDs (`thrill_seeker`, `intellectual_explorer`, `content_chameleon`, `investigative_viewer`). Synthetic ads must also exist as MP4 files in `static/ads/` (run the matching generation script to regenerate). The active set is selected by `"synthetic_ad_version"` in `experiment.json`.
+To add or swap ad creatives: add an entry to `config/ad_library.json` with a `category` matching one of the four viewer profile IDs (see [Viewer profile ad categories](#viewer-profile-ad-categories)), then generate the MP4 into `static/ads/` with the matching generation script.
 
 ---
 
 ## Deployment
 
+Assets are built on your own machine and shipped to the server as files. **The study server never downloads anything** — it needs no `yt-dlp`, no `ffmpeg`, and no internet access during participant sessions. Every video, ad, and poster is served from `static/`.
+
+### Step 1 — build the assets locally
+
 ```bash
+pip install -r requirements-build.txt
+
+python scripts/generate_ads_v3.py   # → static/ads/
+python scripts/download_all.py      # → static/content/ (full length)
+python scripts/trim_content.py      # → static/content_short/ (≤11 min, what the player serves)
+```
+
+> **Don't skip `trim_content.py`.** `content_version` defaults to `"short"`, so the player serves from `static/content_short/` — which only that script creates. Skipping it leaves every title unplayable. (Set `content_version` to `"full"` to serve the untrimmed files from `static/content/` instead.)
+
+Posters are already committed to `static/posters/`, so a fresh clone has them — run `download_posters.py` only to refresh.
+
+### Step 2 — transfer to the server
+
+Copy the repository including the populated `static/` tree. If `content_version` is `"short"` you only strictly need `static/content_short/`, not the much larger `static/content/`:
+
+```bash
+rsync -av --progress \
+  --exclude 'static/content/' \
+  --exclude 'data/events.sqlite' \
+  ./ user@server:/srv/avod-lab/
+```
+
+Excluding `data/events.sqlite` avoids shipping your local test database — the server creates a fresh one on first run. (If you have not already cleared test data, see [Testing without polluting production data](#testing-without-polluting-production-data).)
+
+### Step 3 — run it
+
+```bash
+pip install -r requirements.txt          # Flask + gunicorn only
 export ADMIN_TOKEN="$(openssl rand -hex 24)"
 gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
 Mount `data/` on a persistent volume (SQLite). For high concurrency, swap to Postgres — the schema ports unchanged.
-
-### Offline / air-gapped server
-
-The server does not need internet access at runtime. All `video_url` fields point to `/static/content/<id>.mp4` or `/static/ads/<id>.mp4`. Populate these before deployment:
-
-```bash
-python scripts/generate_ads_v3.py  # recommended synthetic ads (content-targeted)
-python scripts/download_all.py     # content + non-synthetic ads
-```
-
-Then copy the `static/` tree to the server. No outbound requests are made during participant sessions.
 
 ### Prolific completion redirect
 
@@ -403,16 +439,18 @@ avod-lab/
 ├── app.py                      Flask backend; balanced assignment; event log
 ├── README.md                   Setup, configuration, questionnaire reference
 ├── TESTING.md                  Manual QA checklist + event schema reference
+├── requirements.txt            Server deps (Flask + gunicorn) — all the server needs
+├── requirements-build.txt      Asset-building deps (Pillow + yt-dlp), local machine only
 ├── config/
 │   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
-│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; 36 synthetic ads (12 per version × v1/v2/v3)
+│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; the 12 live synthetic_v3 ads
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
 │   ├── survey.js               Pre- and post-exposure questionnaire (Exp 1)
 │   ├── browse.js               Catalogue / hero rendering
 │   ├── player.js               Video + ad scheduler + viewer-profile ad selection
-│   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads.py)
+│   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads_v3.py)
 │   ├── content/                Content MP4s, full length (gitignored — run download_all.py)
 │   ├── content_short/          Content MP4s, ≤11 min (gitignored — run trim_content.py)
 │   ├── posters/                Film poster JPEGs (committed; run download_posters.py to refresh)
@@ -422,14 +460,10 @@ avod-lab/
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    ├── generate_ads.py         v1 — 12 synthetic ads (Pillow + ffmpeg, 3 per viewer profile)
-    ├── generate_ads_v2.py      v2 — 12 synthetic ads with richer visuals and glow text
-    ├── generate_ads_v3.py      v3 — 12 synthetic ads designed for this content library (recommended)
-    ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by all ad generators
+    ├── generate_ads_v3.py      The 12 synthetic ads (Pillow + ffmpeg, 3 per viewer profile)
+    ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by the ad generator
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
     ├── trim_content.py         Creates ≤11 min copies in static/content_short/ (originals untouched)
     ├── download_posters.py     Fetches film poster JPEGs into static/posters/
-    ├── purge_sessions.py       Clears test and/or all sessions from data/events.sqlite
-    ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
-    └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
+    └── purge_sessions.py       Clears test and/or all sessions from data/events.sqlite
 ```

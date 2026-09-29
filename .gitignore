@@ -10,7 +10,7 @@ env/
 data/events.sqlite
 data/*.sqlite
 
-# Generated synthetic ad videos — regenerate with scripts/generate_ads.py
+# Generated synthetic ad videos — regenerate with scripts/generate_ads_v3.py
 static/ads/*.mp4
 
 # Downloaded / trimmed content videos — regenerate with scripts/download_all.py / trim_content.py
