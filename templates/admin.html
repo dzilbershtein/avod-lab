@@ -28,6 +28,9 @@
     .source-override  { background: #3a2a1a; color: #e0a050; }
     .source-random    { background: #1a2a3a; color: #5090e0; }
     .source-fixed     { background: #2a2a2a; color: var(--muted); }
+    .test-badge       { background: #3a1a1a; color: #e05050; font-size: 11px;
+                         padding: 2px 7px; border-radius: 10px; font-weight: 600;
+                         letter-spacing: 0.03em; }
   </style>
 </head>
 <body>
@@ -36,6 +39,10 @@
       <h1 style="margin:0 0 6px;">AVOD-Lab — Admin</h1>
       <p style="margin:0;">
         <a href="{{ url_for('admin_export_participants_csv', token=token) }}">Download data (CSV)</a>
+        <span style="font-size:12px;color:var(--muted);margin-left:8px;">
+          ({{ n_test_sessions }} test session{{ 's' if n_test_sessions != 1 else '' }} excluded —
+          add <code>?test=1</code> to a URL to mark a session as test data)
+        </span>
       </p>
     </header>
 
@@ -152,7 +159,9 @@
         {% set src       = s['condition_source'] or '' %}
         {% set arm       = s['ad_relevance_arm'] or '' %}
         <tr>
-          <td><a href="{{ url_for('admin_session', sid=s['id'], token=token) }}">{{ s['id'][:8] }}&hellip;</a></td>
+          <td><a href="{{ url_for('admin_session', sid=s['id'], token=token) }}">{{ s['id'][:8] }}&hellip;</a>
+            {% if s['is_test'] %}<span class="test-badge">TEST</span>{% endif %}
+          </td>
           <td>{{ s['created_at'] }}</td>
           <td>
             {% if cond_code %}

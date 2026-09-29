@@ -167,6 +167,7 @@ def _pick_ad_relevance(
     rows = db.execute(
         "SELECT ad_relevance_arm, COUNT(*) AS n FROM sessions "
         "WHERE condition = ? AND ad_relevance_arm IN ('relevant', 'irrelevant') "
+        "AND (is_test IS NULL OR is_test = 0) "
         "GROUP BY ad_relevance_arm",
         (condition,),
     ).fetchall()
@@ -191,7 +192,8 @@ def _count_condition_assignments(pool: list, db: sqlite3.Connection) -> dict:
     placeholders = ",".join("?" * len(pool))
     rows = db.execute(
         f"SELECT condition, COUNT(*) AS n FROM sessions "
-        f"WHERE condition IN ({placeholders}) GROUP BY condition",
+        f"WHERE condition IN ({placeholders}) AND (is_test IS NULL OR is_test = 0) "
+        f"GROUP BY condition",
         pool,
     ).fetchall()
     for row in rows:
@@ -326,6 +328,7 @@ def init_db() -> None:
         "ALTER TABLE sessions ADD COLUMN condition TEXT",
         "ALTER TABLE sessions ADD COLUMN condition_source TEXT",
         "ALTER TABLE sessions ADD COLUMN ad_relevance_arm TEXT",
+        "ALTER TABLE sessions ADD COLUMN is_test INTEGER DEFAULT 0",
         "CREATE INDEX IF NOT EXISTS idx_sessions_cond ON sessions(condition)",
         "CREATE INDEX IF NOT EXISTS idx_sessions_rel  ON sessions(condition, ad_relevance_arm)",
     ]:
@@ -360,6 +363,7 @@ def start_session():
     # URL param wins; JSON body is supported for parity with future fetch calls.
     body = request.get_json(silent=True) or {}
     override = request.args.get("cond") or body.get("cond")
+    is_test = 1 if (request.args.get("test") or body.get("test")) in ("1", "true", True) else 0
     # Pass the DB so balanced assignment can query current cell counts.
     db = get_db()
     cfg = load_config(condition_override=override, db=db)
@@ -367,8 +371,8 @@ def start_session():
     db.execute(
         "INSERT INTO sessions "
         "(id, created_at, user_agent, condition_label, condition, condition_source, "
-        " ad_relevance_arm, config_snapshot) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        " ad_relevance_arm, is_test, config_snapshot) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (
             sid,
             datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -377,11 +381,12 @@ def start_session():
             cfg.get("active_condition_resolved"),       # clean code, e.g. "A2"
             cfg.get("active_condition_source"),         # "balanced"|"random"|"fixed"|"override"
             cfg.get("resolved_ad_relevance"),           # "relevant"|"irrelevant"|None
+            is_test,
             json.dumps(cfg, separators=(",", ":")),
         ),
     )
     db.commit()
-    return jsonify({"session_id": sid, "config": cfg})
+    return jsonify({"session_id": sid, "config": cfg, "is_test": bool(is_test)})
 
 
 @app.post("/api/event")
@@ -431,7 +436,7 @@ def admin():
     db = get_db()
     sessions = db.execute(
         "SELECT id, created_at, condition_label, condition, condition_source, "
-        "ad_relevance_arm, user_agent, "
+        "ad_relevance_arm, is_test, user_agent, "
         "(SELECT COUNT(*) FROM events e WHERE e.session_id = s.id) AS n_events "
         "FROM sessions s ORDER BY created_at DESC LIMIT 200"
     ).fetchall()
@@ -449,10 +454,15 @@ def admin():
         for row in db.execute(
             f"SELECT condition, ad_relevance_arm, COUNT(*) AS n FROM sessions "
             f"WHERE condition IN ({placeholders}) AND ad_relevance_arm IS NOT NULL "
+            f"AND (is_test IS NULL OR is_test = 0) "
             f"GROUP BY condition, ad_relevance_arm",
             exp1_pool,
         ).fetchall():
             cell8_counts[(row["condition"], row["ad_relevance_arm"])] = row["n"]
+
+    n_test_sessions = db.execute(
+        "SELECT COUNT(*) AS n FROM sessions WHERE is_test = 1"
+    ).fetchone()["n"]
 
     return render_template(
         "admin.html",
@@ -462,6 +472,7 @@ def admin():
         exp1_pool=exp1_pool,
         cell_counts=cell_counts,
         cell8_counts=cell8_counts,
+        n_test_sessions=n_test_sessions,
     )
 
 
@@ -484,13 +495,19 @@ def admin_session(sid: str):
 
 @app.get("/admin/export_participants.csv")
 def admin_export_participants_csv():
-    """One row per session: metadata + key behavioural columns + all survey answers."""
+    """One row per session: metadata + key behavioural columns + all survey answers.
+
+    Test sessions (started with ?test=1) are excluded by default.
+    Pass ?include_test=1 to include them (e.g. to inspect your own test runs).
+    """
     _require_admin()
     db = get_db()
-    sessions = db.execute(
-        "SELECT id, condition, ad_relevance_arm, condition_label, created_at "
-        "FROM sessions ORDER BY created_at ASC"
-    ).fetchall()
+    include_test = request.args.get("include_test") == "1"
+    query = "SELECT id, condition, ad_relevance_arm, condition_label, created_at FROM sessions"
+    if not include_test:
+        query += " WHERE (is_test IS NULL OR is_test = 0)"
+    query += " ORDER BY created_at ASC"
+    sessions = db.execute(query).fetchall()
 
     rows: dict[str, dict] = {}
     for s in sessions:

@@ -189,6 +189,32 @@ Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placem
 
 ---
 
+## Testing without polluting production data
+
+Append `&test=1` to any URL to tag the session as test data:
+
+```
+http://localhost:8000/?cond=A0&test=1
+```
+
+Test sessions are stored like any other session but are flagged (`sessions.is_test = 1`) and automatically excluded from:
+
+- The **cell-balance panel** and 8-cell breakdown on `/admin` — so testing doesn't skew balanced condition assignment for real participants.
+- The **participants CSV export** — pass `&include_test=1` to the export URL if you need to inspect your own test runs.
+
+Test sessions still show up in the admin session list, marked with a red **TEST** badge, and the admin header shows a running count ("N test sessions excluded").
+
+**Before sending the real study link to participants**, wipe out all accumulated test data for a guaranteed clean slate:
+
+```bash
+python scripts/purge_sessions.py --all         # deletes every session and event — irreversible
+python scripts/purge_sessions.py --test-only   # deletes only is_test=1 sessions (safe to run anytime)
+```
+
+Both prompt for confirmation; pass `--yes` to skip the prompt.
+
+---
+
 ## Testing pipeline — Experiment 1
 
 ### 1. Pre-flight check (run once)
@@ -514,6 +540,7 @@ avod-lab/
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
     ├── trim_content.py         Creates ≤11 min copies in static/content_short/ (originals untouched)
     ├── download_posters.py     Fetches film poster JPEGs into static/posters/
+    ├── purge_sessions.py       Clears test and/or all sessions from data/events.sqlite
     ├── fetch_cc_videos.py      Verifies CC licenses and downloads YouTube content
     └── cc_video_manifest.json  Source URLs and metadata for CC YouTube titles
 ```

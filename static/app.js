@@ -22,11 +22,13 @@
     async start() {
       // Pass through the ?cond= override so the server's random arm matches
       // what we asked for. The server is the source of truth for which
-      // condition this session ended up on.
+      // condition this session ended up on. ?test=1 tags the session as
+      // test data so it's excluded from balance counts and CSV exports.
       const params = new URLSearchParams(window.location.search);
-      const url = params.get("cond")
-        ? `/api/session/start?cond=${encodeURIComponent(params.get("cond"))}`
-        : "/api/session/start";
+      const qs = new URLSearchParams();
+      if (params.get("cond")) qs.set("cond", params.get("cond"));
+      if (params.get("test"))  qs.set("test", params.get("test"));
+      const url = qs.toString() ? `/api/session/start?${qs.toString()}` : "/api/session/start";
       const r = await fetch(url, { method: "POST" });
       const data = await r.json();
       this.id = data.session_id;
