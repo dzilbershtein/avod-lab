@@ -24,7 +24,9 @@
  *   Consent form             : 6 required + 1 optional checkbox (page 0 of pre-survey)
  *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
  *   Skip intention           : 1 item
- *   Perceived control        : 5-point item, A3 manipulation check only
+ *   Perceived control        : 3 items (ctrl_1–ctrl_3; page 5, all conditions) —
+ *                              serves as both the A3 manipulation check and the
+ *                              proposed mediator for H1a
  *   Relevance manipulation check : 1 item (manip_relevance; page 5, all conditions)
  */
 
