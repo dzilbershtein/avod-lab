@@ -276,7 +276,13 @@ Six required checkboxes and one optional checkbox. All required items must be ti
 **Page 4 — Privacy concern / IUIPC**
 *(adapted from Malhotra et al. 2004; 3 items per subscale; 1 = Strongly disagree, 7 = Strongly agree)*
 
-Items use simplified wording rather than the original scale verbatim, and `iuipc_ctl_1` / `iuipc_ctl_2` were newly written — report this as an adaptation, not the published IUIPC, and re-check subscale reliability in your own sample rather than citing the original's.
+Provenance differs by subscale, so report it precisely rather than citing IUIPC wholesale:
+
+- **Collection** — `iuipc_col_1`–`col_3` are three of Malhotra's four collection items, verbatim.
+- **Awareness** — all three map to Malhotra's awareness items with simplified wording. These are deliberately *normative* ("companies should disclose…"), which is how IUIPC defines the dimension: concern that privacy practices be transparent, not self-reported knowledge of what companies actually do. If asked, the answer is that the awareness items follow Malhotra et al.'s normative formulation.
+- **Control** — `iuipc_ctl_3` closely renders Malhotra's first control item; `iuipc_ctl_1` and `iuipc_ctl_2` were newly written in its place.
+
+Re-check subscale reliability in your own sample rather than citing the original's.
 
 | Item ID | Subscale | Statement |
 |---------|----------|-----------|
