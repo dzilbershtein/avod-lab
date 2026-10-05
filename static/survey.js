@@ -17,7 +17,8 @@
  * -----------
  *   Persuasion knowledge  : 3 items adapted from Friestad & Wright (1994) /
  *                           Jung et al. (2019)
- *   IUIPC                 : 9 items from Malhotra et al. (2004), 3 per subscale
+ *   IUIPC                 : 9 items adapted from Malhotra et al. (2004), 3 per subscale,
+ *                           simplified wording; iuipc_ctl_1 and iuipc_ctl_2 newly written
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
@@ -28,6 +29,8 @@
  *                              serves as both the A3 manipulation check and the
  *                              proposed mediator for H1a
  *   Relevance manipulation check : 1 item (manip_relevance; page 5, all conditions)
+ *   Perceived tracking       : 2 items (track_1–track_2; page 5, all conditions) —
+ *                              exploratory; the proposed route behind H2b
  */
 
 (() => {
@@ -118,7 +121,7 @@
         L7("iuipc_awa_1",
           "Online companies should clearly disclose how they use the personal information they collect from me."),
         L7("iuipc_awa_2",
-          "I am usually aware of whether or not an online company is collecting information about me."),
+          "Online companies' privacy policies should be clear and easy to find."),
         L7("iuipc_awa_3",
           "It is very important to me to be aware of what online companies do with my personal information."),
         ATT("attn_pre", 6),
@@ -204,7 +207,10 @@
         "Had you seen this specific advertisement before today?",
         ["Yes", "No", "Not sure"]),
       L7("manip_relevance",
-        "The ad appeared to be chosen based on the type of video I watched.")
+        "The ad appeared to be chosen based on the type of video I watched."),
+      // perceived tracking (exploratory; the route behind H2b)
+      L7("track_1", "This ad seemed to use personal information about me, beyond the video I chose."),
+      L7("track_2", "I felt the platform was tracking what I do.")
     );
     return items;
   }

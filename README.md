@@ -274,7 +274,9 @@ Six required checkboxes and one optional checkbox. All required items must be ti
 | `pk_3` | I understand the techniques that advertisers use to influence people. |
 
 **Page 4 — Privacy concern / IUIPC**
-*(Malhotra et al. 2004; 3 items per subscale; 1 = Strongly disagree, 7 = Strongly agree)*
+*(adapted from Malhotra et al. 2004; 3 items per subscale; 1 = Strongly disagree, 7 = Strongly agree)*
+
+Items use simplified wording rather than the original scale verbatim, and `iuipc_ctl_1` / `iuipc_ctl_2` were newly written — report this as an adaptation, not the published IUIPC, and re-check subscale reliability in your own sample rather than citing the original's.
 
 | Item ID | Subscale | Statement |
 |---------|----------|-----------|
@@ -285,7 +287,7 @@ Six required checkboxes and one optional checkbox. All required items must be ti
 | `iuipc_ctl_2` | Control | I want to have complete control over what online companies do with my personal information. |
 | `iuipc_ctl_3` | Control | Consumer online privacy is really a matter of consumers' right to exercise control over how their information is collected, used, and shared. |
 | `iuipc_awa_1` | Awareness | Online companies should clearly disclose how they use the personal information they collect from me. |
-| `iuipc_awa_2` | Awareness | I am usually aware of whether or not an online company is collecting information about me. |
+| `iuipc_awa_2` | Awareness | Online companies' privacy policies should be clear and easy to find. |
 | `iuipc_awa_3` | Awareness | It is very important to me to be aware of what online companies do with my personal information. |
 | `attn_pre` | — | **Attention check** — select "Agree" (6) |
 
@@ -352,10 +354,14 @@ Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. T
 | `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
 | `manip_relevance` | All | Likert-7 | The ad appeared to be chosen based on the type of video I watched. |
+| `track_1` | All | Likert-7 | This ad seemed to use personal information about me, beyond the video I chose. |
+| `track_2` | All | Likert-7 | I felt the platform was tracking what I do. |
 
 `ctrl_1`–`ctrl_3` form a perceived-control index (mean; report Cronbach's α). They serve two roles: (1) **manipulation check** — A3 should score higher than A0–A2, confirming the viewer-chosen condition actually raised perceived control; (2) **mediator** — perceived control is the proposed mechanism linking timing condition to lower intrusion (H1a mediation path).
 
 `manip_relevance` is the relevance manipulation check. It is distinct from `rel_1`–`rel_3` (which measure perceived ad-content fit as a mediator): this item asks whether the participant perceived the *matching mechanism* rather than product-level fit. The manipulation succeeds if `manip_relevance` scores significantly higher in the relevant arm than in the irrelevant arm (independent-samples *t*-test, one-tailed).
+
+`track_1`–`track_2` measure **perceived tracking** and are **exploratory** — the proposed route behind H2b. They separate two things participants could infer from a relevant ad: that it was matched to the *content* they chose (`manip_relevance`, `rel_1`–`rel_3`) versus matched to *them personally* via data collection. Score as a 2-item mean and report the inter-item correlation rather than α. Because the relevance manipulation is content-based only — no participant data is used for targeting — elevated scores here reflect inferred rather than actual tracking, which is the point: it tests whether relevance alone triggers privacy concern. Expect moderation by the pre-exposure IUIPC score.
 
 ---
 
