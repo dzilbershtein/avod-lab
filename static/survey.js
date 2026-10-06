@@ -18,8 +18,10 @@
  *   Persuasion knowledge  : 3 items written for this study, informed by
  *                           Friestad & Wright (1994); pk_1 scepticism,
  *                           pk_2/pk_3 recognition of persuasive intent
- *   IUIPC                 : 9 items adapted from Malhotra et al. (2004), 3 per subscale,
- *                           simplified wording; iuipc_ctl_1 and iuipc_ctl_2 newly written
+ *   IUIPC                 : 9 items from Malhotra et al. (2004), 3 per subscale —
+ *                           collection verbatim; awareness simplified but keeping
+ *                           the original normative formulation; control keeps
+ *                           ctl_3, with ctl_1/ctl_2 newly written. See README.
  *   Intrusiveness         : 7 items from Li et al. (2002)
  *   Irritation            : 5 items from Edwards et al. (2002)
  *   Ad / platform attitude: 3-item semantic differentials
