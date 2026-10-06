@@ -265,7 +265,7 @@ Six required checkboxes and one optional checkbox. All required items must be ti
 | `vod_freq` | How often do you watch ad-supported streaming? | Radio (5 options) |
 
 **Page 3 — Persuasion knowledge**
-*(Friestad & Wright 1994; Jung et al. 2019; 1 = Strongly disagree, 7 = Strongly agree)*
+*(Written for this study, informed by Friestad & Wright 1994; 1 = Strongly disagree, 7 = Strongly agree)*
 
 | Item ID | Statement |
 |---------|-----------|

@@ -15,8 +15,9 @@
  *
  * Scales used
  * -----------
- *   Persuasion knowledge  : 3 items adapted from Friestad & Wright (1994) /
- *                           Jung et al. (2019)
+ *   Persuasion knowledge  : 3 items written for this study, informed by
+ *                           Friestad & Wright (1994); pk_1 scepticism,
+ *                           pk_2/pk_3 recognition of persuasive intent
  *   IUIPC                 : 9 items adapted from Malhotra et al. (2004), 3 per subscale,
  *                           simplified wording; iuipc_ctl_1 and iuipc_ctl_2 newly written
  *   Intrusiveness         : 7 items from Li et al. (2002)
