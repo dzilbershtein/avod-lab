@@ -2,20 +2,26 @@
 """
 generate_ads_v3.py — Content-library-targeted synthetic ad set.
 
-12 ads designed specifically for the AVOD-Lab content library, closing
-relevance gaps identified in the tag-Jaccard analysis.  Each ad has a
-product-specific drawn object, glow text, and synthesized audio.
+16 ads designed specifically for the AVOD-Lab content library, four per
+viewer profile. Each advertises a product matching a topic the catalogue
+actually contains, so the contextual relevance manipulation can fire for
+every creative. Each ad has a product-specific drawn object, glow text, and
+synthesized audio.
 
 Viewer-profile → relevant ad pool
-  thrill_seeker        → ad_thrill_gravecrest, ad_thrill_torque, ad_thrill_vanguard
-  intellectual_explorer → ad_intel_curiosity, ad_intel_horizon, ad_intel_terra
-  content_chameleon    → ad_chame_toonbox, ad_chame_stagecraft, ad_chame_pantry
-  investigative_viewer → ad_invest_nocturne, ad_invest_deadlines, ad_invest_caseroom
+  thrill_seeker        → gravecrest (horror), vanguard (adventure),
+                         apex (live sport), ranger (outdoor gear)
+  intellectual_explorer → curiosity (science), horizon (sci-fi),
+                         synapse (technology), renderlab (animation/VFX)
+  content_chameleon    → toonbox (animation), stagecraft (classic film),
+                         storybook (family musicals), tabletop (board games)
+  investigative_viewer → nocturne (noir), deadlines (journalism),
+                         caseroom (true crime), tribunal (courtroom)
 
 Run:
     pip install Pillow
     python scripts/generate_ads_v3.py
-    python scripts/generate_ads_v3.py --only ad_thrill_torque ad_intel_horizon
+    python scripts/generate_ads_v3.py --only ad_thrill_ranger ad_intel_horizon
 """
 
 from __future__ import annotations
@@ -320,27 +326,6 @@ def draw_skull_reel(draw, cx, cy, r, col, alpha):
                      fill=(*col, alpha // 3))
 
 
-def draw_speedometer(draw, cx, cy, r, col, alpha, needle_angle=0.0):
-    """Speedometer dial — automotive."""
-    # Outer rim
-    draw.arc([cx - r, cy - r, cx + r, cy + r],
-             start=135, end=45, fill=(*col, alpha), width=5)
-    # Tick marks
-    for k in range(11):
-        angle = math.radians(135 + k * 27)
-        x0 = cx + int(math.cos(angle) * (r - 8))
-        y0 = cy + int(math.sin(angle) * (r - 8))
-        x1 = cx + int(math.cos(angle) * (r - 22 if k % 5 == 0 else r - 14))
-        y1 = cy + int(math.sin(angle) * (r - 22 if k % 5 == 0 else r - 14))
-        draw.line([(x0, y0), (x1, y1)], fill=(*col, alpha), width=3 if k % 5 == 0 else 1)
-    # Needle
-    na = math.radians(135 + needle_angle * 270)
-    nx = cx + int(math.cos(na) * (r - 18))
-    ny = cy + int(math.sin(na) * (r - 18))
-    draw.line([(cx, cy), (nx, ny)], fill=(*col, alpha), width=4)
-    draw.ellipse([cx - 8, cy - 8, cx + 8, cy + 8], fill=(*col, alpha))
-
-
 def draw_shield(draw, cx, cy, r, col, alpha):
     """Heraldic shield with cross inset — action/adventure streaming."""
     pts = [
@@ -398,30 +383,6 @@ def draw_wormhole(draw, cx, cy, r, col, alpha):
                   fill=(*col, alpha // 4), width=1)
 
 
-def draw_globe(draw, cx, cy, r, col, alpha):
-    """Simplified globe — nature/travel."""
-    # Outer circle
-    draw.ellipse([cx - r, cy - r, cx + r, cy + r],
-                 outline=(*col, alpha), width=4)
-    # Latitude lines
-    for lat in [-0.55, 0.0, 0.55]:
-        ry = int(r * math.sqrt(max(0, 1 - lat ** 2)))
-        yo = int(lat * r)
-        if ry > 2:
-            draw.arc([cx - ry, cy + yo - int(ry * 0.35),
-                      cx + ry, cy + yo + int(ry * 0.35)],
-                     start=0, end=360, fill=(*col, alpha // 2), width=2)
-    # Longitude lines
-    for lon in [-60, 0, 60]:
-        ang = math.radians(lon)
-        draw.arc([cx - r, cy - r, cx + r, cy + r],
-                 start=lon - 90, end=lon + 90, fill=(*col, alpha // 2), width=2)
-    # Stand
-    draw.line([(cx, cy + r), (cx, cy + r + 22)], fill=(*col, alpha), width=4)
-    draw.line([(cx - 25, cy + r + 22), (cx + 25, cy + r + 22)],
-              fill=(*col, alpha), width=4)
-
-
 def draw_clapperboard(draw, cx, cy, r, col, alpha):
     """Film clapperboard — animation streaming."""
     bw, bh = int(r * 2.2), int(r * 1.6)
@@ -475,37 +436,6 @@ def draw_theater_masks(draw, cx, cy, r, col, alpha):
         draw.line([(mx - mr // 3, bwy - brow_dy * 5),
                    (mx + mr // 3, bwy + brow_dy * 5)],
                   fill=(*col, alpha), width=3)
-
-
-def draw_grocery_bag(draw, cx, cy, r, col, alpha):
-    """Paper grocery bag with vegetable tops — food/grocery delivery."""
-    bw, bh = int(r * 1.5), int(r * 1.8)
-    # Bag body (trapezoid wider at top)
-    pts = [
-        (cx - bw // 2 - 10, cy - bh // 2),
-        (cx + bw // 2 + 10, cy - bh // 2),
-        (cx + bw // 2, cy + bh // 2),
-        (cx - bw // 2, cy + bh // 2),
-    ]
-    draw.polygon(pts, outline=(*col, alpha), width=4)
-    # Fold line at top
-    draw.line([(cx - bw // 2 - 10, cy - bh // 2 + 22),
-               (cx + bw // 2 + 10, cy - bh // 2 + 22)],
-              fill=(*col, alpha // 2), width=2)
-    # Handles
-    for hx in [cx - bw // 4, cx + bw // 4]:
-        draw.arc([hx - 18, cy - bh // 2 - 30, hx + 18, cy - bh // 2 + 10],
-                 start=0, end=180, fill=(*col, alpha), width=4)
-    # Veggie tops peeking out
-    tops = [(cx - bw // 3, cy - bh // 2 - 5),
-            (cx, cy - bh // 2 - 12),
-            (cx + bw // 3, cy - bh // 2 - 6)]
-    for tx, ty in tops:
-        for ang in [-25, 0, 25]:
-            ra = math.radians(ang - 90)
-            draw.line([(tx, ty), (tx + int(math.cos(ra) * 22),
-                                  ty + int(math.sin(ra) * 22))],
-                      fill=(*col, alpha), width=3)
 
 
 def draw_venetian_blinds(draw, cx, cy, r, col, alpha, tilt=0.15):
@@ -665,52 +595,6 @@ def gravecrest_frame(fi, t):
     return bg
 
 
-def torque_frame(fi, t):
-    """TORQUE — automotive lifestyle. Burnt orange; speedometer object."""
-    acc = (255, 85, 0)
-
-    needle_pos = min(t / 12.0, 1.0)  # needle sweeps over duration
-
-    if t < 5.0:
-        bg = gradient_bg([(18, 10, 0), (45, 22, 0), (12, 6, 0)])
-        d = ImageDraw.Draw(bg)
-        # Speed lines (horizontal streaks)
-        rng = random.Random(fi)
-        for _ in range(18):
-            ly = rng.randint(0, H)
-            lw = rng.randint(80, 400)
-            la = rng.randint(20, 70)
-            d.line([(0, ly), (lw, ly)], fill=(*acc, la), width=2)
-        draw_speedometer(d, W // 2, H // 2, 80, acc, 200, needle_pos * 0.4)
-        bg = scene_title(bg, "TORQUE", t, 0.8, acc)
-
-    elif t < 10.0:
-        bg = gradient_bg([(25, 12, 0), (60, 30, 0)])
-        d = ImageDraw.Draw(bg)
-        # Asphalt texture dots
-        rng = random.Random(42)
-        for _ in range(300):
-            gx = rng.randint(0, W)
-            gy = rng.randint(0, H)
-            d.ellipse([gx - 1, gy - 1, gx + 1, gy + 1],
-                      fill=(80, 40, 10, 25))
-        draw_speedometer(d, int(W * 0.68), H // 2, 70, acc, 220, needle_pos * 0.8)
-        bg = glow_text(bg, "Built for the road.", W // 2, H // 2 - 20,
-                       try_font(50), (255, 240, 220, 220), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(15, 7, 0), (40, 20, 0)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.0, n=3, max_r=190)
-        draw_speedometer(d, W // 2, H // 2 - 20, 85, acc, 220, 0.95)
-        bg = glow_text(bg, "TORQUE", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Drive further.", W // 2, H - 90, try_font(38),
-                       (255, 210, 180, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
 def vanguard_frame(fi, t):
     """VANGUARD — action/adventure streaming. Steel blue; shield object."""
     acc = (64, 128, 192)
@@ -837,42 +721,6 @@ def horizon_frame(fi, t):
     return bg
 
 
-def terra_frame(fi, t):
-    """TERRA — nature & travel docs. Forest green; globe object."""
-    acc = (80, 160, 80)
-
-    if t < 5.0:
-        bg = gradient_bg([(5, 20, 5), (15, 50, 18), (8, 30, 10)])
-        d = ImageDraw.Draw(bg)
-        particles(d, t, acc, count=22, seed=20, vy=-25, drift=20,
-                  r_range=(2, 5), a_range=(0.20, 0.55))
-        gl_prog = ease_out(min(t / 3.5, 1.0))
-        # Globe rotates
-        rot_d = ImageDraw.Draw(bg)
-        draw_globe(rot_d, W // 2, H // 2 - 10, int(68 * gl_prog), acc,
-                   int(195 * gl_prog))
-        bg = scene_title(bg, "TERRA", t, 1.0, acc, font_size=68)
-
-    elif t < 10.0:
-        bg = gradient_bg([(8, 28, 10), (20, 65, 22)])
-        d = ImageDraw.Draw(bg)
-        draw_globe(d, int(W * 0.68), H // 2, 65, acc, 210)
-        bg = glow_text(bg, "Every landscape. Every story.", W // 2, H // 2 - 25,
-                       try_font(44), (210, 245, 210, 215), glow_color=acc, glow_r=14)
-
-    else:
-        bg = gradient_bg([(5, 18, 6), (14, 42, 16)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.5, n=3, max_r=195)
-        draw_globe(d, W // 2, H // 2 - 18, 72, acc, 210)
-        bg = glow_text(bg, "TERRA", W // 2, H - 165, try_font(70),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Explore. Discover. Wonder.", W // 2, H - 90,
-                       try_font(36), (195, 240, 195, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # CONTENT_CHAMELEON ads
 # ─────────────────────────────────────────────────────────────────────────────
@@ -961,53 +809,6 @@ def stagecraft_frame(fi, t):
                        (255, 255, 255, 255), glow_color=acc, glow_r=22)
         bg = glow_text(bg, "Every era. Every laugh.", W // 2, H - 90,
                        try_font(36), (255, 240, 190, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
-def pantry_frame(fi, t):
-    """PANTRY — grocery delivery. Fresh green; grocery bag object."""
-    acc = (80, 192, 96)
-
-    if t < 5.0:
-        bg = gradient_bg([(8, 28, 10), (22, 70, 26), (12, 38, 14)])
-        d = ImageDraw.Draw(bg)
-        # Falling produce dots (colorful)
-        rng = random.Random(fi + 500)
-        for _ in range(18):
-            px_p = rng.randint(0, W)
-            py_p = int((rng.randint(0, H) + t * 40) % H)
-            pc = hsv_to_rgb(rng.uniform(0.0, 0.4), 0.8, 0.9)
-            d.ellipse([px_p - 8, py_p - 8, px_p + 8, py_p + 8],
-                      fill=(*pc, 80))
-        bag_prog = ease_back(min(t / 3.0, 1.0))
-        draw_grocery_bag(d, W // 2, H // 2, int(60 * bag_prog), acc,
-                         int(210 * min(bag_prog, 1.0)))
-        bg = scene_title(bg, "PANTRY", t, 0.9, acc, font_size=66)
-
-    elif t < 10.0:
-        bg = gradient_bg([(10, 35, 12), (28, 85, 32)])
-        d = ImageDraw.Draw(bg)
-        rng = random.Random(fi + 600)
-        for _ in range(14):
-            px_p = rng.randint(0, W)
-            py_p = int((rng.randint(0, H) + t * 35) % H)
-            pc = hsv_to_rgb(rng.uniform(0.0, 0.35), 0.75, 0.9)
-            d.ellipse([px_p - 7, py_p - 7, px_p + 7, py_p + 7],
-                      fill=(*pc, 65))
-        draw_grocery_bag(d, int(W * 0.68), H // 2, 58, acc, 215)
-        bg = glow_text(bg, "Fresh, fast, doorstep.", W // 2, H // 2 - 22,
-                       try_font(46), (220, 255, 220, 215), glow_color=acc, glow_r=14)
-
-    else:
-        bg = gradient_bg([(6, 20, 8), (18, 55, 20)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.3, n=3, max_r=195)
-        draw_grocery_bag(d, W // 2, H // 2 - 18, 64, acc, 215)
-        bg = glow_text(bg, "PANTRY", W // 2, H - 165, try_font(70),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Good food, delivered.", W // 2, H - 90,
-                       try_font(38), (200, 255, 205, 220), glow_color=acc, glow_r=12)
 
     return bg
 
@@ -1140,23 +941,444 @@ def caseroom_frame(fi, t):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Gap-filling ads
+#
+# Each of these covers content the original 12 left without a well-matched
+# relevant ad: sports (jackie_robinson), consumer technology (elephant_dream,
+# tears_of_steel) and family/fantasy/music (pied_piper).
+# ─────────────────────────────────────────────────────────────────────────────
+
+def draw_compass(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Compass rose with a swinging needle — outdoor and adventure gear."""
+    draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)], outline=(*col, alpha), width=4)
+    inner = int(r * 0.80)
+    draw.ellipse([(cx - inner, cy - inner), (cx + inner, cy + inner)],
+                 outline=(*col, int(alpha * 0.45)), width=2)
+    for k in range(8):
+        ang = math.pi * k / 4.0
+        long_tick = (k % 2 == 0)
+        r0 = int(r * (0.62 if long_tick else 0.74))
+        draw.line([(cx + int(r0 * math.sin(ang)), cy - int(r0 * math.cos(ang))),
+                   (cx + int(r * 0.92 * math.sin(ang)), cy - int(r * 0.92 * math.cos(ang)))],
+                  fill=(*col, alpha if long_tick else int(alpha * 0.6)),
+                  width=3 if long_tick else 2)
+    na = math.radians(-32.0 + 14.0 * math.sin(phase * 1.3))
+    tip, tail, half = int(r * 0.66), int(r * 0.46), int(r * 0.13)
+    draw.polygon([(cx + int(tip * math.sin(na)), cy - int(tip * math.cos(na))),
+                  (cx + int(half * math.cos(na)), cy + int(half * math.sin(na))),
+                  (cx - int(half * math.cos(na)), cy - int(half * math.sin(na)))],
+                 outline=(*col, alpha), width=3)
+    draw.line([(cx, cy), (cx - int(tail * math.sin(na)), cy + int(tail * math.cos(na)))],
+              fill=(*col, int(alpha * 0.7)), width=3)
+
+
+def draw_wireframe_cube(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Rotating wireframe cube — 3D animation and VFX software."""
+    if r <= 0:
+        return  # first frames of the scale-in; nothing to draw yet
+    s = r * 0.58
+    a = phase * 0.6
+    pts = []
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            for sz in (-1, 1):
+                x, y, z = sx * s, sy * s, sz * s
+                xr = x * math.cos(a) - z * math.sin(a)
+                zr = x * math.sin(a) + z * math.cos(a)
+                yr = y * math.cos(0.42) - zr * math.sin(0.42)
+                depth = zr * math.sin(0.42) + y * math.cos(0.42)
+                k = 1.0 + depth / (r * 7.0)
+                pts.append((cx + int(xr * k), cy + int(yr * k)))
+    edges = [(0,1),(0,2),(0,4),(1,3),(1,5),(2,3),(2,6),(3,7),(4,5),(4,6),(5,7),(6,7)]
+    for i, j in edges:
+        draw.line([pts[i], pts[j]], fill=(*col, alpha), width=3)
+    for p in pts:
+        draw.ellipse([(p[0]-3, p[1]-3), (p[0]+3, p[1]+3)], outline=(*col, alpha), width=2)
+
+
+def draw_dice(draw, cx, cy, r, col, alpha):
+    """Two dice — family board games."""
+    def die(ox, oy, side, pips):
+        h = side // 2
+        draw.rounded_rectangle([(ox - h, oy - h), (ox + h, oy + h)],
+                               radius=max(4, side // 7), outline=(*col, alpha), width=4)
+        step, pr = side // 4, max(3, side // 14)
+        grid = {1: [(0,0)], 2: [(-1,-1),(1,1)], 3: [(-1,-1),(0,0),(1,1)],
+                5: [(-1,-1),(1,-1),(0,0),(-1,1),(1,1)]}
+        for gx, gy in grid[pips]:
+            px, py = ox + gx * step, oy + gy * step
+            draw.ellipse([(px-pr, py-pr), (px+pr, py+pr)], fill=(*col, alpha))
+    big = int(r * 0.62)
+    die(cx - int(r * 0.34), cy + int(r * 0.10), big, 5)
+    die(cx + int(r * 0.40), cy - int(r * 0.26), int(big * 0.78), 3)
+
+def draw_track_lanes(draw, cx, cy, r, col, alpha):
+    """Concentric stadium ovals — running track, for live sport."""
+    for i, scale in enumerate((1.0, 0.72, 0.44)):
+        rx, ry = int(r * scale), int(r * scale * 0.56)
+        a = int(alpha * (1.0 - i * 0.18))
+        draw.rounded_rectangle(
+            [(cx - rx, cy - ry), (cx + rx, cy + ry)],
+            radius=ry, outline=(*col, a), width=4,
+        )
+
+
+def draw_microchip(draw, cx, cy, r, col, alpha):
+    """Square die with pin rows and inner traces — consumer technology."""
+    half = int(r * 0.62)
+    draw.rounded_rectangle(
+        [(cx - half, cy - half), (cx + half, cy + half)],
+        radius=8, outline=(*col, alpha), width=4,
+    )
+    inner = int(half * 0.45)
+    draw.rounded_rectangle(
+        [(cx - inner, cy - inner), (cx + inner, cy + inner)],
+        radius=4, outline=(*col, int(alpha * 0.8)), width=3,
+    )
+    pin, gap = int(r * 0.22), half // 2
+    for k in (-1, 0, 1):
+        off = k * gap
+        draw.line([(cx + off, cy - half), (cx + off, cy - half - pin)],
+                  fill=(*col, alpha), width=3)
+        draw.line([(cx + off, cy + half), (cx + off, cy + half + pin)],
+                  fill=(*col, alpha), width=3)
+        draw.line([(cx - half, cy + off), (cx - half - pin, cy + off)],
+                  fill=(*col, alpha), width=3)
+        draw.line([(cx + half, cy + off), (cx + half + pin, cy + off)],
+                  fill=(*col, alpha), width=3)
+
+
+def draw_open_book(draw, cx, cy, r, col, alpha, sparkle_phase=0.0):
+    """Open book with sparkles — family storytelling, fantasy and musicals."""
+    w, h = int(r * 0.92), int(r * 0.60)
+    for side in (-1, 1):
+        ox = cx + side * w
+        draw.polygon([(cx, cy - int(h * 0.45)), (ox, cy - int(h * 0.12)),
+                      (ox, cy + int(h * 0.72)), (cx, cy + int(h * 0.45))],
+                     outline=(*col, alpha), width=4)
+        # Ruled lines read as text and stop the pages looking like wings.
+        for k in (1, 2, 3):
+            f = k / 4.0
+            y0 = cy - int(h * 0.45) + int(h * 0.90 * f)
+            y1 = cy - int(h * 0.12) + int(h * 0.84 * f)
+            draw.line([(cx + side * int(w * 0.18), y0 + int(h * 0.06)),
+                       (cx + side * int(w * 0.82), y1 + int(h * 0.06))],
+                      fill=(*col, int(alpha * 0.55)), width=2)
+    draw.line([(cx, cy - int(h * 0.45)), (cx, cy + int(h * 0.45))],
+              fill=(*col, alpha), width=4)
+    for i, (sx, sy, sr) in enumerate((
+        (cx - int(w * 0.45), cy - int(h * 1.15), 7),
+        (cx + int(w * 0.40), cy - int(h * 1.35), 9),
+        (cx + int(w * 0.80), cy - int(h * 0.55), 6),
+    )):
+        tw = 0.55 + 0.45 * math.sin(sparkle_phase * 2.2 + i * 1.7)
+        a = int(alpha * tw)
+        draw.line([(sx - sr, sy), (sx + sr, sy)], fill=(*col, a), width=3)
+        draw.line([(sx, sy - sr), (sx, sy + sr)], fill=(*col, a), width=3)
+
+
+def draw_gavel(draw, cx, cy, r, col, alpha):
+    """Gavel resting on its sound block — courtroom and legal drama."""
+    if r <= 0:
+        return
+    # Mallet head, tilted, sitting up and left of centre.
+    hw, hh = int(r * 0.86), int(r * 0.40)
+    hx, hy = cx - int(r * 0.30), cy - int(r * 0.42)
+    draw.rounded_rectangle([(hx - hw // 2, hy - hh // 2), (hx + hw // 2, hy + hh // 2)],
+                           radius=hh // 3, outline=(*col, alpha), width=4)
+    # Banded ends, so it reads as a mallet rather than a plain box.
+    for sx in (-1, 1):
+        bx = hx + sx * int(hw * 0.30)
+        draw.line([(bx, hy - hh // 2), (bx, hy + hh // 2)],
+                  fill=(*col, int(alpha * 0.75)), width=3)
+    # Handle angling down to the right, with a collar where it meets the head.
+    x0, y0 = hx + int(hw * 0.10), hy + hh // 2
+    x1, y1 = cx + int(r * 0.62), cy + int(r * 0.30)
+    draw.line([(x0, y0), (x1, y1)], fill=(*col, alpha), width=7)
+    draw.line([(x0 - 7, y0 - 2), (x0 + 11, y0 + 8)], fill=(*col, alpha), width=4)
+    draw.ellipse([(x1 - 7, y1 - 7), (x1 + 7, y1 + 7)], outline=(*col, alpha), width=4)
+    # Sound block.
+    bw, bh = int(r * 1.10), int(r * 0.22)
+    by = cy + int(r * 0.66)
+    draw.rounded_rectangle([(cx - bw // 2, by), (cx + bw // 2, by + bh)],
+                           radius=bh // 2, outline=(*col, alpha), width=4)
+    draw.line([(cx - int(bw * 0.34), by + bh // 2), (cx + int(bw * 0.34), by + bh // 2)],
+              fill=(*col, int(alpha * 0.45)), width=2)
+
+
+def tribunal_frame(fi, t):
+    """TRIBUNAL — courtroom & legal drama. Deep amber; gavel object."""
+    acc = (214, 150, 70)
+
+    if t < 5.0:
+        bg = gradient_bg([(14, 9, 2), (34, 22, 6), (16, 10, 3)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=26, seed=29, vy=-34, drift=16,
+                  r_range=(2, 5), a_range=(0.22, 0.62))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_gavel(d, W // 2, H // 2 - 10, int(118 * prog), acc,
+                   int(205 * min(prog, 1.0)))
+        bg = scene_title(bg, "TRIBUNAL", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(18, 11, 3), (40, 26, 8)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=2.1, n=2, max_r=158)
+        draw_gavel(d, int(W * 0.70), H // 2,
+                   110 + int(6 * math.sin(t * 1.5)), acc, 210)
+        bg = glow_text(bg, "Every case has two sides.", W // 2, H // 2 - 25,
+                       try_font(46), (248, 232, 206, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(14, 9, 2), (36, 23, 7)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.5, n=3, max_r=198)
+        draw_gavel(d, W // 2, H // 2 - 20, 124, acc, 220)
+        bg = glow_text(bg, "TRIBUNAL", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Courtroom drama, every week.", W // 2, H - 90,
+                       try_font(36), (240, 220, 190, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def ranger_frame(fi, t):
+    """RANGER — outdoor adventure gear. Vivid orange; compass object."""
+    acc = (235, 110, 45)
+
+    if t < 5.0:
+        bg = gradient_bg([(18, 8, 2), (42, 20, 6), (20, 10, 3)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=30, seed=31, vy=-44, drift=24,
+                  r_range=(2, 5), a_range=(0.25, 0.68))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_compass(d, W // 2, H // 2 - 10, int(112 * prog), acc,
+                     int(205 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "RANGER", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(22, 10, 4), (50, 24, 8)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.9, n=2, max_r=160)
+        draw_compass(d, int(W * 0.70), H // 2,
+                     104 + int(6 * math.sin(t * 1.6)), acc, 210, phase=t)
+        bg = glow_text(bg, "Made for out there.", W // 2, H // 2 - 25,
+                       try_font(50), (255, 232, 212, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(18, 8, 3), (46, 22, 7)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
+        draw_compass(d, W // 2, H // 2 - 20, 118, acc, 220, phase=t)
+        bg = glow_text(bg, "RANGER", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Gear for the wild places.", W // 2, H - 90,
+                       try_font(36), (255, 220, 198, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def renderlab_frame(fi, t):
+    """RENDERLAB — 3D animation & VFX software. Spring green; wireframe cube."""
+    acc = (110, 225, 140)
+
+    if t < 5.0:
+        bg = gradient_bg([(3, 16, 9), (8, 38, 22), (4, 20, 12)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=28, seed=37, vy=-40, drift=18,
+                  r_range=(2, 5), a_range=(0.25, 0.66))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_wireframe_cube(d, W // 2, H // 2 - 10, int(116 * prog), acc,
+                            int(205 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "RENDERLAB", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(5, 22, 13), (10, 46, 27)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.8, n=2, max_r=160)
+        draw_wireframe_cube(d, int(W * 0.70), H // 2,
+                            108 + int(6 * math.sin(t * 1.5)), acc, 210, phase=t)
+        bg = glow_text(bg, "Build worlds, frame by frame.", W // 2, H // 2 - 25,
+                       try_font(44), (220, 255, 232, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(3, 18, 10), (9, 42, 25)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.3, n=3, max_r=200)
+        draw_wireframe_cube(d, W // 2, H // 2 - 20, 122, acc, 220, phase=t)
+        bg = glow_text(bg, "RENDERLAB", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Animation studio, on your desk.", W // 2, H - 90,
+                       try_font(36), (205, 250, 220, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def tabletop_frame(fi, t):
+    """TABLETOP — family board games. Coral; dice object."""
+    acc = (255, 100, 100)
+
+    if t < 5.0:
+        bg = gradient_bg([(20, 6, 6), (46, 16, 16), (22, 8, 8)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=30, seed=41, vy=-36, drift=26,
+                  r_range=(2, 6), a_range=(0.25, 0.70))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_dice(d, W // 2, H // 2 - 10, int(118 * prog), acc,
+                  int(205 * min(prog, 1.0)))
+        bg = scene_title(bg, "TABLETOP", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(26, 8, 8), (56, 20, 20)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.7, n=2, max_r=162)
+        draw_dice(d, int(W * 0.70), H // 2,
+                  110 + int(7 * math.sin(t * 1.7)), acc, 210)
+        bg = glow_text(bg, "Everyone round the table.", W // 2, H // 2 - 25,
+                       try_font(46), (255, 226, 226, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(20, 6, 6), (50, 18, 18)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
+        draw_dice(d, W // 2, H // 2 - 20, 124, acc, 220)
+        bg = glow_text(bg, "TABLETOP", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Game night, sorted.", W // 2, H - 90,
+                       try_font(36), (255, 215, 215, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+def apex_frame(fi, t):
+    """APEX — live sports streaming. Turf lime; running-track object."""
+    acc = (150, 205, 50)
+
+    if t < 5.0:
+        bg = gradient_bg([(6, 14, 4), (16, 38, 10), (8, 20, 6)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=34, seed=13, vy=-62, drift=26,
+                  r_range=(2, 5), a_range=(0.25, 0.70))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_track_lanes(d, W // 2, H // 2 - 10, int(120 * prog), acc,
+                         int(205 * min(prog, 1.0)))
+        bg = scene_title(bg, "APEX", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(10, 22, 6), (22, 48, 14)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.7, n=2, max_r=165)
+        draw_track_lanes(d, int(W * 0.70), H // 2,
+                         112 + int(7 * math.sin(t * 2.1)), acc, 210)
+        bg = glow_text(bg, "Every match. Live.", W // 2, H // 2 - 25,
+                       try_font(50), (235, 250, 215, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(6, 16, 4), (18, 40, 12)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.2, n=3, max_r=205)
+        draw_track_lanes(d, W // 2, H // 2 - 20, 126, acc, 220)
+        bg = glow_text(bg, "APEX", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Every match. Every moment.", W // 2, H - 90,
+                       try_font(36), (225, 245, 200, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def synapse_frame(fi, t):
+    """SYNAPSE — consumer technology. Cyan; microchip object."""
+    acc = (0, 205, 255)
+
+    if t < 5.0:
+        bg = gradient_bg([(2, 10, 18), (6, 26, 44), (3, 14, 26)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=30, seed=17, vy=-46, drift=18,
+                  r_range=(2, 5), a_range=(0.25, 0.68))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_microchip(d, W // 2, H // 2 - 10, int(118 * prog), acc,
+                       int(205 * min(prog, 1.0)))
+        bg = scene_title(bg, "SYNAPSE", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(4, 16, 28), (8, 34, 56)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.9, n=2, max_r=160)
+        draw_microchip(d, int(W * 0.70), H // 2,
+                       110 + int(6 * math.sin(t * 1.7)), acc, 210)
+        bg = glow_text(bg, "Think faster.", W // 2, H // 2 - 25,
+                       try_font(50), (215, 240, 255, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(2, 12, 22), (6, 30, 50)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.3, n=3, max_r=200)
+        draw_microchip(d, W // 2, H // 2 - 20, 124, acc, 220)
+        bg = glow_text(bg, "SYNAPSE", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Technology that keeps up.", W // 2, H - 90,
+                       try_font(36), (200, 235, 255, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def storybook_frame(fi, t):
+    """STORYBOOK — family musicals & live shows. Warm pink; open-book object."""
+    acc = (255, 120, 170)
+
+    if t < 5.0:
+        bg = gradient_bg([(20, 6, 14), (46, 14, 32), (24, 8, 18)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, acc, count=32, seed=23, vy=-38, drift=28,
+                  r_range=(2, 6), a_range=(0.25, 0.70))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_open_book(d, W // 2, H // 2 - 10, int(120 * prog), acc,
+                       int(205 * min(prog, 1.0)), sparkle_phase=t)
+        bg = scene_title(bg, "STORYBOOK", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(26, 8, 18), (56, 18, 40)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.8, n=2, max_r=162)
+        draw_open_book(d, int(W * 0.70), H // 2,
+                       112 + int(7 * math.sin(t * 1.6)), acc, 210, sparkle_phase=t)
+        bg = glow_text(bg, "Where stories sing.", W // 2, H // 2 - 25,
+                       try_font(50), (255, 230, 240, 215), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(20, 6, 16), (50, 16, 36)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
+        draw_open_book(d, W // 2, H // 2 - 20, 126, acc, 220, sparkle_phase=t)
+        bg = glow_text(bg, "STORYBOOK", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Family tales, live on stage.", W // 2, H - 90,
+                       try_font(36), (255, 220, 235, 220), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Ad registry
 # ─────────────────────────────────────────────────────────────────────────────
 
 ADS = [
     # (ad_id,                   frame_fn,          accent_rgb,     brand_char, category)
     ("ad_thrill_gravecrest",  gravecrest_frame,  (204,  0,  32), "G", "thrill_seeker"),
-    ("ad_thrill_torque",      torque_frame,      (255, 85,   0), "T", "thrill_seeker"),
+    ("ad_thrill_ranger",      ranger_frame,      (235,110,  45), "R", "thrill_seeker"),
     ("ad_thrill_vanguard",    vanguard_frame,    ( 64,128, 192), "V", "thrill_seeker"),
+    ("ad_thrill_apex",        apex_frame,        (150,205,  50), "A", "thrill_seeker"),
     ("ad_intel_curiosity",    curiosity_frame,   ( 32,184, 160), "C", "intellectual_explorer"),
     ("ad_intel_horizon",      horizon_frame,     (144, 96, 224), "H", "intellectual_explorer"),
-    ("ad_intel_terra",        terra_frame,       ( 80,160,  80), "T", "intellectual_explorer"),
+    ("ad_intel_renderlab",    renderlab_frame,   (110,225, 140), "R", "intellectual_explorer"),
+    ("ad_intel_synapse",      synapse_frame,     (  0,205, 255), "S", "intellectual_explorer"),
     ("ad_chame_toonbox",      toonbox_frame,     ( 96, 64, 255), "T", "content_chameleon"),
     ("ad_chame_stagecraft",   stagecraft_frame,  (212,160,  32), "S", "content_chameleon"),
-    ("ad_chame_pantry",       pantry_frame,      ( 80,192,  96), "P", "content_chameleon"),
+    ("ad_chame_tabletop",     tabletop_frame,    (255,100, 100), "T", "content_chameleon"),
+    ("ad_chame_storybook",    storybook_frame,   (255,120, 170), "S", "content_chameleon"),
     ("ad_invest_nocturne",    nocturne_frame,    (184,112,  32), "N", "investigative_viewer"),
     ("ad_invest_deadlines",   deadlines_frame,   ( 96,128, 176), "D", "investigative_viewer"),
     ("ad_invest_caseroom",    caseroom_frame,    (144,  0,  24), "C", "investigative_viewer"),
+    ("ad_invest_tribunal",    tribunal_frame,    (214,150,  70), "T", "investigative_viewer"),
 ]
 
 

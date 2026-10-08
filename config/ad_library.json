@@ -46,20 +46,20 @@
       ]
     },
     {
-      "id": "ad_thrill_torque",
+      "id": "ad_thrill_ranger",
       "category": "thrill_seeker",
-      "title": "TORQUE — automotive lifestyle (synthetic v3)",
+      "title": "RANGER — outdoor adventure gear (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_thrill_torque.mp4",
+      "video_url": "/static/ads/ad_thrill_ranger.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch adventure and documentary content, we picked this for you.",
+      "default_banner": "Because you watch adventure and outdoor content, we picked this for you.",
       "context_tags": [
-        "cars",
-        "documentary",
+        "action",
         "adventure",
+        "nature",
         "outdoors"
       ]
     },
@@ -79,6 +79,24 @@
         "adventure",
         "thriller",
         "drama"
+      ]
+    },
+    {
+      "id": "ad_thrill_apex",
+      "category": "thrill_seeker",
+      "title": "APEX — live sports streaming (synthetic v3)",
+      "duration_sec": 15,
+      "source": "synthetic_v3",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_thrill_apex.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch sport and competition, we picked this for you.",
+      "context_tags": [
+        "sports",
+        "action",
+        "drama",
+        "streaming"
       ]
     },
     {
@@ -118,22 +136,39 @@
       ]
     },
     {
-      "id": "ad_intel_terra",
+      "id": "ad_intel_renderlab",
       "category": "intellectual_explorer",
-      "title": "TERRA — nature & travel documentaries (synthetic v3)",
+      "title": "RENDERLAB — 3D animation & VFX software (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_intel_terra.mp4",
+      "video_url": "/static/ads/ad_intel_renderlab.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch travel and nature content, we picked this for you.",
+      "default_banner": "Because you watch animation and science-fiction content, we picked this for you.",
       "context_tags": [
-        "nature",
-        "travel",
-        "outdoors",
-        "documentary",
-        "adventure"
+        "animation",
+        "education",
+        "sci-fi",
+        "technology"
+      ]
+    },
+    {
+      "id": "ad_intel_synapse",
+      "category": "intellectual_explorer",
+      "title": "SYNAPSE — consumer technology (synthetic v3)",
+      "duration_sec": 15,
+      "source": "synthetic_v3",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_intel_synapse.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch science and technology content, we picked this for you.",
+      "context_tags": [
+        "technology",
+        "science",
+        "education",
+        "sci-fi"
       ]
     },
     {
@@ -175,21 +210,39 @@
       ]
     },
     {
-      "id": "ad_chame_pantry",
+      "id": "ad_chame_tabletop",
       "category": "content_chameleon",
-      "title": "PANTRY — grocery delivery (synthetic v3)",
+      "title": "TABLETOP — family board games (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_chame_pantry.mp4",
+      "video_url": "/static/ads/ad_chame_tabletop.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you enjoy lifestyle and family content, we picked this for you.",
+      "default_banner": "Because you watch family and comedy content, we picked this for you.",
       "context_tags": [
-        "food",
+        "comedy",
+        "entertainment",
         "family",
-        "lifestyle",
-        "education"
+        "lifestyle"
+      ]
+    },
+    {
+      "id": "ad_chame_storybook",
+      "category": "content_chameleon",
+      "title": "STORYBOOK — family musicals & live shows (synthetic v3)",
+      "duration_sec": 15,
+      "source": "synthetic_v3",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_chame_storybook.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch family and fantasy content, we picked this for you.",
+      "context_tags": [
+        "family",
+        "fantasy",
+        "music",
+        "entertainment"
       ]
     },
     {
@@ -248,6 +301,24 @@
         "thriller",
         "mystery",
         "noir"
+      ]
+    },
+    {
+      "id": "ad_invest_tribunal",
+      "category": "investigative_viewer",
+      "title": "TRIBUNAL — courtroom & legal drama (synthetic v3)",
+      "duration_sec": 15,
+      "source": "synthetic_v3",
+      "license": "generated_locally",
+      "video_url": "/static/ads/ad_invest_tribunal.mp4",
+      "fallback_urls": [],
+      "click_url": "",
+      "default_banner": "Because you watch crime and courtroom drama, we picked this for you.",
+      "context_tags": [
+        "crime",
+        "drama",
+        "justice",
+        "thriller"
       ]
     }
   ]

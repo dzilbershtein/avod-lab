@@ -53,6 +53,31 @@
     statusEl.textContent = msg;
   }
 
+  // How far from the extreme an ad may score and still stay in the rotation.
+  // The irrelevant arm draws from twelve ads and already has variety, so it
+  // takes the worst fit outright.
+  //
+  // The relevant margin is capped at 0.20 to protect the floor of the
+  // manipulation, not just its average: at 0.25 or above the weakest ad a
+  // participant can draw falls to 0.25, barely better than the unranked pool
+  // averaged. At 0.20 every relevant draw scores at least 0.50, and every
+  // creative is still reachable in both arms.
+  const RELEVANT_FIT_MARGIN = 0.20;
+  const IRRELEVANT_FIT_MARGIN = 0;
+
+  // Share of the smaller tag set that the two sets have in common. Preferred
+  // over Jaccard, which divides by the union and so penalises an ad for
+  // carrying more tags — that ranked a generic action ad above the classic-film
+  // ad for a screwball comedy purely on tag count.
+  function tagFit(videoTags, adTags) {
+    const video = new Set(videoTags || []);
+    const ad = new Set(adTags || []);
+    if (video.size === 0 || ad.size === 0) return 0;
+    let shared = 0;
+    for (const tag of ad) if (video.has(tag)) shared++;
+    return shared / Math.min(video.size, ad.size);
+  }
+
   // state
   let sessionVideoCount = 0;    // incremented each time a title is opened; drives ad_pool rotation
   // Both locked in on first ad resolution so all videos in one session share
@@ -114,21 +139,17 @@
       : synthetic.filter((a) => a.category !== titleCat);
     if (pool.length === 0) pool = synthetic; // fallback: any synthetic ad
 
-    // For relevant ads: sort pool by tag overlap with the video, then rotate
-    // among the top-3 so participants get variety without losing relevance.
-    if (relevance === "relevant") {
-      const videoTags = (title && title.context_tags) || [];
-      if (videoTags.length > 0) {
-        const videoSet = new Set(videoTags);
-        pool = pool.slice().sort((a, b) => {
-          const simA = (a.context_tags || []).filter(t => videoSet.has(t)).length /
-                       (new Set([...videoTags, ...(a.context_tags || [])]).size || 1);
-          const simB = (b.context_tags || []).filter(t => videoSet.has(t)).length /
-                       (new Set([...videoTags, ...(b.context_tags || [])]).size || 1);
-          return simB - simA;
-        });
-        pool = pool.slice(0, 3); // keep top-3 matches for rotation
-      }
+    // Narrow the pool by how well each ad's tags fit this specific video:
+    // the relevant arm takes the best fits, the irrelevant arm the worst, so
+    // the two arms sit as far apart as the library allows.
+    const videoTags = (title && title.context_tags) || [];
+    if (videoTags.length > 0 && pool.length > 1) {
+      const scored = pool.map((a) => ({ ad: a, fit: tagFit(videoTags, a.context_tags) }));
+      const fits = scored.map((s) => s.fit);
+      const keep = relevance === "relevant"
+        ? (f) => f >= Math.max(...fits) - RELEVANT_FIT_MARGIN
+        : (f) => f <= Math.min(...fits) + IRRELEVANT_FIT_MARGIN;
+      pool = scored.filter((s) => keep(s.fit)).map((s) => s.ad);
     }
 
     const entry = pool[(sessionCreativeOffset + sessionVideoCount) % pool.length];
