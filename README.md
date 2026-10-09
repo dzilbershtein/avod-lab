@@ -67,19 +67,20 @@ python scripts/download_all.py --force    # re-download even if file exists
 
 `download_all.py` reads `source_url` from each active title in `config/experiment.json`. YouTube URLs are fetched via yt-dlp; HTTP URLs are stream-copied via ffmpeg. Content is trimmed to **15 minutes (900 s)**. Ads are never downloaded — all 12 creatives are generated locally.
 
-`"content_version"` in `config/experiment.json` is set to `"short"` by default — the player serves ≤11 min copies from `static/content_short/`. These are **not** created by `download_all.py`; generate them separately:
+`"content_version"` in `config/experiment.json` is set to `"short"` by default — the player serves **exactly 8 min (480 s)** copies from `static/content_short/`. These are **not** created by `download_all.py`; generate them separately:
 
 ```bash
-python scripts/trim_content.py            # trim all active titles → static/content_short/
-python scripts/trim_content.py --force    # re-trim even if output exists
-python scripts/trim_content.py --trim-sec 600  # custom cap
+python scripts/trim_content.py --trim-sec 480   # the 8 min cap the study uses
+python scripts/trim_content.py --force          # re-trim even if output exists
 ```
 
 The full 15-min files in `static/content/` are still downloaded by `download_all.py` and are left untouched. Set `"content_version"` back to `"full"` to serve those instead.
 
+The 480 s cap is below the shortest source clip (629 s), so **every active clip is exactly 8:00** — the forced mid-roll therefore falls at exactly 240 s for every participant, with no clip-length variation to control for. `catalog.titles[].duration_sec` holds this served length, which is what the browse tiles display.
+
 ### Content catalogue
 
-Titles under 10 min have been retired. **Source duration** below is the length as downloaded (capped at 15 min by `download_all.py`) — with `content_version: "short"` anything longer than 11:00 is truncated to 11:00 at playback.
+Titles under 10 min have been retired. **Source duration** below is the length as downloaded (capped at 15 min by `download_all.py`). Every clip is truncated to 8:00 at playback, so source length affects only how much of each film is available, not what participants see.
 
 | ID | Title | Genre | Source duration | Viewer profile | Source |
 |---|---|---|---|---|---|
@@ -432,7 +433,7 @@ pip install -r requirements-build.txt
 
 python scripts/generate_ads_v3.py   # → static/ads/
 python scripts/download_all.py      # → static/content/ (full length)
-python scripts/trim_content.py      # → static/content_short/ (≤11 min, what the player serves)
+python scripts/trim_content.py --trim-sec 480   # → static/content_short/ (8 min, what the player serves)
 ```
 
 > **Don't skip `trim_content.py`.** `content_version` defaults to `"short"`, so the player serves from `static/content_short/` — which only that script creates. Skipping it leaves every title unplayable. (Set `content_version` to `"full"` to serve the untrimmed files from `static/content/` instead.)
@@ -488,7 +489,7 @@ avod-lab/
 │   ├── player.js               Video + ad scheduler + viewer-profile ad selection
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads_v3.py)
 │   ├── content/                Content MP4s, full length (gitignored — run download_all.py)
-│   ├── content_short/          Content MP4s, ≤11 min (gitignored — run trim_content.py)
+│   ├── content_short/          Content MP4s, 8 min (gitignored — run trim_content.py)
 │   ├── posters/                Film poster JPEGs (committed; run download_posters.py to refresh)
 │   └── style.css               Dark-theme UI + survey form styles
 ├── templates/
@@ -499,7 +500,7 @@ avod-lab/
     ├── generate_ads_v3.py      The 16 synthetic ads (Pillow + ffmpeg, 4 per viewer profile)
     ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by the ad generator
     ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
-    ├── trim_content.py         Creates ≤11 min copies in static/content_short/ (originals untouched)
+    ├── trim_content.py         Creates the 8 min copies in static/content_short/ (originals untouched)
     ├── download_posters.py     Fetches film poster JPEGs into static/posters/
     └── purge_sessions.py       Clears test and/or all sessions from data/events.sqlite
 ```
