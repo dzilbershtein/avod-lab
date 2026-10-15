@@ -9,13 +9,13 @@ every creative. Each ad has a product-specific drawn object, glow text, and
 synthesized audio.
 
 Viewer-profile → relevant ad pool
-  thrill_seeker        → gravecrest (horror), vanguard (adventure),
+  thrill_seeker        → gravecrest (horror), adrenaline (action movies),
                          apex (live sport), ranger (outdoor gear)
   intellectual_explorer → curiosity (science), horizon (sci-fi),
                          synapse (technology), renderlab (animation/VFX)
   content_chameleon    → toonbox (animation), stagecraft (classic film),
-                         storybook (family musicals), tabletop (board games)
-  investigative_viewer → nocturne (noir), deadlines (journalism),
+                         storybook (family musicals), chuckle (family comedy)
+  investigative_viewer → whodunit (crime/detective), deadlines (journalism),
                          caseroom (true crime), tribunal (courtroom)
 
 Run:
@@ -326,23 +326,6 @@ def draw_skull_reel(draw, cx, cy, r, col, alpha):
                      fill=(*col, alpha // 3))
 
 
-def draw_shield(draw, cx, cy, r, col, alpha):
-    """Heraldic shield with cross inset — action/adventure streaming."""
-    pts = [
-        (cx, cy - r),
-        (cx + r, cy - int(r * 0.4)),
-        (cx + r, cy + int(r * 0.3)),
-        (cx, cy + r),
-        (cx - r, cy + int(r * 0.3)),
-        (cx - r, cy - int(r * 0.4)),
-    ]
-    draw.polygon(pts, outline=(*col, alpha), width=4)
-    # Cross
-    arm = int(r * 0.45)
-    draw.line([(cx, cy - arm), (cx, cy + arm)], fill=(*col, alpha), width=4)
-    draw.line([(cx - arm, cy), (cx + arm, cy)], fill=(*col, alpha), width=4)
-
-
 def draw_dna_helix(draw, cx, cy, r, col, alpha, phase=0.0):
     """Double-helix — science/education."""
     h = int(r * 2.8)
@@ -436,36 +419,6 @@ def draw_theater_masks(draw, cx, cy, r, col, alpha):
         draw.line([(mx - mr // 3, bwy - brow_dy * 5),
                    (mx + mr // 3, bwy + brow_dy * 5)],
                   fill=(*col, alpha), width=3)
-
-
-def draw_venetian_blinds(draw, cx, cy, r, col, alpha, tilt=0.15):
-    """Venetian blinds with light-streak through gap — noir."""
-    bw = int(r * 2.2)
-    slat_h = 18
-    slats = 8
-    total_h = slats * slat_h
-    y0 = cy - total_h // 2
-    for k in range(slats):
-        sy = y0 + k * slat_h
-        # Slat outline with tilt
-        off = int(tilt * bw)
-        draw.polygon([
-            (cx - bw // 2, sy + off),
-            (cx + bw // 2, sy - off),
-            (cx + bw // 2, sy - off + slat_h - 3),
-            (cx - bw // 2, sy + off + slat_h - 3),
-        ], outline=(*col, alpha // 2), width=2,
-           fill=(0, 0, 0, alpha // 6))
-    # Light streak through one gap (slat 3)
-    gap_y = y0 + 3 * slat_h + slat_h // 2
-    for lx in range(cx - bw // 2, cx + bw // 2):
-        dist = abs(lx - cx)
-        la = int(alpha * 0.6 * max(0, 1 - dist / (bw * 0.45)))
-        draw.line([(lx, gap_y - 2), (lx, gap_y + 2)],
-                  fill=(255, 230, 180, la))
-    # Silhouette behind blinds (simplified head shape)
-    draw.ellipse([cx - 28, cy - 28, cx + 28, cy + 28],
-                 fill=(0, 0, 0, alpha // 2))
 
 
 def draw_typewriter(draw, cx, cy, r, col, alpha):
@@ -591,42 +544,6 @@ def gravecrest_frame(fi, t):
                        (255, 255, 255, 255), glow_color=acc, glow_r=22)
         bg = glow_text(bg, "Horror. Unleashed.", W // 2, H - 90, try_font(36),
                        (255, 200, 200, 220), glow_color=acc, glow_r=10)
-
-    return bg
-
-
-def vanguard_frame(fi, t):
-    """VANGUARD — action/adventure streaming. Steel blue; shield object."""
-    acc = (64, 128, 192)
-
-    if t < 5.0:
-        bg = gradient_bg([(5, 10, 22), (15, 30, 60), (8, 18, 40)])
-        d = ImageDraw.Draw(bg)
-        particles(d, t, acc, count=30, seed=5, vy=-40, drift=22,
-                  r_range=(2, 6), a_range=(0.25, 0.70))
-        sh_prog = ease_back(min(t / 3.0, 1.0))
-        draw_shield(d, W // 2, H // 2 - 10, int(75 * sh_prog), acc,
-                    int(200 * min(sh_prog, 1.0)))
-        bg = scene_title(bg, "VANGUARD", t, 1.0, acc)
-
-    elif t < 10.0:
-        bg = gradient_bg([(8, 16, 35), (20, 40, 80)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 4, H // 2, t, acc, period=2.0, n=2, max_r=160)
-        draw_shield(d, int(W * 0.70), H // 2,
-                    70 + int(5 * math.sin(t * 1.8)), acc, 210)
-        bg = glow_text(bg, "Adventure awaits.", W // 2, H // 2 - 25,
-                       try_font(50), (220, 235, 255, 215), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(5, 10, 25), (14, 28, 58)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.3, n=3, max_r=200)
-        draw_shield(d, W // 2, H // 2 - 20, 82, acc, 220)
-        bg = glow_text(bg, "VANGUARD", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Stream bold. Stream brave.", W // 2, H - 90,
-                       try_font(36), (200, 220, 255, 220), glow_color=acc, glow_r=12)
 
     return bg
 
@@ -817,46 +734,6 @@ def stagecraft_frame(fi, t):
 # INVESTIGATIVE_VIEWER ads
 # ─────────────────────────────────────────────────────────────────────────────
 
-def nocturne_frame(fi, t):
-    """NOCTURNE — noir streaming. Amber-brown; venetian blinds object."""
-    acc = (184, 112, 32)
-
-    if t < 5.0:
-        bg = gradient_bg([(10, 7, 0), (28, 18, 4), (12, 8, 0)])
-        d = ImageDraw.Draw(bg)
-        # Soft amber spotlight from above-left
-        for radius in range(220, 20, -40):
-            a = int(18 * (1 - radius / 220))
-            d.ellipse([80 - radius, -80 - radius, 80 + radius, -80 + radius],
-                      fill=(*acc, a))
-        tilt = 0.10 + 0.05 * math.sin(t * 0.5)
-        draw_venetian_blinds(d, W // 2, H // 2, 80, acc, 200, tilt)
-        bg = scene_title(bg, "NOCTURNE", t, 0.9, acc, font_size=60)
-
-    elif t < 10.0:
-        bg = gradient_bg([(14, 9, 0), (38, 24, 5)])
-        d = ImageDraw.Draw(bg)
-        tilt = 0.08 + 0.06 * math.sin(t * 0.7)
-        draw_venetian_blinds(d, int(W * 0.65), H // 2, 70, acc, 210, tilt)
-        # Floating cigarette smoke wisps
-        particles(d, t, (180, 140, 80), count=12, seed=30, vy=-18, drift=8,
-                  r_range=(3, 8), a_range=(0.08, 0.25))
-        bg = glow_text(bg, "The city never sleeps.", W // 2, H // 2 - 22,
-                       try_font(46), (240, 220, 180, 215), glow_color=acc, glow_r=15)
-
-    else:
-        bg = gradient_bg([(8, 5, 0), (22, 14, 2)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.5, n=3, max_r=190)
-        draw_venetian_blinds(d, W // 2, H // 2 - 15, 75, acc, 205)
-        bg = glow_text(bg, "NOCTURNE", W // 2, H - 165, try_font(64),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Classic noir. Remastered.", W // 2, H - 90,
-                       try_font(36), (240, 210, 160, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
 def deadlines_frame(fi, t):
     """DEADLINES — investigative journalism. Slate blue; typewriter object."""
     acc = (96, 128, 176)
@@ -996,21 +873,96 @@ def draw_wireframe_cube(draw, cx, cy, r, col, alpha, phase=0.0):
         draw.ellipse([(p[0]-3, p[1]-3), (p[0]+3, p[1]+3)], outline=(*col, alpha), width=2)
 
 
-def draw_dice(draw, cx, cy, r, col, alpha):
-    """Two dice — family board games."""
-    def die(ox, oy, side, pips):
-        h = side // 2
-        draw.rounded_rectangle([(ox - h, oy - h), (ox + h, oy + h)],
-                               radius=max(4, side // 7), outline=(*col, alpha), width=4)
-        step, pr = side // 4, max(3, side // 14)
-        grid = {1: [(0,0)], 2: [(-1,-1),(1,1)], 3: [(-1,-1),(0,0),(1,1)],
-                5: [(-1,-1),(1,-1),(0,0),(-1,1),(1,1)]}
-        for gx, gy in grid[pips]:
-            px, py = ox + gx * step, oy + gy * step
-            draw.ellipse([(px-pr, py-pr), (px+pr, py+pr)], fill=(*col, alpha))
-    big = int(r * 0.62)
-    die(cx - int(r * 0.34), cy + int(r * 0.10), big, 5)
-    die(cx + int(r * 0.40), cy - int(r * 0.26), int(big * 0.78), 3)
+def draw_explosion(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Jagged starburst with a hot core — explosions, for action movies."""
+    if r <= 0:
+        return
+    n = 14
+    pts = []
+    for k in range(n * 2):
+        ang = math.pi * k / n + phase * 0.35
+        rr = r * (1.0 if k % 2 == 0 else 0.52 + 0.08 * math.sin(phase * 3 + k))
+        pts.append((cx + int(rr * math.cos(ang)), cy + int(rr * math.sin(ang))))
+    draw.polygon(pts, outline=(*col, alpha), width=4)
+    core = int(r * 0.34)
+    draw.ellipse([(cx - core, cy - core), (cx + core, cy + core)],
+                 outline=(255, 235, 170, alpha), width=4)
+
+
+def draw_speed_streaks(draw, t, col, alpha, n=14, seed=7):
+    """Horizontal motion streaks crossing the frame — speed and chases."""
+    rng = random.Random(seed)
+    for _ in range(n):
+        y = rng.randint(int(H * 0.08), int(H * 0.92))
+        length = rng.randint(120, 320)
+        speed = rng.uniform(900, 1500)
+        x = (rng.uniform(0, W) + t * speed) % (W + length) - length
+        a = int(alpha * rng.uniform(0.25, 0.7))
+        draw.line([(x, y), (x + length, y)], fill=(*col, a), width=rng.choice((2, 3, 4)))
+
+
+def draw_laughing_family(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Family of three on a sofa with laughter marks — family comedy."""
+    if r <= 0:
+        return
+    sw, sh = int(r * 1.55), int(r * 0.42)
+    seat_y = cy + int(r * 0.30)
+    draw.rounded_rectangle([(cx - sw // 2, seat_y), (cx + sw // 2, seat_y + sh)],
+                           radius=sh // 3, outline=(*col, alpha), width=4)
+    draw.rounded_rectangle([(cx - sw // 2, seat_y - int(r * 0.42)),
+                            (cx + sw // 2, seat_y + int(r * 0.06))],
+                           radius=sh // 3, outline=(*col, int(alpha * 0.55)), width=3)
+    for k, (dx, hr) in enumerate(((-0.46, 0.21), (0.0, 0.17), (0.46, 0.21))):
+        bob = int(r * 0.04 * math.sin(phase * 7 + k * 1.9))
+        hx = cx + int(r * dx)
+        hy = seat_y - int(r * 0.40) + bob
+        rad = int(r * hr)
+        draw.ellipse([(hx - rad, hy - rad), (hx + rad, hy + rad)],
+                     outline=(*col, alpha), width=4)
+        draw.arc([(hx - int(rad * 0.55), hy - int(rad * 0.15)),
+                  (hx + int(rad * 0.55), hy + int(rad * 0.62))],
+                 start=10, end=170, fill=(*col, alpha), width=3)
+        for j, ox in enumerate((-0.30, 0.30)):
+            ex = hx + int(rad * ox)
+            draw.arc([(ex - 5, hy - int(rad * 0.38)), (ex + 5, hy - int(rad * 0.18))],
+                     start=200, end=340, fill=(*col, alpha), width=2)
+    for k in range(3):
+        tw = 0.55 + 0.45 * math.sin(phase * 4 + k * 2.1)
+        lx = cx - int(r * 0.55) + k * int(r * 0.55)
+        ly = seat_y - int(r * 0.95) - int(r * 0.10 * (k % 2))
+        draw.text((lx, ly), "ha", fill=(*col, int(alpha * tw)), font=try_font(30))
+
+
+def draw_police_tape(draw, cx, cy, r, col, alpha):
+    """Two crossed bands of striped tape — a crime scene."""
+    if r <= 0:
+        return
+    for ang in (math.radians(-18), math.radians(16)):
+        dx, dy = math.cos(ang), math.sin(ang)
+        nx, ny = -dy, dx
+        half_len, half_w = r * 1.35, r * 0.15
+        corners = [(cx - dx * half_len - nx * half_w, cy - dy * half_len - ny * half_w),
+                   (cx + dx * half_len - nx * half_w, cy + dy * half_len - ny * half_w),
+                   (cx + dx * half_len + nx * half_w, cy + dy * half_len + ny * half_w),
+                   (cx - dx * half_len + nx * half_w, cy - dy * half_len + ny * half_w)]
+        draw.polygon([(int(x), int(y)) for x, y in corners], outline=(*col, alpha), width=3)
+        for k in range(-6, 7):
+            px, py = cx + dx * k * r * 0.20, cy + dy * k * r * 0.20
+            draw.line([(int(px - nx * half_w + dx * 8), int(py - ny * half_w + dy * 8)),
+                       (int(px + nx * half_w - dx * 8), int(py + ny * half_w - dy * 8))],
+                      fill=(*col, int(alpha * 0.7)), width=3)
+
+
+def draw_fingerprint(draw, cx, cy, r, col, alpha):
+    """Concentric whorl of ridges — evidence, for detective stories."""
+    if r <= 0:
+        return
+    for k in range(7):
+        rx = int(r * (0.18 + 0.11 * k))
+        ry = int(rx * 1.32)
+        start, end = (200 + 9 * k) % 360, (520 - 7 * k) % 360
+        draw.arc([(cx - rx, cy - ry), (cx + rx, cy + ry)], start=start, end=end,
+                 fill=(*col, int(alpha * (1.0 - 0.06 * k))), width=3)
 
 def draw_track_lanes(draw, cx, cy, r, col, alpha):
     """Concentric stadium ovals — running track, for live sport."""
@@ -1214,38 +1166,107 @@ def renderlab_frame(fi, t):
     return bg
 
 
-def tabletop_frame(fi, t):
-    """TABLETOP — family board games. Coral; dice object."""
-    acc = (255, 100, 100)
+def adrenaline_frame(fi, t):
+    """ADRENALINE — action-movie streaming. Steel blue; explosions and speed."""
+    acc = (64, 128, 192)
+    hot = (255, 150, 60)
 
     if t < 5.0:
-        bg = gradient_bg([(20, 6, 6), (46, 16, 16), (22, 8, 8)])
+        bg = gradient_bg([(8, 10, 22), (22, 28, 60), (10, 14, 34)])
         d = ImageDraw.Draw(bg)
-        particles(d, t, acc, count=30, seed=41, vy=-36, drift=26,
-                  r_range=(2, 6), a_range=(0.25, 0.70))
-        prog = ease_back(min(t / 3.0, 1.0))
-        draw_dice(d, W // 2, H // 2 - 10, int(118 * prog), acc,
-                  int(205 * min(prog, 1.0)))
-        bg = scene_title(bg, "TABLETOP", t, 1.0, acc)
+        draw_speed_streaks(d, t, acc, 180, n=16, seed=5)
+        prog = ease_back(min(t / 2.4, 1.0))
+        draw_explosion(d, W // 2, H // 2 - 10, int(118 * prog), hot,
+                       int(225 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "ADRENALINE", t, 1.0, acc)
 
     elif t < 10.0:
-        bg = gradient_bg([(26, 8, 8), (56, 20, 20)])
+        bg = gradient_bg([(10, 12, 28), (26, 34, 70)])
         d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 4, H // 2, t, acc, period=1.7, n=2, max_r=162)
-        draw_dice(d, int(W * 0.70), H // 2,
-                  110 + int(7 * math.sin(t * 1.7)), acc, 210)
-        bg = glow_text(bg, "Everyone round the table.", W // 2, H // 2 - 25,
-                       try_font(46), (255, 226, 226, 215), glow_color=acc, glow_r=16)
+        draw_speed_streaks(d, t, acc, 200, n=20, seed=9)
+        for k, (ex, ey, er) in enumerate(((0.20, 0.30, 70), (0.80, 0.62, 92), (0.66, 0.24, 58))):
+            pulse = 0.75 + 0.25 * math.sin(t * 5 + k * 2)
+            draw_explosion(d, int(W * ex), int(H * ey), int(er * pulse), hot, 200, phase=t + k)
+        bg = glow_text(bg, "Chases. Stunts. Explosions.", W // 2, H // 2 - 25,
+                       try_font(48), (230, 240, 255, 225), glow_color=acc, glow_r=16)
 
     else:
-        bg = gradient_bg([(20, 6, 6), (50, 18, 18)])
+        bg = gradient_bg([(8, 10, 24), (22, 30, 64)])
+        d = ImageDraw.Draw(bg)
+        draw_speed_streaks(d, t, acc, 170, n=14, seed=13)
+        draw_explosion(d, W // 2, H // 2 - 30, 112, hot, 225, phase=t)
+        bg = glow_text(bg, "ADRENALINE", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Non-stop action movies.", W // 2, H - 90,
+                       try_font(36), (215, 228, 255, 225), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def chuckle_frame(fi, t):
+    """CHUCKLE — family comedy streaming. Warm coral; laughing family on a sofa."""
+    acc = (255, 120, 90)
+
+    if t < 5.0:
+        bg = gradient_bg([(48, 20, 12), (88, 40, 22), (58, 26, 14)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, (255, 210, 120), count=34, seed=41, vy=-40, drift=26,
+                  r_range=(2, 6), a_range=(0.30, 0.75))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_laughing_family(d, W // 2, H // 2 - 10, int(120 * prog), acc,
+                             int(215 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "CHUCKLE", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(56, 24, 14), (100, 46, 26)])
+        d = ImageDraw.Draw(bg)
+        pulse_rings(d, W // 4, H // 2, t, acc, period=1.7, n=2, max_r=162)
+        draw_laughing_family(d, int(W * 0.70), H // 2 + 10,
+                             112 + int(5 * math.sin(t * 2)), acc, 220, phase=t)
+        bg = glow_text(bg, "Comedy for the whole family.", W // 2, H // 2 - 70,
+                       try_font(46), (255, 238, 225, 230), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(50, 22, 12), (94, 42, 24)])
         d = ImageDraw.Draw(bg)
         pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
-        draw_dice(d, W // 2, H // 2 - 20, 124, acc, 220)
-        bg = glow_text(bg, "TABLETOP", W // 2, H - 165, try_font(66),
+        draw_laughing_family(d, W // 2, H // 2 - 30, 118, acc, 225, phase=t)
+        bg = glow_text(bg, "CHUCKLE", W // 2, H - 165, try_font(66),
                        (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Game night, sorted.", W // 2, H - 90,
-                       try_font(36), (255, 215, 215, 220), glow_color=acc, glow_r=12)
+        bg = glow_text(bg, "Family comedies and sitcoms.", W // 2, H - 90,
+                       try_font(36), (255, 228, 212, 225), glow_color=acc, glow_r=12)
+
+    return bg
+
+
+def whodunit_frame(fi, t):
+    """WHODUNIT — crime and detective series. Case-file amber; tape and fingerprint."""
+    acc = (214, 162, 40)
+
+    if t < 5.0:
+        bg = gradient_bg([(30, 22, 8), (58, 42, 14), (34, 25, 9)])
+        d = ImageDraw.Draw(bg)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_police_tape(d, W // 2, H // 2 - 10, int(118 * prog), acc,
+                         int(215 * min(prog, 1.0)))
+        bg = scene_title(bg, "WHODUNIT", t, 1.0, acc)
+
+    elif t < 10.0:
+        bg = gradient_bg([(34, 25, 9), (64, 46, 16)])
+        d = ImageDraw.Draw(bg)
+        draw_fingerprint(d, int(W * 0.72), H // 2 + 10, 96, acc, 210)
+        draw_police_tape(d, W // 2, int(H * 0.86), 150, acc, 120)
+        bg = glow_text(bg, "Crime and detective stories.", W // 2, H // 2 - 70,
+                       try_font(46), (255, 240, 205, 230), glow_color=acc, glow_r=16)
+
+    else:
+        bg = gradient_bg([(30, 22, 8), (60, 43, 15)])
+        d = ImageDraw.Draw(bg)
+        draw_fingerprint(d, W // 2, H // 2 - 40, 92, acc, 220)
+        bg = glow_text(bg, "WHODUNIT", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Every case. Every detective.", W // 2, H - 90,
+                       try_font(36), (255, 232, 190, 225), glow_color=acc, glow_r=12)
 
     return bg
 
@@ -1365,7 +1386,7 @@ ADS = [
     # (ad_id,                   frame_fn,          accent_rgb,     brand_char, category)
     ("ad_thrill_gravecrest",  gravecrest_frame,  (204,  0,  32), "G", "thrill_seeker"),
     ("ad_thrill_ranger",      ranger_frame,      (235,110,  45), "R", "thrill_seeker"),
-    ("ad_thrill_vanguard",    vanguard_frame,    ( 64,128, 192), "V", "thrill_seeker"),
+    ("ad_thrill_adrenaline",  adrenaline_frame,  ( 64,128, 192), "A", "thrill_seeker"),
     ("ad_thrill_apex",        apex_frame,        (150,205,  50), "A", "thrill_seeker"),
     ("ad_intel_curiosity",    curiosity_frame,   ( 32,184, 160), "C", "intellectual_explorer"),
     ("ad_intel_horizon",      horizon_frame,     (144, 96, 224), "H", "intellectual_explorer"),
@@ -1373,9 +1394,9 @@ ADS = [
     ("ad_intel_synapse",      synapse_frame,     (  0,205, 255), "S", "intellectual_explorer"),
     ("ad_chame_toonbox",      toonbox_frame,     ( 96, 64, 255), "T", "content_chameleon"),
     ("ad_chame_stagecraft",   stagecraft_frame,  (212,160,  32), "S", "content_chameleon"),
-    ("ad_chame_tabletop",     tabletop_frame,    (255,100, 100), "T", "content_chameleon"),
+    ("ad_chame_chuckle",      chuckle_frame,     (255,120,  90), "C", "content_chameleon"),
     ("ad_chame_storybook",    storybook_frame,   (255,120, 170), "S", "content_chameleon"),
-    ("ad_invest_nocturne",    nocturne_frame,    (184,112,  32), "N", "investigative_viewer"),
+    ("ad_invest_whodunit",    whodunit_frame,    (214,162,  40), "W", "investigative_viewer"),
     ("ad_invest_deadlines",   deadlines_frame,   ( 96,128, 176), "D", "investigative_viewer"),
     ("ad_invest_caseroom",    caseroom_frame,    (144,  0,  24), "C", "investigative_viewer"),
     ("ad_invest_tribunal",    tribunal_frame,    (214,150,  70), "T", "investigative_viewer"),

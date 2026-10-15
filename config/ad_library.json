@@ -39,10 +39,10 @@
       "click_url": "",
       "default_banner": "Because you watch horror and thriller content, we picked this for you.",
       "context_tags": [
+        "action",
         "horror",
-        "thriller",
-        "streaming",
-        "action"
+        "scary",
+        "streaming"
       ]
     },
     {
@@ -64,21 +64,21 @@
       ]
     },
     {
-      "id": "ad_thrill_vanguard",
+      "id": "ad_thrill_adrenaline",
       "category": "thrill_seeker",
-      "title": "VANGUARD — action/adventure streaming (synthetic v3)",
+      "title": "ADRENALINE — action-movie streaming (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_thrill_vanguard.mp4",
+      "video_url": "/static/ads/ad_thrill_adrenaline.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch action and adventure content, we picked this for you.",
+      "default_banner": "Because you watch action movies, we picked this for you.",
       "context_tags": [
         "action",
         "adventure",
-        "thriller",
-        "drama"
+        "drama",
+        "stunts"
       ]
     },
     {
@@ -210,20 +210,20 @@
       ]
     },
     {
-      "id": "ad_chame_tabletop",
+      "id": "ad_chame_chuckle",
       "category": "content_chameleon",
-      "title": "TABLETOP — family board games (synthetic v3)",
+      "title": "CHUCKLE — family comedy streaming (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_chame_tabletop.mp4",
+      "video_url": "/static/ads/ad_chame_chuckle.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch family and comedy content, we picked this for you.",
+      "default_banner": "Because you watch comedy, we picked this for you.",
       "context_tags": [
         "comedy",
-        "entertainment",
         "family",
+        "sitcom",
         "lifestyle"
       ]
     },
@@ -246,22 +246,21 @@
       ]
     },
     {
-      "id": "ad_invest_nocturne",
+      "id": "ad_invest_whodunit",
       "category": "investigative_viewer",
-      "title": "NOCTURNE — noir streaming (synthetic v3)",
+      "title": "WHODUNIT — crime and detective series (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
-      "video_url": "/static/ads/ad_invest_nocturne.mp4",
+      "video_url": "/static/ads/ad_invest_whodunit.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch noir and crime content, we picked this for you.",
+      "default_banner": "Because you watch crime and detective stories, we picked this for you.",
       "context_tags": [
         "crime",
-        "noir",
-        "thriller",
+        "detective",
         "drama",
-        "streaming"
+        "noir"
       ]
     },
     {
