@@ -10,13 +10,13 @@ synthesized audio.
 
 Viewer-profile → relevant ad pool
   thrill_seeker        → gravecrest (horror), adrenaline (action movies),
-                         apex (live sport), ranger (outdoor gear)
+                         apex (live sport), ranger (extreme adventure gear)
   intellectual_explorer → curiosity (science), horizon (sci-fi),
                          synapse (technology), renderlab (animation/VFX)
-  content_chameleon    → toonbox (animation), stagecraft (classic film),
-                         storybook (family musicals), chuckle (family comedy)
-  investigative_viewer → whodunit (crime/detective), deadlines (journalism),
-                         caseroom (true crime), tribunal (courtroom)
+  content_chameleon    → toonbox (funny cartoons), stagecraft (classic comedy),
+                         singalong (family musicals), chuckle (family comedy)
+  investigative_viewer → whodunit (crime/detective), deadlines (crime drama),
+                         caseroom (crime mystery), tribunal (courtroom)
 
 Run:
     pip install Pillow
@@ -366,34 +366,6 @@ def draw_wormhole(draw, cx, cy, r, col, alpha):
                   fill=(*col, alpha // 4), width=1)
 
 
-def draw_clapperboard(draw, cx, cy, r, col, alpha):
-    """Film clapperboard — animation streaming."""
-    bw, bh = int(r * 2.2), int(r * 1.6)
-    # Body
-    draw.rectangle([cx - bw // 2, cy - bh // 4, cx + bw // 2, cy + bh * 3 // 4],
-                   outline=(*col, alpha), width=4)
-    # Lines inside body
-    for k in range(1, 4):
-        y = cy - bh // 4 + k * (bh // 4)
-        draw.line([(cx - bw // 2 + 10, y), (cx + bw // 2 - 10, y)],
-                  fill=(*col, alpha // 3), width=1)
-    # Clapper strip (top bar with diagonal stripes)
-    ty = cy - bh // 4
-    draw.rectangle([cx - bw // 2, ty - int(r * 0.55), cx + bw // 2, ty],
-                   outline=(*col, alpha), width=3)
-    stripe_w = int(bw / 7)
-    for k in range(7):
-        x0 = cx - bw // 2 + k * stripe_w
-        fill_col = (*col, alpha // 2) if k % 2 == 0 else (0, 0, 0, alpha // 3)
-        draw.polygon([
-            (x0, ty - int(r * 0.55)), (x0 + stripe_w, ty - int(r * 0.55)),
-            (x0 + stripe_w, ty), (x0, ty)
-        ], fill=fill_col)
-    # Hinge circle
-    draw.ellipse([cx - 12, ty - 12, cx + 12, ty + 12],
-                 outline=(*col, alpha), width=3)
-
-
 def draw_theater_masks(draw, cx, cy, r, col, alpha):
     """Comedy + tragedy masks — classic cinema/entertainment."""
     for i, (dx, expr, brow_dy) in enumerate([(-int(r * 0.65), "happy", -1),
@@ -419,37 +391,6 @@ def draw_theater_masks(draw, cx, cy, r, col, alpha):
         draw.line([(mx - mr // 3, bwy - brow_dy * 5),
                    (mx + mr // 3, bwy + brow_dy * 5)],
                   fill=(*col, alpha), width=3)
-
-
-def draw_typewriter(draw, cx, cy, r, col, alpha):
-    """Typewriter — investigative journalism."""
-    bw, bh = int(r * 2.0), int(r * 1.2)
-    # Body
-    draw.rounded_rectangle([cx - bw // 2, cy - bh // 2,
-                             cx + bw // 2, cy + bh // 2],
-                            radius=8, outline=(*col, alpha), width=4)
-    # Paper roll at top
-    draw.rectangle([cx - bw // 3, cy - bh // 2 - 30,
-                    cx + bw // 3, cy - bh // 2 + 5],
-                   outline=(*col, alpha), width=3)
-    # Text lines on paper
-    for lk in range(3):
-        lw = int(bw * (0.55 - lk * 0.08))
-        ly = cy - bh // 2 - 20 + lk * 9
-        draw.line([(cx - lw // 2, ly), (cx + lw // 2, ly)],
-                  fill=(*col, alpha // 2), width=2)
-    # Key rows (3 rows of circular keys)
-    key_r = 8
-    for row, (ny, n) in enumerate([(cy + 2, 10), (cy + 22, 10), (cy + 40, 8)]):
-        x_start = cx - (n // 2) * (key_r * 2 + 4) + key_r
-        for k in range(n):
-            kx = x_start + k * (key_r * 2 + 4)
-            draw.ellipse([kx - key_r, ny - key_r, kx + key_r, ny + key_r],
-                         outline=(*col, alpha), width=2)
-    # Carriage return lever
-    draw.line([(cx + bw // 2 - 10, cy - bh // 2),
-               (cx + bw // 2 + 22, cy - bh // 4)],
-              fill=(*col, alpha), width=4)
 
 
 def draw_evidence_board(draw, cx, cy, r, col, alpha):
@@ -642,180 +583,9 @@ def horizon_frame(fi, t):
 # CONTENT_CHAMELEON ads
 # ─────────────────────────────────────────────────────────────────────────────
 
-def toonbox_frame(fi, t):
-    """TOONBOX — animation streaming. Indigo; clapperboard object."""
-    acc = (96, 64, 255)
-
-    if t < 5.0:
-        bg = gradient_bg([(10, 5, 35), (30, 15, 80), (15, 8, 45)])
-        d = ImageDraw.Draw(bg)
-        # Bouncing color blobs (cartoon feel)
-        for k in range(5):
-            bx = int(W * (0.15 + k * 0.18) + 20 * math.sin(t * 2 + k))
-            by = int(H * 0.5 + 30 * math.cos(t * 1.5 + k * 0.7))
-            blob_col = hsv_to_rgb((k / 5.0 + t * 0.05) % 1.0, 0.8, 0.9)
-            d.ellipse([bx - 18, by - 18, bx + 18, by + 18],
-                      fill=(*blob_col, 60))
-        cb_prog = ease_back(min(t / 3.0, 1.0))
-        draw_clapperboard(d, W // 2, H // 2, int(65 * cb_prog), acc,
-                          int(210 * min(cb_prog, 1.0)))
-        bg = scene_title(bg, "TOONBOX", t, 0.9, acc, font_size=62)
-
-    elif t < 10.0:
-        bg = gradient_bg([(14, 8, 45), (35, 18, 90)])
-        d = ImageDraw.Draw(bg)
-        for k in range(5):
-            bx = int(W * (0.12 + k * 0.19) + 25 * math.sin(t * 1.8 + k))
-            by = int(H * 0.6 + 35 * math.cos(t * 1.2 + k))
-            blob_col = hsv_to_rgb((k / 5.0 + t * 0.05) % 1.0, 0.8, 0.9)
-            d.ellipse([bx - 22, by - 22, bx + 22, by + 22],
-                      fill=(*blob_col, 50))
-        draw_clapperboard(d, int(W * 0.70), H // 2, 62, acc, 215)
-        bg = glow_text(bg, "Animation for everyone.", W // 2, H // 2 - 25,
-                       try_font(46), (220, 210, 255, 215), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(8, 4, 28), (22, 10, 58)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.2, n=3, max_r=195)
-        draw_clapperboard(d, W // 2, H // 2 - 18, 68, acc, 215)
-        bg = glow_text(bg, "TOONBOX", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Animated worlds await.", W // 2, H - 90,
-                       try_font(36), (200, 190, 255, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
-def stagecraft_frame(fi, t):
-    """STAGECRAFT — classic film & comedy. Gold; theater masks object."""
-    acc = (212, 160, 32)
-
-    if t < 5.0:
-        bg = gradient_bg([(22, 14, 0), (55, 35, 0), (28, 18, 0)])
-        d = ImageDraw.Draw(bg)
-        # Stage curtain columns (vertical bands)
-        for k in range(6):
-            cx_c = int(W * k / 5)
-            wave = int(12 * math.sin(t * 0.6 + k * 0.9))
-            d.line([(cx_c + wave, 0), (cx_c + wave, H)],
-                   fill=(*acc, 18), width=28)
-        tm_prog = ease_out(min(t / 3.5, 1.0))
-        draw_theater_masks(d, W // 2, H // 2 - 5, int(55 * tm_prog), acc,
-                           int(205 * tm_prog))
-        bg = scene_title(bg, "STAGECRAFT", t, 0.8, acc, font_size=56)
-
-    elif t < 10.0:
-        bg = gradient_bg([(28, 18, 0), (65, 42, 0)])
-        d = ImageDraw.Draw(bg)
-        for k in range(6):
-            cx_c = int(W * k / 5)
-            wave = int(10 * math.sin(t * 0.5 + k))
-            d.line([(cx_c + wave, 0), (cx_c + wave, H)],
-                   fill=(*acc, 14), width=22)
-        draw_theater_masks(d, int(W * 0.70), H // 2, 52, acc, 210)
-        bg = glow_text(bg, "Classics reimagined.", W // 2, H // 2 - 22,
-                       try_font(48), (255, 245, 200, 215), glow_color=acc, glow_r=15)
-
-    else:
-        bg = gradient_bg([(18, 11, 0), (45, 28, 0)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=195)
-        draw_theater_masks(d, W // 2, H // 2 - 15, 58, acc, 215)
-        bg = glow_text(bg, "STAGECRAFT", W // 2, H - 165, try_font(60),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Every era. Every laugh.", W // 2, H - 90,
-                       try_font(36), (255, 240, 190, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 # INVESTIGATIVE_VIEWER ads
 # ─────────────────────────────────────────────────────────────────────────────
-
-def deadlines_frame(fi, t):
-    """DEADLINES — investigative journalism. Slate blue; typewriter object."""
-    acc = (96, 128, 176)
-
-    if t < 5.0:
-        bg = gradient_bg([(8, 10, 18), (20, 26, 48), (10, 14, 26)])
-        d = ImageDraw.Draw(bg)
-        # Scrolling headline text (left side)
-        headlines = ["BREAKING:", "SOURCES SAY:", "EXCLUSIVE:", "REPORT:"]
-        for k, hl in enumerate(headlines):
-            ly = int((H * 0.2 + k * 60 - t * 15) % H)
-            d.text((30, ly), hl, font=try_font(20), fill=(*acc, 55))
-        tw_prog = ease_out(min(t / 3.5, 1.0))
-        draw_typewriter(d, W // 2, H // 2 - 10, int(60 * tw_prog), acc,
-                        int(205 * tw_prog))
-        bg = scene_title(bg, "DEADLINES", t, 0.8, acc, font_size=58)
-
-    elif t < 10.0:
-        bg = gradient_bg([(12, 15, 28), (30, 38, 70)])
-        d = ImageDraw.Draw(bg)
-        for k, hl in enumerate(["BREAKING:", "SOURCES SAY:", "EXCLUSIVE:"]):
-            ly = int((H * 0.15 + k * 70 - t * 12) % H)
-            d.text((30, ly), hl, font=try_font(18), fill=(*acc, 45))
-        draw_typewriter(d, int(W * 0.70), H // 2, 58, acc, 210)
-        bg = glow_text(bg, "The truth demands urgency.", W // 2, H // 2 - 22,
-                       try_font(43), (210, 220, 240, 215), glow_color=acc, glow_r=15)
-
-    else:
-        bg = gradient_bg([(6, 8, 16), (16, 22, 42)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=192)
-        draw_typewriter(d, W // 2, H // 2 - 18, 64, acc, 210)
-        bg = glow_text(bg, "DEADLINES", W // 2, H - 165, try_font(62),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Journalism that matters.", W // 2, H - 90,
-                       try_font(36), (195, 210, 235, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
-def caseroom_frame(fi, t):
-    """CASEROOM — true crime podcast. Crimson-dark; evidence board object."""
-    acc = (144, 0, 24)
-
-    if t < 5.0:
-        bg = gradient_bg([(10, 4, 4), (28, 8, 8), (12, 5, 5)])
-        d = ImageDraw.Draw(bg)
-        # Static noise texture
-        rng = random.Random(fi * 3131)
-        for _ in range(800):
-            nx = rng.randint(0, W)
-            ny = rng.randint(0, H)
-            d.point((nx, ny), fill=(255, 255, 255, rng.randint(2, 12)))
-        eb_prog = ease_out(min(t / 3.0, 1.0))
-        draw_evidence_board(d, W // 2, H // 2, int(75 * eb_prog), acc,
-                            int(200 * eb_prog))
-        bg = scene_title(bg, "CASEROOM", t, 0.9, acc, font_size=62)
-
-    elif t < 10.0:
-        bg = gradient_bg([(14, 6, 6), (36, 10, 10)])
-        d = ImageDraw.Draw(bg)
-        rng = random.Random(fi * 2477)
-        for _ in range(500):
-            nx = rng.randint(0, W)
-            ny = rng.randint(0, H)
-            d.point((nx, ny), fill=(255, 255, 255, rng.randint(2, 9)))
-        draw_evidence_board(d, int(W * 0.68), H // 2, 72, acc, 210)
-        bg = glow_text(bg, "Every case. Every clue.", W // 2, H // 2 - 22,
-                       try_font(46), (240, 200, 200, 215), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(8, 2, 2), (22, 6, 6)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.3, n=3, max_r=192)
-        draw_evidence_board(d, W // 2, H // 2 - 18, 78, acc, 210)
-        bg = glow_text(bg, "CASEROOM", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "True crime. True depth.", W // 2, H - 90,
-                       try_font(36), (240, 190, 190, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Gap-filling ads
@@ -824,30 +594,6 @@ def caseroom_frame(fi, t):
 # relevant ad: sports (jackie_robinson), consumer technology (elephant_dream,
 # tears_of_steel) and family/fantasy/music (pied_piper).
 # ─────────────────────────────────────────────────────────────────────────────
-
-def draw_compass(draw, cx, cy, r, col, alpha, phase=0.0):
-    """Compass rose with a swinging needle — outdoor and adventure gear."""
-    draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)], outline=(*col, alpha), width=4)
-    inner = int(r * 0.80)
-    draw.ellipse([(cx - inner, cy - inner), (cx + inner, cy + inner)],
-                 outline=(*col, int(alpha * 0.45)), width=2)
-    for k in range(8):
-        ang = math.pi * k / 4.0
-        long_tick = (k % 2 == 0)
-        r0 = int(r * (0.62 if long_tick else 0.74))
-        draw.line([(cx + int(r0 * math.sin(ang)), cy - int(r0 * math.cos(ang))),
-                   (cx + int(r * 0.92 * math.sin(ang)), cy - int(r * 0.92 * math.cos(ang)))],
-                  fill=(*col, alpha if long_tick else int(alpha * 0.6)),
-                  width=3 if long_tick else 2)
-    na = math.radians(-32.0 + 14.0 * math.sin(phase * 1.3))
-    tip, tail, half = int(r * 0.66), int(r * 0.46), int(r * 0.13)
-    draw.polygon([(cx + int(tip * math.sin(na)), cy - int(tip * math.cos(na))),
-                  (cx + int(half * math.cos(na)), cy + int(half * math.sin(na))),
-                  (cx - int(half * math.cos(na)), cy - int(half * math.sin(na)))],
-                 outline=(*col, alpha), width=3)
-    draw.line([(cx, cy), (cx - int(tail * math.sin(na)), cy + int(tail * math.cos(na)))],
-              fill=(*col, int(alpha * 0.7)), width=3)
-
 
 def draw_wireframe_cube(draw, cx, cy, r, col, alpha, phase=0.0):
     """Rotating wireframe cube — 3D animation and VFX software."""
@@ -964,6 +710,96 @@ def draw_fingerprint(draw, cx, cy, r, col, alpha):
         draw.arc([(cx - rx, cy - ry), (cx + rx, cy + ry)], start=start, end=end,
                  fill=(*col, int(alpha * (1.0 - 0.06 * k))), width=3)
 
+def draw_laugh_marks(draw, cx, cy, spread, col, alpha, phase=0.0, n=3, size=30):
+    """Bobbing "ha" marks above a face or scene — visible laughter."""
+    for k in range(n):
+        tw = 0.55 + 0.45 * math.sin(phase * 4 + k * 2.1)
+        x = cx - spread + k * spread
+        y = cy - int(10 * (k % 2)) + int(4 * math.sin(phase * 6 + k))
+        draw.text((x, y), "ha", fill=(*col, int(alpha * tw)), font=try_font(size))
+
+
+def draw_climbing_gear(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Mountain peak with a carabiner in front — extreme adventure gear."""
+    if r <= 0:
+        return
+    base = cy + int(r * 0.70)
+    draw.polygon([(cx - int(r * 1.15), base), (cx - int(r * 0.25), cy - int(r * 0.85)),
+                  (cx + int(r * 0.25), cy - int(r * 0.30)), (cx + int(r * 0.55), cy - int(r * 0.65)),
+                  (cx + int(r * 1.15), base)], outline=(*col, int(alpha * 0.55)), width=3)
+    w, h = int(r * 0.52), int(r * 0.92)
+    tilt = int(r * 0.06 * math.sin(phase * 2.5))
+    x0, y0 = cx - w // 2 + tilt, cy - h // 2 + int(r * 0.10)
+    draw.rounded_rectangle([(x0, y0), (x0 + w, y0 + h)], radius=w // 2,
+                           outline=(*col, alpha), width=6)
+    draw.line([(x0 + w - 3, y0 + int(h * 0.30)), (x0 + int(w * 0.35), y0 + int(h * 0.58))],
+              fill=(*col, alpha), width=5)
+
+
+def draw_laughing_cartoon(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Round cartoon face laughing — squinted eyes, wide open mouth."""
+    if r <= 0:
+        return
+    bob = int(r * 0.05 * math.sin(phase * 8))
+    cy = cy + bob
+    draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)], outline=(*col, alpha), width=5)
+    for ex in (-0.38, 0.38):
+        x = cx + int(r * ex)
+        draw.arc([(x - int(r * 0.18), cy - int(r * 0.42)), (x + int(r * 0.18), cy - int(r * 0.12))],
+                 start=200, end=340, fill=(*col, alpha), width=5)
+    draw.chord([(cx - int(r * 0.55), cy - int(r * 0.10)), (cx + int(r * 0.55), cy + int(r * 0.70))],
+               start=0, end=180, outline=(*col, alpha), width=5)
+    draw.arc([(cx - int(r * 0.30), cy + int(r * 0.25)), (cx + int(r * 0.30), cy + int(r * 0.62))],
+             start=200, end=340, fill=(*col, int(alpha * 0.6)), width=3)
+
+
+def draw_musical_stage(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Stage with drawn curtains and bouncing musical notes — family musicals."""
+    if r <= 0:
+        return
+    w, h = int(r * 1.5), int(r * 1.05)
+    top, floor = cy - h // 2, cy + h // 2
+    draw.rectangle([(cx - w // 2, top), (cx + w // 2, floor)], outline=(*col, alpha), width=4)
+    for side in (-1, 1):
+        edge = cx + side * w // 2
+        inner = cx + side * int(w * 0.20)
+        draw.polygon([(edge, top), (inner, top), (edge - side * int(w * 0.05), floor)],
+                     outline=(*col, int(alpha * 0.75)), width=3)
+    draw.line([(cx - w // 2 - 12, floor + 8), (cx + w // 2 + 12, floor + 8)], fill=(*col, alpha), width=4)
+    for k, dx in enumerate((-0.16, 0.0, 0.16)):
+        nx = cx + int(w * dx)
+        ny = cy + int(r * 0.05) - int(r * 0.14 * abs(math.sin(phase * 3 + k * 1.3)))
+        hr = max(4, int(r * 0.07))
+        draw.ellipse([(nx - hr, ny - hr // 1.3), (nx + hr, ny + hr // 1.3)], fill=(*col, alpha))
+        draw.line([(nx + hr - 1, ny), (nx + hr - 1, ny - int(r * 0.32))], fill=(*col, alpha), width=3)
+        draw.line([(nx + hr - 1, ny - int(r * 0.32)), (nx + hr + int(r * 0.10), ny - int(r * 0.22))],
+                  fill=(*col, alpha), width=3)
+
+
+def draw_badge_clock(draw, cx, cy, r, col, alpha, phase=0.0):
+    """Police badge beside a stopwatch with a sweeping hand — crime against the clock."""
+    if r <= 0:
+        return
+    bx, by, br = cx - int(r * 0.45), cy, int(r * 0.62)
+    pts = []
+    for k in range(12):
+        ang = math.pi * k / 6 - math.pi / 2
+        rr = br if k % 2 == 0 else int(br * 0.62)
+        pts.append((bx + int(rr * math.cos(ang)), by + int(rr * math.sin(ang))))
+    draw.polygon(pts, outline=(*col, alpha), width=5)
+    ir = int(br * 0.34)
+    draw.ellipse([(bx - ir, by - ir), (bx + ir, by + ir)], outline=(*col, alpha), width=4)
+    for k in range(6):
+        ang = math.pi * k / 3 - math.pi / 2
+        tx, ty = bx + int(br * math.cos(ang)), by + int(br * math.sin(ang))
+        draw.ellipse([(tx - 6, ty - 6), (tx + 6, ty + 6)], fill=(*col, alpha))
+    sx, sy, sr = cx + int(r * 0.78), cy + int(r * 0.05), int(r * 0.40)
+    draw.ellipse([(sx - sr, sy - sr), (sx + sr, sy + sr)], outline=(*col, alpha), width=5)
+    draw.rectangle([(sx - 7, sy - sr - 16), (sx + 7, sy - sr)], outline=(*col, alpha), width=3)
+    ang = phase * 2.4
+    draw.line([(sx, sy), (sx + int(sr * 0.80 * math.sin(ang)), sy - int(sr * 0.80 * math.cos(ang)))],
+              fill=(*col, alpha), width=4)
+
 def draw_track_lanes(draw, cx, cy, r, col, alpha):
     """Concentric stadium ovals — running track, for live sport."""
     for i, scale in enumerate((1.0, 0.72, 0.44)):
@@ -998,35 +834,6 @@ def draw_microchip(draw, cx, cy, r, col, alpha):
                   fill=(*col, alpha), width=3)
         draw.line([(cx + half, cy + off), (cx + half + pin, cy + off)],
                   fill=(*col, alpha), width=3)
-
-
-def draw_open_book(draw, cx, cy, r, col, alpha, sparkle_phase=0.0):
-    """Open book with sparkles — family storytelling, fantasy and musicals."""
-    w, h = int(r * 0.92), int(r * 0.60)
-    for side in (-1, 1):
-        ox = cx + side * w
-        draw.polygon([(cx, cy - int(h * 0.45)), (ox, cy - int(h * 0.12)),
-                      (ox, cy + int(h * 0.72)), (cx, cy + int(h * 0.45))],
-                     outline=(*col, alpha), width=4)
-        # Ruled lines read as text and stop the pages looking like wings.
-        for k in (1, 2, 3):
-            f = k / 4.0
-            y0 = cy - int(h * 0.45) + int(h * 0.90 * f)
-            y1 = cy - int(h * 0.12) + int(h * 0.84 * f)
-            draw.line([(cx + side * int(w * 0.18), y0 + int(h * 0.06)),
-                       (cx + side * int(w * 0.82), y1 + int(h * 0.06))],
-                      fill=(*col, int(alpha * 0.55)), width=2)
-    draw.line([(cx, cy - int(h * 0.45)), (cx, cy + int(h * 0.45))],
-              fill=(*col, alpha), width=4)
-    for i, (sx, sy, sr) in enumerate((
-        (cx - int(w * 0.45), cy - int(h * 1.15), 7),
-        (cx + int(w * 0.40), cy - int(h * 1.35), 9),
-        (cx + int(w * 0.80), cy - int(h * 0.55), 6),
-    )):
-        tw = 0.55 + 0.45 * math.sin(sparkle_phase * 2.2 + i * 1.7)
-        a = int(alpha * tw)
-        draw.line([(sx - sr, sy), (sx + sr, sy)], fill=(*col, a), width=3)
-        draw.line([(sx, sy - sr), (sx, sy + sr)], fill=(*col, a), width=3)
 
 
 def draw_gavel(draw, cx, cy, r, col, alpha):
@@ -1090,42 +897,6 @@ def tribunal_frame(fi, t):
                        (255, 255, 255, 255), glow_color=acc, glow_r=22)
         bg = glow_text(bg, "Courtroom drama, every week.", W // 2, H - 90,
                        try_font(36), (240, 220, 190, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
-def ranger_frame(fi, t):
-    """RANGER — outdoor adventure gear. Vivid orange; compass object."""
-    acc = (235, 110, 45)
-
-    if t < 5.0:
-        bg = gradient_bg([(18, 8, 2), (42, 20, 6), (20, 10, 3)])
-        d = ImageDraw.Draw(bg)
-        particles(d, t, acc, count=30, seed=31, vy=-44, drift=24,
-                  r_range=(2, 5), a_range=(0.25, 0.68))
-        prog = ease_back(min(t / 3.0, 1.0))
-        draw_compass(d, W // 2, H // 2 - 10, int(112 * prog), acc,
-                     int(205 * min(prog, 1.0)), phase=t)
-        bg = scene_title(bg, "RANGER", t, 1.0, acc)
-
-    elif t < 10.0:
-        bg = gradient_bg([(22, 10, 4), (50, 24, 8)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 4, H // 2, t, acc, period=1.9, n=2, max_r=160)
-        draw_compass(d, int(W * 0.70), H // 2,
-                     104 + int(6 * math.sin(t * 1.6)), acc, 210, phase=t)
-        bg = glow_text(bg, "Made for out there.", W // 2, H // 2 - 25,
-                       try_font(50), (255, 232, 212, 215), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(18, 8, 3), (46, 22, 7)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
-        draw_compass(d, W // 2, H // 2 - 20, 118, acc, 220, phase=t)
-        bg = glow_text(bg, "RANGER", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Gear for the wild places.", W // 2, H - 90,
-                       try_font(36), (255, 220, 198, 220), glow_color=acc, glow_r=12)
 
     return bg
 
@@ -1270,6 +1041,178 @@ def whodunit_frame(fi, t):
 
     return bg
 
+def ranger_frame(fi, t):
+    """RANGER — extreme adventure gear. Vivid orange; mountain and carabiner."""
+    acc = (235, 110, 45)
+    if t < 5.0:
+        bg = gradient_bg([(18, 8, 2), (42, 20, 6), (20, 10, 3)])
+        d = ImageDraw.Draw(bg)
+        draw_speed_streaks(d, t, acc, 150, n=12, seed=31)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_climbing_gear(d, W // 2, H // 2 - 10, int(118 * prog), acc,
+                           int(210 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "RANGER", t, 1.0, acc)
+    elif t < 10.0:
+        bg = gradient_bg([(22, 10, 4), (50, 24, 8)])
+        d = ImageDraw.Draw(bg)
+        draw_speed_streaks(d, t, acc, 170, n=16, seed=33)
+        draw_climbing_gear(d, int(W * 0.72), H // 2 + 10, 110, acc, 215, phase=t)
+        bg = glow_text(bg, "Climb. Ride. Jump.", W // 2, H // 2 - 70,
+                       try_font(50), (255, 232, 212, 225), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(18, 8, 3), (46, 22, 7)])
+        d = ImageDraw.Draw(bg)
+        draw_speed_streaks(d, t, acc, 140, n=12, seed=35)
+        draw_climbing_gear(d, W // 2, H // 2 - 30, 112, acc, 222, phase=t)
+        bg = glow_text(bg, "RANGER", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Gear for extreme adventures.", W // 2, H - 90,
+                       try_font(36), (255, 220, 198, 225), glow_color=acc, glow_r=12)
+    return bg
+
+
+def toonbox_frame(fi, t):
+    """TOONBOX — funny cartoons. Indigo; laughing cartoon face."""
+    acc = (96, 64, 255)
+    hi = (200, 185, 255)
+    if t < 5.0:
+        bg = gradient_bg([(12, 6, 40), (30, 18, 90), (16, 8, 50)])
+        d = ImageDraw.Draw(bg)
+        particles(d, t, (255, 200, 120), count=30, seed=17, vy=-36, drift=26,
+                  r_range=(2, 6), a_range=(0.30, 0.75))
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_laughing_cartoon(d, W // 2, H // 2 - 10, int(80 * prog), hi,
+                              int(225 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "TOONBOX", t, 0.9, acc, font_size=62)
+    elif t < 10.0:
+        bg = gradient_bg([(14, 8, 46), (34, 22, 100)])
+        d = ImageDraw.Draw(bg)
+        draw_laughing_cartoon(d, W // 2, H // 2 + 80, 82, hi, 225, phase=t)
+        draw_laugh_marks(d, W // 2, H // 2 - 40, 56, hi, 230, phase=t)
+        bg = glow_text(bg, "Cartoons that make you laugh.", W // 2, H // 2 - 150,
+                       try_font(48), (230, 225, 255, 230), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(12, 6, 42), (30, 20, 92)])
+        d = ImageDraw.Draw(bg)
+        draw_laughing_cartoon(d, W // 2, H // 2 - 40, 76, hi, 228, phase=t)
+        draw_laugh_marks(d, W // 2, H // 2 - 150, 56, hi, 230, phase=t)
+        bg = glow_text(bg, "TOONBOX", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Funny cartoons for the whole family.", W // 2, H - 90,
+                       try_font(34), (220, 215, 255, 225), glow_color=acc, glow_r=12)
+    return bg
+
+
+def stagecraft_frame(fi, t):
+    """STAGECRAFT — classic comedy films. Gold; theatre masks with laughter."""
+    acc = (212, 160, 32)
+    if t < 5.0:
+        bg = gradient_bg([(28, 20, 4), (56, 40, 8), (30, 22, 5)])
+        d = ImageDraw.Draw(bg)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_theater_masks(d, W // 2, H // 2 - 5, int(95 * prog), acc, int(215 * min(prog, 1.0)))
+        bg = scene_title(bg, "STAGECRAFT", t, 0.8, acc, font_size=56)
+    elif t < 10.0:
+        bg = gradient_bg([(32, 23, 5), (62, 45, 10)])
+        d = ImageDraw.Draw(bg)
+        draw_theater_masks(d, W // 2, H // 2 + 75, 95, acc, 215)
+        draw_laugh_marks(d, W // 2, H // 2 - 40, 56, acc, 230, phase=t)
+        bg = glow_text(bg, "Classic comedies, big laughs.", W // 2, H // 2 - 150,
+                       try_font(48), (255, 240, 200, 230), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(28, 20, 4), (58, 42, 9)])
+        d = ImageDraw.Draw(bg)
+        draw_theater_masks(d, W // 2, H // 2 - 40, 95, acc, 220)
+        draw_laugh_marks(d, W // 2, H // 2 - 175, 56, acc, 230, phase=t)
+        bg = glow_text(bg, "STAGECRAFT", W // 2, H - 165, try_font(60),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Classic films that still make you laugh.", W // 2, H - 90,
+                       try_font(32), (250, 235, 190, 225), glow_color=acc, glow_r=12)
+    return bg
+
+
+def storybook_frame(fi, t):
+    """SINGALONG — family musicals. Warm pink; stage with bouncing notes."""
+    acc = (255, 120, 170)
+    if t < 5.0:
+        bg = gradient_bg([(20, 6, 14), (46, 14, 32), (24, 8, 18)])
+        d = ImageDraw.Draw(bg)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_musical_stage(d, W // 2, H // 2 - 10, int(116 * prog), acc,
+                           int(210 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "SINGALONG", t, 1.0, acc)
+    elif t < 10.0:
+        bg = gradient_bg([(26, 8, 18), (56, 18, 40)])
+        d = ImageDraw.Draw(bg)
+        draw_musical_stage(d, W // 2, H // 2 + 80, 118, acc, 215, phase=t)
+        draw_laugh_marks(d, W // 2, H // 2 - 40, 56, acc, 220, phase=t)
+        bg = glow_text(bg, "Sing-along family musicals.", W // 2, H // 2 - 150,
+                       try_font(48), (255, 230, 240, 230), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(20, 6, 16), (50, 16, 36)])
+        d = ImageDraw.Draw(bg)
+        draw_musical_stage(d, W // 2, H // 2 - 30, 110, acc, 220, phase=t)
+        bg = glow_text(bg, "SINGALONG", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Family musicals, full of laughs.", W // 2, H - 90,
+                       try_font(36), (255, 220, 235, 225), glow_color=acc, glow_r=12)
+    return bg
+
+
+def deadlines_frame(fi, t):
+    """DEADLINES — crime drama against the clock. Slate blue; police badge and stopwatch."""
+    acc = (96, 128, 176)
+    hi = (175, 200, 235)
+    if t < 5.0:
+        bg = gradient_bg([(6, 10, 18), (16, 24, 40), (8, 12, 22)])
+        d = ImageDraw.Draw(bg)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_badge_clock(d, W // 2, H // 2 - 10, int(118 * prog), hi,
+                             int(215 * min(prog, 1.0)), phase=t)
+        bg = scene_title(bg, "DEADLINES", t, 0.8, acc, font_size=58)
+    elif t < 10.0:
+        bg = gradient_bg([(8, 12, 22), (20, 28, 48)])
+        d = ImageDraw.Draw(bg)
+        draw_badge_clock(d, W // 2, H // 2 + 70, 120, hi, 215, phase=t)
+        bg = glow_text(bg, "Detectives against the clock.", W // 2, H // 2 - 150,
+                       try_font(48), (220, 230, 245, 230), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(6, 10, 18), (18, 26, 44)])
+        d = ImageDraw.Draw(bg)
+        draw_badge_clock(d, W // 2, H // 2 - 30, 112, hi, 222, phase=t)
+        bg = glow_text(bg, "DEADLINES", W // 2, H - 165, try_font(62),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Crime drama. Every second counts.", W // 2, H - 90,
+                       try_font(34), (210, 222, 240, 225), glow_color=acc, glow_r=12)
+    return bg
+
+
+def caseroom_frame(fi, t):
+    """CASEROOM — crime mystery series. Crimson; evidence board."""
+    acc = (144, 0, 24)
+    hi = (230, 120, 120)
+    if t < 5.0:
+        bg = gradient_bg([(10, 2, 2), (26, 6, 6), (12, 3, 3)])
+        d = ImageDraw.Draw(bg)
+        prog = ease_back(min(t / 3.0, 1.0))
+        draw_evidence_board(d, W // 2, H // 2, int(115 * prog), hi, int(215 * min(prog, 1.0)))
+        bg = scene_title(bg, "CASEROOM", t, 0.9, acc, font_size=62)
+    elif t < 10.0:
+        bg = gradient_bg([(12, 3, 3), (30, 8, 8)])
+        d = ImageDraw.Draw(bg)
+        draw_evidence_board(d, W // 2, H // 2 + 70, 115, hi, 215)
+        bg = glow_text(bg, "Every case. Every suspect.", W // 2, H // 2 - 150,
+                       try_font(48), (250, 220, 220, 230), glow_color=acc, glow_r=16)
+    else:
+        bg = gradient_bg([(10, 2, 2), (26, 7, 7)])
+        d = ImageDraw.Draw(bg)
+        draw_evidence_board(d, W // 2, H // 2 - 40, 115, hi, 220)
+        bg = glow_text(bg, "CASEROOM", W // 2, H - 165, try_font(66),
+                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
+        bg = glow_text(bg, "Crime mysteries, one case at a time.", W // 2, H - 90,
+                       try_font(34), (245, 200, 200, 225), glow_color=acc, glow_r=12)
+    return bg
+
 def apex_frame(fi, t):
     """APEX — live sports streaming. Turf lime; running-track object."""
     acc = (150, 205, 50)
@@ -1338,42 +1281,6 @@ def synapse_frame(fi, t):
                        (255, 255, 255, 255), glow_color=acc, glow_r=22)
         bg = glow_text(bg, "Technology that keeps up.", W // 2, H - 90,
                        try_font(36), (200, 235, 255, 220), glow_color=acc, glow_r=12)
-
-    return bg
-
-
-def storybook_frame(fi, t):
-    """STORYBOOK — family musicals & live shows. Warm pink; open-book object."""
-    acc = (255, 120, 170)
-
-    if t < 5.0:
-        bg = gradient_bg([(20, 6, 14), (46, 14, 32), (24, 8, 18)])
-        d = ImageDraw.Draw(bg)
-        particles(d, t, acc, count=32, seed=23, vy=-38, drift=28,
-                  r_range=(2, 6), a_range=(0.25, 0.70))
-        prog = ease_back(min(t / 3.0, 1.0))
-        draw_open_book(d, W // 2, H // 2 - 10, int(120 * prog), acc,
-                       int(205 * min(prog, 1.0)), sparkle_phase=t)
-        bg = scene_title(bg, "STORYBOOK", t, 1.0, acc)
-
-    elif t < 10.0:
-        bg = gradient_bg([(26, 8, 18), (56, 18, 40)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 4, H // 2, t, acc, period=1.8, n=2, max_r=162)
-        draw_open_book(d, int(W * 0.70), H // 2,
-                       112 + int(7 * math.sin(t * 1.6)), acc, 210, sparkle_phase=t)
-        bg = glow_text(bg, "Where stories sing.", W // 2, H // 2 - 25,
-                       try_font(50), (255, 230, 240, 215), glow_color=acc, glow_r=16)
-
-    else:
-        bg = gradient_bg([(20, 6, 16), (50, 16, 36)])
-        d = ImageDraw.Draw(bg)
-        pulse_rings(d, W // 2, H // 2, t, acc, period=1.4, n=3, max_r=200)
-        draw_open_book(d, W // 2, H // 2 - 20, 126, acc, 220, sparkle_phase=t)
-        bg = glow_text(bg, "STORYBOOK", W // 2, H - 165, try_font(66),
-                       (255, 255, 255, 255), glow_color=acc, glow_r=22)
-        bg = glow_text(bg, "Family tales, live on stage.", W // 2, H - 90,
-                       try_font(36), (255, 220, 235, 220), glow_color=acc, glow_r=12)
 
     return bg
 

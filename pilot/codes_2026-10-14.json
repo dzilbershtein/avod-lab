@@ -1,25 +1,87 @@
 {
-  "_note": "Survey codes for the 2026-10-14 ad-relevance pilot. A04, A08 and A16 rated ads that have since been replaced (NOCTURNE, VANGUARD, TABLETOP); the script reports them as retired.",
+  "_note": "Survey codes for the 2026-10-14 ad-relevance pilot. A04, A08 and A16 rated ads that have since been replaced (NOCTURNE, VANGUARD, TABLETOP). The ads in changed_since_pilot were redesigned afterwards, so their ratings describe an earlier version.",
   "attention": {
-    "attn_1": 2, "attn_2": 2, "attn_3": 2, "attn_4": 2,
-    "attn2_1": 1, "attn2_2": 1, "attn2_3": 7, "attn2_4": 1
+    "attn_1": 2,
+    "attn_2": 2,
+    "attn_3": 2,
+    "attn_4": 2,
+    "attn2_1": 1,
+    "attn2_2": 1,
+    "attn2_3": 7,
+    "attn2_4": 1
   },
   "codes": {
-    "A01": {"ad_id": "ad_thrill_apex",       "intended": "A"},
-    "A02": {"ad_id": "ad_invest_caseroom",   "intended": "D"},
-    "A03": {"ad_id": "ad_invest_deadlines",  "intended": "D"},
-    "A04": {"ad_id": "ad_invest_nocturne",   "intended": "D"},
-    "A05": {"ad_id": "ad_chame_stagecraft",  "intended": "C"},
-    "A06": {"ad_id": "ad_chame_toonbox",     "intended": "C"},
-    "A07": {"ad_id": "ad_intel_horizon",     "intended": "B"},
-    "A08": {"ad_id": "ad_thrill_vanguard",   "intended": "A"},
-    "A09": {"ad_id": "ad_intel_curiosity",   "intended": "B"},
-    "A10": {"ad_id": "ad_thrill_gravecrest", "intended": "A"},
-    "A11": {"ad_id": "ad_intel_synapse",     "intended": "B"},
-    "A12": {"ad_id": "ad_chame_storybook",   "intended": "C"},
-    "A13": {"ad_id": "ad_invest_tribunal",   "intended": "D"},
-    "A14": {"ad_id": "ad_thrill_ranger",     "intended": "A"},
-    "A15": {"ad_id": "ad_intel_renderlab",   "intended": "B"},
-    "A16": {"ad_id": "ad_chame_tabletop",    "intended": "C"}
-  }
+    "A01": {
+      "ad_id": "ad_thrill_apex",
+      "intended": "A"
+    },
+    "A02": {
+      "ad_id": "ad_invest_caseroom",
+      "intended": "D"
+    },
+    "A03": {
+      "ad_id": "ad_invest_deadlines",
+      "intended": "D"
+    },
+    "A04": {
+      "ad_id": "ad_invest_nocturne",
+      "intended": "D"
+    },
+    "A05": {
+      "ad_id": "ad_chame_stagecraft",
+      "intended": "C"
+    },
+    "A06": {
+      "ad_id": "ad_chame_toonbox",
+      "intended": "C"
+    },
+    "A07": {
+      "ad_id": "ad_intel_horizon",
+      "intended": "B"
+    },
+    "A08": {
+      "ad_id": "ad_thrill_vanguard",
+      "intended": "A"
+    },
+    "A09": {
+      "ad_id": "ad_intel_curiosity",
+      "intended": "B"
+    },
+    "A10": {
+      "ad_id": "ad_thrill_gravecrest",
+      "intended": "A"
+    },
+    "A11": {
+      "ad_id": "ad_intel_synapse",
+      "intended": "B"
+    },
+    "A12": {
+      "ad_id": "ad_chame_storybook",
+      "intended": "C"
+    },
+    "A13": {
+      "ad_id": "ad_invest_tribunal",
+      "intended": "D"
+    },
+    "A14": {
+      "ad_id": "ad_thrill_ranger",
+      "intended": "A"
+    },
+    "A15": {
+      "ad_id": "ad_intel_renderlab",
+      "intended": "B"
+    },
+    "A16": {
+      "ad_id": "ad_chame_tabletop",
+      "intended": "C"
+    }
+  },
+  "changed_since_pilot": [
+    "ad_thrill_ranger",
+    "ad_chame_toonbox",
+    "ad_chame_stagecraft",
+    "ad_chame_storybook",
+    "ad_invest_deadlines",
+    "ad_invest_caseroom"
+  ]
 }

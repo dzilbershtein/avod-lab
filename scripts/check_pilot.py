@@ -144,9 +144,11 @@ def main():
         ad_id, intended = info["ad_id"], info["intended"]
         m = means[code]
         in_library = ad_id in library
-        status = "in library" if in_library else "retired (not in current library)"
+        changed = ad_id in spec.get("changed_since_pilot", [])
+        status = ("retired (not in current library)" if not in_library
+                  else "redesigned since this pilot" if changed else "in library")
         print(f"  {code:5s}{ad_id:24s}{intended:5s}" + "".join(f"{x:6.2f}" for x in m) + f"   {status}")
-        if not in_library:
+        if not in_library or changed:
             continue
         top = max(range(4), key=lambda i: m[i])
         if GENRES[top] != intended:
