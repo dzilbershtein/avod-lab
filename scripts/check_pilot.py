@@ -168,8 +168,8 @@ def main():
         print("  " + line)
 
     rated = {info["ad_id"] for info in spec["codes"].values()}
-    unrated = sorted(set(library) - rated)
-    print("\nAds in the current library with no pilot ratings")
+    unrated = sorted((set(library) - rated) | (set(library) & set(spec.get("changed_since_pilot", []))))
+    print("\nAds whose current version has no ratings in this pilot")
     print("  " + (", ".join(unrated) if unrated else "none"))
 
 

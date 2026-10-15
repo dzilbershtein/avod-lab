@@ -1,5 +1,5 @@
 {
-  "_note": "Survey codes for the 2026-10-14 ad-relevance pilot. A04, A08 and A16 rated ads that have since been replaced (NOCTURNE, VANGUARD, TABLETOP). The ads in changed_since_pilot were redesigned afterwards, so their ratings describe an earlier version.",
+  "_note": "Survey codes for the 2026-10-14 ad-relevance pilot. Every ad has since been rebuilt as a product ad, and A04, A08 and A16 were replaced outright, so these ratings describe earlier versions of all sixteen.",
   "attention": {
     "attn_1": 2,
     "attn_2": 2,
@@ -77,11 +77,21 @@
     }
   },
   "changed_since_pilot": [
-    "ad_thrill_ranger",
-    "ad_chame_toonbox",
+    "ad_chame_chuckle",
     "ad_chame_stagecraft",
     "ad_chame_storybook",
+    "ad_chame_toonbox",
+    "ad_intel_curiosity",
+    "ad_intel_horizon",
+    "ad_intel_renderlab",
+    "ad_intel_synapse",
+    "ad_invest_caseroom",
     "ad_invest_deadlines",
-    "ad_invest_caseroom"
+    "ad_invest_tribunal",
+    "ad_invest_whodunit",
+    "ad_thrill_adrenaline",
+    "ad_thrill_apex",
+    "ad_thrill_gravecrest",
+    "ad_thrill_ranger"
   ]
 }
