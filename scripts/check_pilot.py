@@ -8,11 +8,13 @@ improved before the next round.
 
 Usage:
   python scripts/check_pilot.py <qualtrics_export.csv> --codes pilot/codes_2026-10-14.json
-  python scripts/check_pilot.py export.csv --codes codes.json --min-duration 180 --threshold 3
+  python scripts/check_pilot.py export.csv --codes codes.json --min-duration 240 --min-type-sd 1.0
 
 The codes file maps survey codes (A01, ...) to ad ids and lists the expected
 attention-check answers. Exclusions: survey previews, failed attention checks,
-and completions faster than --min-duration seconds.
+completions faster than --min-duration seconds and, with --min-type-sd, raters
+who barely told the four types apart (mean within-ad SD across the four type
+ratings below the cut-off).
 
 Which ads the app can draw as relevant or irrelevant for each clip is obtained
 by running the shipping tagFit and resolveAdByRelevance from static/player.js
@@ -85,7 +87,12 @@ def rating(value):
     return int(value.split(" ")[0])
 
 
-def load_responses(path, attention, min_duration):
+def type_separation(r, codes):
+    """Mean over ads of the population SD of the rater's four type ratings."""
+    return statistics.mean(statistics.pstdev([rating(r[f"{c}_{k}"]) for k in range(1, 5)]) for c in codes)
+
+
+def load_responses(path, attention, min_duration, codes, min_type_sd):
     with open(path, newline="", encoding="utf-8-sig") as f:
         rows = [r for r in csv.DictReader(f) if r.get("ResponseId", "").startswith("R_")]
     valid, excluded = [], []
@@ -96,6 +103,8 @@ def load_responses(path, attention, min_duration):
             excluded.append((r["ResponseId"], "failed attention check"))
         elif int(r["Duration (in seconds)"]) < min_duration:
             excluded.append((r["ResponseId"], f"speeder ({r['Duration (in seconds)']} s)"))
+        elif min_type_sd and type_separation(r, codes) < min_type_sd:
+            excluded.append((r["ResponseId"], f"low type separation (SD {type_separation(r, codes):.2f})"))
         else:
             valid.append(r)
     return valid, excluded
@@ -117,13 +126,16 @@ def main():
     ap.add_argument("csv", help="Qualtrics CSV export")
     ap.add_argument("--codes", required=True, help="JSON file mapping survey codes to ad ids")
     ap.add_argument("--min-duration", type=int, default=180, help="seconds; faster completions are excluded")
+    ap.add_argument("--min-type-sd", type=float, default=0.0,
+                    help="exclude raters whose mean within-ad SD is below this (default off)")
     ap.add_argument("--threshold", type=float, default=3.0,
                     help="flag an irrelevant pairing whose mean fit is above this (default 3)")
     args = ap.parse_args()
 
     spec = json.load(open(args.codes))
     library = {a["id"]: a for a in json.load(open(os.path.join(REPO, "config", "ad_library.json")))["ads"]}
-    valid, excluded = load_responses(args.csv, spec["attention"], args.min_duration)
+    valid, excluded = load_responses(args.csv, spec["attention"], args.min_duration,
+                                     spec["codes"], args.min_type_sd)
 
     print(f"Responses: {len(valid)} valid, {len(excluded)} excluded")
     for rid, why in excluded:

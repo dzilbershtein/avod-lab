@@ -9,14 +9,15 @@ every creative. Each ad has a product-specific drawn object, glow text, and
 synthesized audio.
 
 Viewer-profile → relevant ad pool
-  thrill_seeker        → gravecrest (horror), adrenaline (action movies),
-                         apex (live sport), ranger (extreme adventure gear)
+  thrill_seeker        → gravecrest (THUNDERDROP rollercoaster park), adrenaline
+                         (energy drink), apex (running shoes), ranger (climbing gear)
   intellectual_explorer → curiosity (science), horizon (sci-fi),
                          synapse (technology), renderlab (animation/VFX)
   content_chameleon    → toonbox (funny cartoons), stagecraft (classic comedy),
                          singalong (family musicals), chuckle (family comedy)
-  investigative_viewer → whodunit (crime/detective), deadlines (crime drama),
-                         caseroom (crime mystery), tribunal (courtroom)
+  investigative_viewer → whodunit (detective audiobooks), deadlines (NIGHTWATCH
+                         doorbell camera), caseroom (crime-fiction magazine),
+                         tribunal (legal-advice app)
 
 Run:
     pip install Pillow
@@ -60,27 +61,10 @@ def ease_out(t):
     return 1 - (1 - t) ** 3
 
 
-def ease_in_out(t):
-    t = min(max(t, 0.0), 1.0)
-    return t * t * (3 - 2 * t)
-
-
 def ease_back(t):
     t = min(max(t, 0.0), 1.0)
     c = 1.70158
     return 1 + (c + 1) * (t - 1) ** 3 + c * (t - 1) ** 2
-
-
-def hsv_to_rgb(h, s, v):
-    h = h % 1.0
-    i = int(h * 6)
-    f = h * 6 - i
-    p = v * (1 - s)
-    q = v * (1 - f * s)
-    _t = v * (1 - (1 - f) * s)
-    r, g, b = [(v, _t, p), (q, v, p), (p, v, _t),
-               (p, q, v), (_t, p, v), (v, p, q)][i % 6]
-    return clamp(r * 255), clamp(g * 255), clamp(b * 255)
 
 
 def try_font(size):
@@ -140,21 +124,6 @@ def gradient_bg(colors, w=W, h=H):
         for x in range(w):
             px[x, y] = (r, g, b, 255)
     return img
-
-
-def particles(draw, t, acc, count=35, seed=0, vy=-55, drift=25,
-              r_range=(2, 7), a_range=(0.3, 0.85)):
-    rng = random.Random(seed)
-    for _ in range(count):
-        x0 = rng.uniform(0, W)
-        y0 = rng.uniform(0, H)
-        spd = rng.uniform(0.6, 1.4)
-        pha = rng.uniform(0, 2 * math.pi)
-        r = rng.randint(*r_range)
-        al = rng.uniform(*a_range)
-        x = (x0 + drift * math.sin(t * 1.2 + pha)) % W
-        y = (y0 + vy * spd * t) % H
-        draw.ellipse([x - r, y - r, x + r, y + r], fill=(*acc, int(al * 255)))
 
 
 def pulse_rings(draw, cx, cy, t, acc, period=1.6, n=3, max_r=220):
@@ -303,15 +272,6 @@ def render_and_encode(frames_fn, ad_id: str,
 # Scene-title utility
 # ─────────────────────────────────────────────────────────────────────────────
 
-def scene_title(img, text, t, t_in, col, font_size=56):
-    prog = ease_out(min((t - t_in) / 0.8, 1.0))
-    a = int(prog * 255)
-    if a < 4:
-        return img
-    font = try_font(font_size)
-    return glow_text(img, text, W // 2, H // 2, font, (*col, a),
-                     glow_color=col, glow_r=18)
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # THRILL_SEEKER ads
@@ -452,37 +412,6 @@ def draw_note(draw, x, y, s, col, alpha):
 
 # ── genre-mood backdrops ─────────────────────────────────────────────────────
 
-def mood_haunted(d, t, acc):
-    d.ellipse([(W - 300, 40), (W - 170, 170)], fill=(235, 230, 210, 70), outline=(240, 235, 215, 130), width=2)
-    rng = random.Random(3)
-    for k in range(7):
-        x = (rng.uniform(0, W) + t * rng.uniform(40, 90)) % (W + 80) - 40
-        y = rng.uniform(60, 260) + 12 * math.sin(t * 3 + k)
-        w = rng.uniform(14, 24)
-        flap = 6 * math.sin(t * 14 + k)
-        d.line([(x - w, y - flap), (x, y + 4), (x + w, y - flap)], fill=(20, 10, 14, 220), width=4)
-    for k in range(3):
-        y = H - 120 + k * 34
-        d.rectangle([(0, y), (W, y + 26)], fill=(*tint(acc, 0.7), 14))
-
-
-def mood_explosive(d, t, acc):
-    draw_speed_streaks(d, t, tint(acc, 0.3), 170, n=18, seed=5)
-    for k, (ex, ey) in enumerate(((0.12, 0.25), (0.88, 0.70), (0.85, 0.18))):
-        pulse = 0.6 + 0.4 * math.sin(t * 4 + k * 2)
-        draw_explosion(d, int(W * ex), int(H * ey), int(55 * pulse), (255, 150, 60), 120, phase=t + k)
-
-
-def mood_stadium(d, t, acc):
-    for sx in (90, W - 90):
-        d.polygon([(sx - 30, 40), (sx + 30, 40), (W // 2 + (sx - W // 2) // 3 + 160, H),
-                   (W // 2 + (sx - W // 2) // 3 - 160, H)], fill=(255, 255, 230, 16))
-        for k in range(3):
-            d.ellipse([(sx - 26 + k * 18, 30), (sx - 14 + k * 18, 42)], fill=(255, 255, 230, 200))
-    for k in range(4):
-        y = H - 150 + k * 40
-        d.line([(0, y), (W, y + 30)], fill=(*tint(acc, 0.5), 50), width=2)
-
 
 def mood_heights(d, t, acc):
     draw_speed_streaks(d, t, tint(acc, 0.4), 120, n=10, seed=31)
@@ -562,15 +491,6 @@ def mood_rain(d, t, acc):
     d.polygon([(lx - 90, 160), (lx - 50, 160), (lx + 40, H), (lx - 220, H)], fill=(255, 220, 150, 22))
 
 
-def mood_doorstep(d, t, acc):
-    mood_rain(d, t, acc)
-    d.rectangle([(150, 160), (390, H)], outline=(70, 70, 85, 255), width=6)
-    d.ellipse([(345, 430), (365, 450)], fill=(90, 90, 105, 255))
-    sx = 520 + int(25 * math.sin(t * 0.8))
-    d.ellipse([(sx - 32, 300), (sx + 32, 364)], fill=(8, 8, 12, 230))
-    d.polygon([(sx - 70, H), (sx - 50, 380), (sx + 50, 380), (sx + 70, H)], fill=(8, 8, 12, 230))
-
-
 def mood_court(d, t, acc):
     for k in range(6):
         x = 110 + k * 212
@@ -579,18 +499,6 @@ def mood_court(d, t, acc):
 
 
 # ── products ─────────────────────────────────────────────────────────────────
-
-def product_gate(d, cx, cy, r, col, a, ph):
-    """Wrought-iron gate under an arch — scare-park tickets."""
-    d.arc([(cx - r, cy - int(r * 1.2)), (cx + r, cy + int(r * 0.4))], start=180, end=360, fill=(*col, a), width=5)
-    for k in range(-4, 5):
-        x = cx + int(k * r / 4.6)
-        top = cy - int(math.sqrt(max(r * r - (x - cx) ** 2, 0)) * 0.8) - int(r * 0.4)
-        d.line([(x, top), (x, cy + r)], fill=(*col, a), width=4)
-        d.polygon([(x - 6, top + 2), (x + 6, top + 2), (x, top - 12)], fill=(*col, a))
-    d.line([(cx - r, cy + int(r * 0.25)), (cx + r, cy + int(r * 0.25))], fill=(*col, a), width=4)
-    d.rectangle([(cx - int(r * 0.6), cy + int(r * 0.45)), (cx + int(r * 0.6), cy + int(r * 0.75))],
-                outline=(*col, a), width=3)
 
 
 def product_can(d, cx, cy, r, col, a, ph):
@@ -819,21 +727,198 @@ def product_audiobook(d, cx, cy, r, col, a, ph):
                   start=(-40 if side > 0 else 140), end=(40 if side > 0 else 220), fill=(*col, a // 2), width=2)
 
 
-def product_cologne(d, cx, cy, r, col, a, ph):
-    """Faceted cologne bottle with a heavy cap."""
-    w, h = int(r * 0.78), int(r * 0.90)
-    by = cy + int(r * 0.20)
-    c = int(w * 0.18)
-    body = [(cx - w // 2 + c, by - h // 2), (cx + w // 2 - c, by - h // 2), (cx + w // 2, by - h // 2 + c),
-            (cx + w // 2, by + h // 2 - c), (cx + w // 2 - c, by + h // 2), (cx - w // 2 + c, by + h // 2),
-            (cx - w // 2, by + h // 2 - c), (cx - w // 2, by - h // 2 + c)]
-    d.polygon(body, outline=(*col, a), width=5)
-    d.rectangle([(cx - int(w * 0.12), by - h // 2 - int(r * 0.12)), (cx + int(w * 0.12), by - h // 2)], outline=(*col, a), width=4)
-    d.rectangle([(cx - int(w * 0.26), by - h // 2 - int(r * 0.42)), (cx + int(w * 0.26), by - h // 2 - int(r * 0.12))],
-                outline=(*col, a), width=5)
-    d.rectangle([(cx - int(w * 0.28), by - int(h * 0.12)), (cx + int(w * 0.28), by + int(h * 0.12))], outline=(*col, a // 2), width=2)
-    gx = cx - w // 2 + int(w * ((ph * 0.4) % 1.0))
-    d.line([(gx, by - h // 2 + 8), (gx - 14, by + h // 2 - 8)], fill=(255, 255, 255, 90), width=5)
+# ── pilot-2 tweaks: moods and products ───────────────────────────────────────
+
+def draw_laugh_marks(draw, cx, cy, spread, col, alpha, phase=0.0, n=3, size=30):
+    """Bobbing "ha" marks — visible laughter."""
+    for k in range(n):
+        tw = 0.55 + 0.45 * math.sin(phase * 4 + k * 2.1)
+        x = cx - spread + k * spread
+        y = cy - int(10 * (k % 2)) + int(4 * math.sin(phase * 6 + k))
+        draw.text((x, y), "ha", fill=(*col, int(alpha * tw)), font=try_font(size))
+
+
+def mood_funfair(d, t, acc):
+    d.ellipse([(W - 230, 40), (W - 110, 160)], fill=(255, 235, 140, 210))
+    for k in range(12):
+        ang = math.pi * 2 * k / 12 + t * 0.3
+        d.line([(W - 170 + int(70 * math.cos(ang)), 100 + int(70 * math.sin(ang))),
+                (W - 170 + int(105 * math.cos(ang)), 100 + int(105 * math.sin(ang)))], fill=(255, 235, 140, 150), width=4)
+    cols = [(255, 80, 80), (80, 170, 255), (255, 220, 60), (120, 220, 120)]
+    for row, y0 in enumerate((70, 120)):
+        for k in range(18):
+            x = 40 + k * 70 + (35 if row else 0)
+            sag = int(14 * math.sin(math.pi * (k % 6) / 6))
+            d.polygon([(x, y0 + sag), (x + 40, y0 + sag), (x + 20, y0 + sag + 30)], fill=(*cols[(k + row) % 4], 200))
+    for k, x in enumerate((90, W - 230)):
+        y = H - 190 + int(18 * math.sin(t * 3 + k))
+        d.text((x + int(14 * math.sin(t * 2 + k)), y), "WHOOO!", fill=(255, 255, 255, 190), font=try_font(34))
+
+
+def mood_extreme(d, t, acc):
+    draw_speed_streaks(d, t, (255, 170, 80), 140, n=14, seed=5)
+    d.polygon([(0, H), (260, H), (260, H - 120)], fill=(*shade(acc, 0.5), 230))
+    hop = (t * 0.45) % 1.0
+    x = 220 + int(hop * 520)
+    y = H - 130 - int(math.sin(hop * math.pi) * 260)
+    rc = (255, 205, 160, 235)
+    for wx in (x - 40, x + 40):
+        d.ellipse([(wx - 24, y - 24), (wx + 24, y + 24)], outline=rc, width=5)
+    d.line([(x - 40, y), (x, y - 38), (x + 40, y)], fill=rc, width=6)
+    d.line([(x, y - 38), (x - 6, y - 98)], fill=rc, width=8)
+    d.ellipse([(x - 24, y - 136), (x + 12, y - 100)], fill=rc)
+    for k, (ex, ey) in enumerate(((0.88, 0.22), (0.82, 0.74))):
+        pulse = 0.6 + 0.4 * math.sin(t * 4 + k * 2)
+        draw_explosion(d, int(W * ex), int(H * ey), int(55 * pulse), (255, 170, 60), 150, phase=t + k)
+
+
+def _runner(d, x, y, s, ph, col):
+    swing = math.sin(ph * 12)
+    d.ellipse([(x - s * 0.18, y - s * 1.05), (x + s * 0.18, y - s * 0.7)], fill=col)
+    d.line([(x, y - s * 0.7), (x + s * 0.12, y - s * 0.15)], fill=col, width=6)
+    for sg in (1, -1):
+        d.line([(x + s * 0.12, y - s * 0.15), (x + s * 0.12 + sg * swing * s * 0.4, y + s * 0.35)], fill=col, width=6)
+        d.line([(x + s * 0.04, y - s * 0.55), (x + s * 0.04 - sg * swing * s * 0.35, y - s * 0.2)], fill=col, width=5)
+
+
+def mood_race(d, t, acc):
+    for k in range(5):
+        y0 = H - 230 + k * 50
+        d.line([(0, y0), (W, y0 + 28)], fill=(255, 255, 255, 60), width=2)
+    fx = W - 220
+    for k in range(12):
+        c = (255, 255, 255, 180) if k % 2 == 0 else (30, 30, 30, 180)
+        d.rectangle([(fx, H - 240 + k * 20), (fx + 14, H - 220 + k * 20)], fill=c)
+    for k in range(3):
+        x = int(((t * 160 + k * 230) % (W + 200)) - 100)
+        _runner(d, x, H - 40 - k * 60, 110, t + k * 0.4, (*tint(acc, 0.55), 210))
+    rng = random.Random(9)
+    for _ in range(140):
+        x, y = rng.uniform(0, W), rng.uniform(20, 110)
+        d.ellipse([(x - 3, y - 3), (x + 3, y + 3)], fill=(*tint(acc, 0.5), 110))
+
+
+def mood_detective(d, t, acc):
+    mood_rain(d, t, acc)
+    mx, my, mr = 150, H - 200, 70
+    d.ellipse([(mx - mr, my - mr), (mx + mr, my + mr)], outline=(*tint(acc, 0.4), 150), width=6)
+    d.line([(mx + int(mr * 0.7), my + int(mr * 0.7)), (mx + 140, my + 140)], fill=(*tint(acc, 0.4), 150), width=12)
+    for k in range(4):
+        rr = 12 + k * 11
+        d.arc([(mx - rr, my - int(rr * 1.3)), (mx + rr, my + int(rr * 1.3))], start=200, end=520, fill=(*tint(acc, 0.4), 120), width=2)
+    hx, hy = W - 330, H - 300
+    d.ellipse([(hx - 26, hy - 26), (hx + 26, hy + 26)], fill=(10, 8, 6, 230))
+    d.line([(hx - 54, hy - 22), (hx + 54, hy - 22)], fill=(10, 8, 6, 230), width=9)
+    d.rectangle([(hx - 30, hy - 54), (hx + 30, hy - 22)], fill=(10, 8, 6, 230))
+    d.polygon([(hx - 40, hy + 26), (hx + 40, hy + 26), (hx + 70, H), (hx - 70, H)], fill=(10, 8, 6, 230))
+
+
+def mood_crime_tape(d, t, acc):
+    mood_rain(d, t, acc)
+    y = H - 18
+    d.rectangle([(0, y - 22), (W, y + 18)], fill=(240, 200, 40, 235))
+    off = int(t * 30) % 420
+    for k in range(-420, W + 420, 420):
+        d.text((k + off, y - 13), "POLICE LINE   DO NOT CROSS", fill=(20, 20, 20, 255), font=try_font(22))
+
+
+def mood_burglary(d, t, acc):
+    mood_rain(d, t, acc)
+    for k in range(5):
+        x = 60 + k * 260
+        d.rectangle([(x, H - 170), (x + 200, H)], fill=(14, 16, 24, 255))
+        d.polygon([(x - 10, H - 170), (x + 100, H - 250), (x + 210, H - 170)], fill=(14, 16, 24, 255))
+        if (k + int(t)) % 3:
+            d.rectangle([(x + 30, H - 130), (x + 70, H - 90)], fill=(255, 210, 120, 140))
+    bx = 120 + int((t * 40) % 900)
+    d.ellipse([(bx - 18, H - 220), (bx + 18, H - 184)], fill=(4, 4, 6, 255))
+    d.polygon([(bx - 30, H - 184), (bx + 30, H - 184), (bx + 38, H - 110), (bx - 38, H - 110)], fill=(4, 4, 6, 255))
+    d.ellipse([(bx + 26, H - 190), (bx + 80, H - 136)], fill=(4, 4, 6, 255))
+    lit = (255, 40, 40) if int(t * 4) % 2 == 0 else (40, 90, 255)
+    for rr, al in ((110, 45), (70, 90)):
+        d.ellipse([(120 - rr, 90 - rr), (120 + rr, 90 + rr)], fill=(*lit, al))
+    d.chord([(84, 54), (156, 126)], 180, 360, fill=(*lit, 255))
+    d.rectangle([(76, 90), (164, 106)], fill=(60, 60, 70, 255))
+    d.text((120, 128), "POLICE", fill=(255, 255, 255, 230), font=try_font(22), anchor="mm")
+
+
+def mood_comedy_show(d, t, acc):
+    mood_spotlight(d, t, acc)
+    for k in range(16):
+        x = 40 + k * 80
+        bob = int(6 * abs(math.sin(t * 8 + k)))
+        d.ellipse([(x - 22, H - 44 - bob), (x + 22, H - 2 - bob)], fill=(14, 10, 4, 255))
+        d.rectangle([(x - 32, H - 16), (x + 32, H)], fill=(14, 10, 4, 255))
+    draw_laugh_marks(d, 150, H - 120, 50, (255, 240, 200), 210, phase=t)
+    draw_laugh_marks(d, W - 250, H - 120, 50, (255, 240, 200), 210, phase=t + 1)
+
+
+def mood_singalong(d, t, acc):
+    mood_music(d, t, acc)
+    bx, by, br = W // 2, 50, 34
+    d.line([(bx, 0), (bx, by - br)], fill=(220, 220, 220, 200), width=3)
+    d.ellipse([(bx - br, by - br), (bx + br, by + br)], fill=(200, 200, 215, 230))
+    for k in range(-2, 3):
+        d.line([(bx - br + 6, by + k * 12), (bx + br - 6, by + k * 12)], fill=(120, 120, 140, 230), width=2)
+    for k in range(10):
+        ang = math.pi * 2 * k / 10 + t * 1.2
+        d.line([(bx, by), (bx + int(420 * math.cos(ang)), by + int(420 * abs(math.sin(ang))))],
+               fill=(*tint(acc, 0.6), 22), width=18)
+    for k, x in enumerate((180, W - 180)):
+        bob = int(8 * math.sin(t * 6 + k))
+        d.ellipse([(x - 30, H - 230 + bob), (x + 30, H - 170 + bob)], fill=(*shade(acc, 0.3), 230))
+        d.polygon([(x - 46, H - 170 + bob), (x + 46, H - 170 + bob), (x + 60, H), (x - 60, H)], fill=(*shade(acc, 0.3), 230))
+        d.chord([(x - 12, H - 205 + bob), (x + 12, H - 180 + bob)], start=0, end=180, fill=(255, 255, 255, 220))
+
+
+def product_coaster(d, cx, cy, r, col, a, ph):
+    """Rollercoaster: a loop, a peak and a steep drop, with a car racing round."""
+    pts = []
+    def seg(p0, p1, n=10):
+        for i in range(n):
+            f = i / n
+            pts.append((p0[0] + (p1[0] - p0[0]) * f, p0[1] + (p1[1] - p0[1]) * f))
+    lx, ly, lr = cx - 0.2 * r, cy - 0.05 * r, 0.45 * r
+    seg((cx - 1.25 * r, cy + 0.6 * r), (lx, ly + lr))
+    for i in range(37):
+        ang = math.pi / 2 + 2 * math.pi * i / 36
+        pts.append((lx - lr * math.cos(ang - math.pi / 2) * 0 + lr * math.cos(ang), ly + lr * math.sin(ang)))
+    seg((lx, ly + lr), (cx + 0.45 * r, cy + 0.5 * r))
+    seg((cx + 0.45 * r, cy + 0.5 * r), (cx + 0.85 * r, cy - 0.8 * r))
+    seg((cx + 0.85 * r, cy - 0.8 * r), (cx + 1.25 * r, cy + 0.6 * r))
+    ipts = [(int(x), int(y)) for x, y in pts]
+    for k in range(0, len(ipts), 6):
+        x, y = ipts[k]
+        if y < cy + 0.8 * r:
+            d.line([(x, y), (x, int(cy + 0.85 * r))], fill=(*col, a // 3), width=3)
+    d.line(ipts, fill=(*col, a), width=6, joint="curve")
+    i = int(((ph * 0.35) % 1.0) * (len(ipts) - 1))
+    x, y = ipts[i]
+    d.rounded_rectangle([(x - 18, y - 16), (x + 18, y + 4)], radius=6, fill=(255, 80, 80, a))
+    for k in (-8, 8):
+        d.line([(x + k, y - 16), (x + k - 4, y - 32)], fill=(255, 255, 255, a), width=3)
+
+
+def product_magazine(d, cx, cy, r, col, a, ph):
+    """Crime-fiction magazine cover: masthead, a fedora silhouette, cover lines."""
+    w, h = int(r * 1.15), int(r * 1.5)
+    x0, y0 = cx - w // 2, cy - h // 2
+    d.rectangle([(x0, y0), (x0 + w, y0 + h)], fill=(18, 14, 12, 255), outline=(*col, a), width=5)
+    d.rectangle([(x0, y0), (x0 + w, y0 + int(h * 0.17))], fill=(*col, a))
+    d.text((cx, y0 + int(h * 0.085)), "CASEROOM", fill=(20, 10, 10, a), font=try_font(max(10, int(r * 0.17))), anchor="mm")
+    hx, hy = cx, cy - int(h * 0.02)
+    d.ellipse([(hx - int(r * 0.13), hy - int(r * 0.13)), (hx + int(r * 0.13), hy + int(r * 0.13))], fill=(*col, a))
+    d.line([(hx - int(r * 0.3), hy - int(r * 0.11)), (hx + int(r * 0.3), hy - int(r * 0.11))], fill=(*col, a), width=6)
+    d.rectangle([(hx - int(r * 0.15), hy - int(r * 0.27)), (hx + int(r * 0.15), hy - int(r * 0.11))], fill=(*col, a))
+    d.polygon([(hx - int(r * 0.2), hy + int(r * 0.13)), (hx + int(r * 0.2), hy + int(r * 0.13)),
+               (hx + int(r * 0.34), hy + int(r * 0.42)), (hx - int(r * 0.34), hy + int(r * 0.42))], fill=(*col, a))
+    for k in range(3):
+        yy = y0 + int(h * 0.78) + k * int(h * 0.06)
+        d.line([(x0 + int(w * 0.12), yy), (x0 + int(w * (0.88 - 0.15 * k)), yy)], fill=(*col, a), width=4)
+    fx, fy = x0 + int(w * 0.82), y0 + int(h * 0.3)
+    for k in range(4):
+        rr = 5 + k * 5
+        d.arc([(fx - rr, fy - int(rr * 1.3)), (fx + rr, fy + int(rr * 1.3))], start=200, end=520, fill=(*col, a), width=2)
 
 
 # ── the template ─────────────────────────────────────────────────────────────
@@ -887,15 +972,15 @@ def product_ad(spec):
 
 SPECS = {
     # Action and thrills
-    "ad_thrill_gravecrest": dict(brand="GRAVECREST", what="scare-park tickets", acc=(204, 0, 32), mood=mood_haunted,
-        product=product_gate, benefit="Dare to walk through the gates?",
-        tagline="Open every Friday night after dark.", cta="Book tickets · from €19"),
-    "ad_thrill_adrenaline": dict(brand="ADRENALINE", what="energy drink", acc=(64, 128, 192), mood=mood_explosive,
-        product=product_can, benefit="Zero sugar. All charge.",
-        tagline="Fuel for whatever comes next.", cta="Grab a can"),
-    "ad_thrill_apex": dict(brand="APEX", what="running shoes", acc=(150, 205, 50), mood=mood_stadium,
-        product=product_shoe, benefit="Every champion starts with one step.",
-        tagline="Built for the final lap.", cta="Shop now · €89"),
+    "ad_thrill_gravecrest": dict(brand="THUNDERDROP", what="rollercoaster park", acc=(255, 160, 30), mood=mood_funfair, bright=3.4,
+        product=product_coaster, size=185, benefit="Europe's fastest drop. Can you take it?",
+        tagline="Feel the rush. Scream if you want to.", cta="Book tickets · from €39"),
+    "ad_thrill_adrenaline": dict(brand="ADRENALINE", what="energy drink", acc=(230, 70, 30), mood=mood_extreme, bright=1.6,
+        product=product_can, benefit="Pure rush in every can.",
+        tagline="Fuel for your biggest jumps.", cta="Grab a can"),
+    "ad_thrill_apex": dict(brand="APEX", what="running shoes", acc=(150, 205, 50), mood=mood_race, bright=1.8,
+        product=product_shoe, benefit="Fastest off the line.",
+        tagline="Race-day speed, every day.", cta="Shop now · €89"),
     "ad_thrill_ranger": dict(brand="RANGER", what="climbing gear", acc=(235, 110, 45), mood=mood_heights,
         product=product_climbing, benefit="Tested on the toughest walls.",
         tagline="Gear you can trust at the top.", cta="Shop the range"),
@@ -919,33 +1004,33 @@ SPECS = {
     "ad_chame_toonbox": dict(brand="TOONBOX", what="breakfast cereal", acc=(96, 64, 255), mood=mood_party, bright=1.5,
         product=product_cereal, benefit="The breakfast that grins back!",
         tagline="Crunchy loops, goofy mornings.", cta="Find it in the cereal aisle"),
-    "ad_chame_storybook": dict(brand="SINGALONG", what="karaoke machine", acc=(255, 120, 170), mood=mood_music, bright=1.5,
+    "ad_chame_storybook": dict(brand="SINGALONG", what="karaoke machine", acc=(255, 120, 170), mood=mood_singalong, bright=2.3,
         product=product_mic, benefit="Everyone's a star. Even Dad.",
-        tagline="Plug in, pick a song, sing your heart out.", cta="Order now · €59"),
-    "ad_chame_stagecraft": dict(brand="STAGECRAFT", what="theatre tickets", acc=(212, 160, 32), mood=mood_spotlight, bright=1.4,
-        product=product_tickets, benefit="Front-row seats for a big night out.",
-        tagline="Tickets for the shows everyone's talking about.", cta="Book now"),
+        tagline="Sing, dance and laugh together.", cta="Order now · €59"),
+    "ad_chame_stagecraft": dict(brand="STAGECRAFT", what="theatre tickets", acc=(212, 160, 32), mood=mood_comedy_show, bright=1.6,
+        product=product_tickets, benefit="The funniest night out in town.",
+        tagline="Comedy shows and musicals, live on stage.", cta="Book now"),
     # Drama and crime
-    "ad_invest_deadlines": dict(brand="NIGHTWATCH", what="smart doorbell camera", acc=(96, 128, 176), mood=mood_doorstep,
-        product=product_doorbell, benefit="Someone's at the door at 3 a.m.",
-        tagline="See who's there. Day or night.", cta="Order now · €99"),
+    "ad_invest_deadlines": dict(brand="NIGHTWATCH", what="smart doorbell camera", acc=(96, 128, 176), mood=mood_burglary,
+        product=product_doorbell, benefit="Catch burglars in the act.",
+        tagline="Keep your street safe, day or night.", cta="Order now · €99"),
     "ad_invest_tribunal": dict(brand="TRIBUNAL", what="legal-advice app", acc=(214, 150, 70), mood=mood_court,
         product=product_legal_app, benefit="Wronged? Know your rights.",
         tagline="Legal advice in minutes, not months.", cta="Download free"),
-    "ad_invest_whodunit": dict(brand="WHODUNIT", what="mystery audiobooks", acc=(214, 162, 40), mood=mood_rain,
-        product=product_audiobook, benefit="Can you guess it before the last chapter?",
-        tagline="Thousands of page-turners to listen to.", cta="First month free"),
-    "ad_invest_caseroom": dict(brand="OBSIDIAN", what="cologne", acc=(144, 0, 24), mood=mood_rain,
-        product=product_cologne, pcol=(235, 215, 200), benefit="For the night that changes everything.",
-        tagline="A scent with a secret.", cta="Available now"),
+    "ad_invest_whodunit": dict(brand="WHODUNIT", what="detective audiobooks", acc=(214, 162, 40), mood=mood_detective,
+        product=product_audiobook, benefit="Solve the case before the detective does.",
+        tagline="Detective mysteries to listen to anywhere.", cta="First month free"),
+    "ad_invest_caseroom": dict(brand="CASEROOM", what="crime-fiction magazine", acc=(190, 30, 40), mood=mood_crime_tape,
+        product=product_magazine, pcol=(235, 215, 200), size=165, benefit="A new case to crack every month.",
+        tagline="Gripping crime stories, delivered to your door.", cta="Subscribe · €4.99 an issue"),
 }
 
 
 ADS = [
     # (ad_id,                  frame_fn,                                  accent_rgb,      badge, category)
-    ("ad_thrill_gravecrest", product_ad(SPECS["ad_thrill_gravecrest"]), (204,   0,  32), "G", "thrill_seeker"),
+    ("ad_thrill_gravecrest", product_ad(SPECS["ad_thrill_gravecrest"]), (255, 160,  30), "T", "thrill_seeker"),
     ("ad_thrill_ranger",     product_ad(SPECS["ad_thrill_ranger"]),     (235, 110,  45), "R", "thrill_seeker"),
-    ("ad_thrill_adrenaline", product_ad(SPECS["ad_thrill_adrenaline"]), ( 64, 128, 192), "A", "thrill_seeker"),
+    ("ad_thrill_adrenaline", product_ad(SPECS["ad_thrill_adrenaline"]), (230,  70,  30), "A", "thrill_seeker"),
     ("ad_thrill_apex",       product_ad(SPECS["ad_thrill_apex"]),       (150, 205,  50), "A", "thrill_seeker"),
     ("ad_intel_curiosity",   product_ad(SPECS["ad_intel_curiosity"]),   ( 32, 184, 160), "C", "intellectual_explorer"),
     ("ad_intel_horizon",     product_ad(SPECS["ad_intel_horizon"]),     (144,  96, 224), "H", "intellectual_explorer"),
@@ -957,7 +1042,7 @@ ADS = [
     ("ad_chame_storybook",   product_ad(SPECS["ad_chame_storybook"]),   (255, 120, 170), "S", "content_chameleon"),
     ("ad_invest_whodunit",   product_ad(SPECS["ad_invest_whodunit"]),   (214, 162,  40), "W", "investigative_viewer"),
     ("ad_invest_deadlines",  product_ad(SPECS["ad_invest_deadlines"]),  ( 96, 128, 176), "N", "investigative_viewer"),
-    ("ad_invest_caseroom",   product_ad(SPECS["ad_invest_caseroom"]),   (144,   0,  24), "O", "investigative_viewer"),
+    ("ad_invest_caseroom",   product_ad(SPECS["ad_invest_caseroom"]),   (190,  30,  40), "C", "investigative_viewer"),
     ("ad_invest_tribunal",   product_ad(SPECS["ad_invest_tribunal"]),   (214, 150,  70), "T", "investigative_viewer"),
 ]
 

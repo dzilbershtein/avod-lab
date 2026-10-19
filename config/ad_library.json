@@ -8,7 +8,7 @@
     {
       "id": "thrill_seeker",
       "label": "Thrill Seeker",
-      "description": "Action, adventure, horror and sports content. Relevant ads: scare-park tickets, energy drink, running shoes, climbing gear."
+      "description": "Action, adventure, horror and sports content. Relevant ads: rollercoaster-park tickets, energy drink, running shoes, climbing gear."
     },
     {
       "id": "intellectual_explorer",
@@ -23,26 +23,26 @@
     {
       "id": "investigative_viewer",
       "label": "Investigative Viewer",
-      "description": "Crime, film noir, thrillers and courtroom content. Relevant ads: smart doorbell camera, legal-advice app, mystery audiobooks, cologne."
+      "description": "Crime, film noir, thrillers and courtroom content. Relevant ads: smart doorbell camera, legal-advice app, detective audiobooks, crime-fiction magazine."
     }
   ],
   "ads": [
     {
       "id": "ad_thrill_gravecrest",
       "category": "thrill_seeker",
-      "title": "GRAVECREST — scare-park tickets (synthetic v3)",
+      "title": "THUNDERDROP — rollercoaster park (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_thrill_gravecrest.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch horror and thrills, we picked this for you.",
+      "default_banner": "Because you watch action and adventure, we picked this for you.",
       "context_tags": [
         "action",
-        "horror",
-        "scary",
-        "night"
+        "adventure",
+        "extreme",
+        "fun"
       ]
     },
     {
@@ -59,7 +59,7 @@
       "context_tags": [
         "action",
         "adventure",
-        "extreme",
+        "nature",
         "outdoors"
       ]
     },
@@ -77,7 +77,7 @@
       "context_tags": [
         "action",
         "extreme",
-        "sports",
+        "stunts",
         "thriller"
       ]
     },
@@ -94,9 +94,7 @@
       "default_banner": "Because you watch sport, we picked this for you.",
       "context_tags": [
         "sports",
-        "action",
-        "drama",
-        "fitness"
+        "action"
       ]
     },
     {
@@ -199,7 +197,7 @@
       "video_url": "/static/ads/ad_chame_stagecraft.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch comedy, we picked this for you.",
+      "default_banner": "Because you watch comedy and musicals, we picked this for you.",
       "context_tags": [
         "comedy",
         "drama",
@@ -246,14 +244,14 @@
     {
       "id": "ad_invest_whodunit",
       "category": "investigative_viewer",
-      "title": "WHODUNIT — mystery audiobooks (synthetic v3)",
+      "title": "WHODUNIT — detective audiobooks (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_invest_whodunit.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch crime and mystery, we picked this for you.",
+      "default_banner": "Because you watch detective mysteries, we picked this for you.",
       "context_tags": [
         "crime",
         "detective",
@@ -282,19 +280,19 @@
     {
       "id": "ad_invest_caseroom",
       "category": "investigative_viewer",
-      "title": "OBSIDIAN — cologne (synthetic v3)",
+      "title": "CASEROOM — crime-fiction magazine (synthetic v3)",
       "duration_sec": 15,
       "source": "synthetic_v3",
       "license": "generated_locally",
       "video_url": "/static/ads/ad_invest_caseroom.mp4",
       "fallback_urls": [],
       "click_url": "",
-      "default_banner": "Because you watch film noir, we picked this for you.",
+      "default_banner": "Because you watch crime and mystery, we picked this for you.",
       "context_tags": [
+        "crime",
         "drama",
-        "noir",
-        "thriller",
-        "mystery"
+        "mystery",
+        "noir"
       ]
     },
     {
