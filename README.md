@@ -246,6 +246,8 @@ Test sessions are stored like any other session but are flagged (`sessions.is_te
 
 Test sessions still show up in the admin session list, marked with a red **TEST** badge, and the admin header shows a running count ("N test sessions excluded").
 
+**Returning to the catalogue.** `allow_return_to_catalogue` in `config/experiment.json` is `false` for Experiment 1: once a participant opens a video there is no way back, and the Step 2 instruction says they must watch the full video. Set it to `true` to restore the *← Browse* button, which allows going back before the ad starts (never once it has started); the instruction's no-return sentence then hides itself.
+
 **Before sending the real study link to participants**, set `prolific_completion_url` in `config/experiment.json` to the completion URL from Prolific (while it is empty, the final screen just tells participants to close the tab and they cannot confirm completion), then wipe out all accumulated test data for a guaranteed clean slate:
 
 ```bash

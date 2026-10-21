@@ -71,7 +71,11 @@
     });
     const onBrowseOrPlayer = name === "browse" || name === "stage";
     $("topnav").classList.toggle("hidden", !onBrowseOrPlayer);
-    $("back-to-browse").classList.toggle("hidden", name !== "stage");
+    // allow_return_to_catalogue (experiment.json) decides whether a viewer may
+    // leave a video for the catalogue before its ad starts; when false, opening
+    // a video is final and no back button is shown.
+    $("back-to-browse").classList.toggle("hidden", name !== "stage" || !cfg.allow_return_to_catalogue);
+    $("no-return-note").hidden = !!cfg.allow_return_to_catalogue;
     window.scrollTo(0, 0); // each view starts at the top, not where the last one was scrolled
   }
 
