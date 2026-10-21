@@ -747,12 +747,37 @@ button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2p
   font-size: 13px;
   color: var(--muted);
 }
+.survey-step-header { margin: 0 0 14px; }
 .survey-step {
   margin: 0 0 6px;
   font-size: 13px;
   font-weight: 600;
   color: var(--accent-soft);
 }
+.survey-step-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: #2a2a31;
+  overflow: hidden;
+}
+.survey-step-fill { height: 100%; background: var(--accent); }
+
+/* Matrix: one stem, one row per short item (intrusiveness) */
+.survey-stem { color: var(--text); font-size: 16px; font-weight: 600; }
+.likert-matrix { margin-top: 12px; }
+.matrix-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 1.4fr) repeat(7, minmax(32px, 1fr));
+  align-items: center;
+}
+.matrix-row.survey-item { margin: 6px 0; padding: 10px 12px; }
+.matrix-head, .matrix-anchors { padding: 0 12px; font-size: 12px; color: var(--muted); }
+.matrix-head .matrix-cell { text-align: center; }
+.matrix-label { font-size: 15px; }
+.matrix-cell { display: flex; justify-content: center; cursor: pointer; }
+.matrix-cell input[type="radio"] { width: 18px; height: 18px; cursor: pointer; margin: 0; }
+.matrix-anchors .matrix-anchor-left { grid-column: 2 / span 3; }
+.matrix-anchors .matrix-anchor-right { grid-column: 6 / span 3; text-align: right; }
 .browse-instructions {
   margin: 0;
   padding: 14px 24px;

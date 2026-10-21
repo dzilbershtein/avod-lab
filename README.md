@@ -329,24 +329,24 @@ Re-check subscale reliability in your own sample rather than citing the original
 ### Post-exposure battery (5 pages)
 
 **Page 1 — Intrusiveness**
-*(adapted from Li et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+*(Li, Edwards & Lee 2002, verbatim; 1 = Strongly disagree, 7 = Strongly agree)*
 
-Each item maps to one of Li et al.'s seven adjectives (intrusive, forced, invasive, disturbing, obtrusive, interfering, distracting). `int_1`, `int_3` and `int_5`–`int_7` are reworded in plain language after pilot testers could not tell *intrusive*, *invasive* and *obtrusive* apart; *invasive* in particular read as a privacy judgement, overlapping with perceived tracking.
+The original format: one stem, **"When the ad played, I thought it was…"** (the original reads "popped-up", for pop-up ads), followed by the seven adjectives in the published order, shown as a single grid. The adjectives are near-synonyms by design. Written out as seven separate sentences, pilot testers read them as the same question asked repeatedly; under one stem they read as one question.
 
-| Item ID | Statement |
+| Item ID | Adjective (display order) |
 |---------|-----------|
-| `int_1` | The ad intruded on my viewing. |
-| `int_2` | The ad was forced on me. |
-| `int_3` | The ad took over my viewing. |
-| `int_4` | The ad disturbed me. |
-| `int_5` | The ad was hard to ignore, in an unwelcome way. |
-| `int_6` | The ad interfered with my watching of the video. |
-| `int_7` | The ad distracted me from the video. |
+| `int_7` | distracting |
+| `int_4` | disturbing |
+| `int_2` | forced |
+| `int_6` | interfering |
+| `int_1` | intrusive |
+| `int_3` | invasive |
+| `int_5` | obtrusive |
 
 **Page 2 — Irritation**
-*(adapted from Edwards et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+*(written for this study; 1 = Strongly disagree, 7 = Strongly agree)*
 
-`irr_3` reads *frustrating* rather than *aggravating*, which some readers take to mean "made worse".
+Five items written for this study. They are not from Edwards et al. (2002), which measured irritation with *irritating, phony, ridiculous, stupid, terrible* (from Wells, Leavitt & McConville 1971).
 
 | Item ID | Statement |
 |---------|-----------|

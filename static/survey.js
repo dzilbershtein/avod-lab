@@ -22,11 +22,10 @@
  *                           collection verbatim; awareness simplified but keeping
  *                           the original normative formulation; control keeps
  *                           ctl_3, with ctl_1/ctl_2 newly written. See README.
- *   Intrusiveness         : 7 items adapted from Li et al. (2002), one per
- *                           original adjective; int_1, int_3, int_5–int_7
- *                           reworded in plain language after pilot feedback
- *   Irritation            : 5 items adapted from Edwards et al. (2002);
- *                           irr_3 says "frustrating" for "aggravating"
+ *   Intrusiveness         : 7 items from Li, Edwards & Lee (2002), verbatim —
+ *                           one stem ("When the ad played, I thought it was…")
+ *                           and the seven adjectives, shown as a grid
+ *   Irritation            : 5 items written for this study
  *   Ad / platform attitude: 3-item semantic differentials
  *   Consent form             : 6 required + 1 optional checkbox (page 0 of pre-survey)
  *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
@@ -142,15 +141,18 @@
       {
         id: "intrusiveness",
         title: "About the ad",
-        intro: "Please rate your agreement with each statement about the ad you just saw.\n(1 = Strongly disagree  ·  7 = Strongly agree)",
+        // Li, Edwards & Lee (2002) verbatim: one stem, seven adjectives, in the
+        // published order. Ids keep their earlier mapping to the adjectives.
+        intro: "When the ad played, I thought it was…\n(1 = Strongly disagree  ·  7 = Strongly agree)",
+        matrix: true,
         items: [
-          L7("int_1", "The ad intruded on my viewing."),
-          L7("int_2", "The ad was forced on me."),
-          L7("int_3", "The ad took over my viewing."),
-          L7("int_4", "The ad disturbed me."),
-          L7("int_5", "The ad was hard to ignore, in an unwelcome way."),
-          L7("int_6", "The ad interfered with my watching of the video."),
-          L7("int_7", "The ad distracted me from the video."),
+          L7("int_7", "distracting"),
+          L7("int_4", "disturbing"),
+          L7("int_2", "forced"),
+          L7("int_6", "interfering"),
+          L7("int_1", "intrusive"),
+          L7("int_3", "invasive"),
+          L7("int_5", "obtrusive"),
         ],
       },
       {
@@ -230,9 +232,14 @@
     container.appendChild(h2);
 
     if (page.intro) {
-      const p = el("p", "survey-intro");
+      const p = el("p", "survey-intro" + (page.matrix ? " survey-stem" : ""));
       p.textContent = page.intro;
       container.appendChild(p);
+    }
+
+    if (page.matrix) {
+      container.appendChild(renderMatrix(page.items, responses));
+      return;
     }
 
     for (const item of page.items) {
@@ -241,6 +248,39 @@
       }
       container.appendChild(renderItem(item, responses));
     }
+  }
+
+  // One stem, several short 7-point items: a grid with one row per item and the
+  // scale points as columns, so it reads as a single question.
+  function renderMatrix(items, responses) {
+    const table = el("div", "likert-matrix");
+    const head = el("div", "matrix-row matrix-head");
+    head.appendChild(el("span", "matrix-label"));
+    for (let v = 1; v <= 7; v++) head.appendChild(el("span", "matrix-cell", String(v)));
+    table.appendChild(head);
+    for (const item of items) {
+      const row = el("div", "matrix-row survey-item");
+      row.dataset.id = item.id;
+      row.appendChild(el("span", "matrix-label", item.label));
+      for (let v = 1; v <= 7; v++) {
+        const cell = el("label", "matrix-cell");
+        const inp = document.createElement("input");
+        inp.type = "radio";
+        inp.name = item.id;
+        inp.value = v;
+        inp.setAttribute("aria-label", `${item.label}: ${v}`);
+        if (responses[item.id] === v) inp.checked = true;
+        cell.appendChild(inp);
+        row.appendChild(cell);
+      }
+      table.appendChild(row);
+    }
+    const anchors = el("div", "matrix-row matrix-anchors");
+    anchors.appendChild(el("span", "matrix-label"));
+    anchors.appendChild(el("span", "matrix-anchor-left", LABELS7[0]));
+    anchors.appendChild(el("span", "matrix-anchor-right", LABELS7[6]));
+    table.appendChild(anchors);
+    return table;
   }
 
   function el(tag, cls, text) {
@@ -377,19 +417,31 @@
 
   // ── Survey runner ───────────────────────────────────────────────────────────
 
-  function runSurvey({ bodyEl, backBtn, nextBtn, progressEl, pages, surveyId, step, finalLabel, onComplete }) {
+  function runSurvey({ bodyEl, backBtn, nextBtn, progressEl, pages, surveyId, step, lastLabel, finalLabel, onComplete }) {
     let pageIdx = 0;
     const responses = {};
 
     function goTo(idx) {
       pageIdx = idx;
       renderPage(bodyEl, pages[idx], responses);
-      // Where this questionnaire sits in the whole study (the intro's three steps).
-      if (step) bodyEl.prepend(el("p", "survey-step", step));
+      // Where this questionnaire sits in the whole study (the intro's three
+      // steps), how far through it the participant is, and when it ends.
+      if (step) {
+        const last = idx === pages.length - 1;
+        const header = el("div", "survey-step-header");
+        header.appendChild(el("p", "survey-step",
+          `${step} · ${last ? lastLabel : `page ${idx + 1} of ${pages.length}`}`));
+        const bar = el("div", "survey-step-bar");
+        const fill = el("div", "survey-step-fill");
+        fill.style.width = `${((idx + 1) / pages.length) * 100}%`;
+        bar.appendChild(fill);
+        header.appendChild(bar);
+        bodyEl.prepend(header);
+      }
       window.scrollTo(0, 0);
       backBtn.classList.toggle("hidden", idx === 0);
       nextBtn.textContent = idx < pages.length - 1 ? "Next →" : (finalLabel || "Submit");
-      if (progressEl) progressEl.textContent = `Page ${idx + 1} of ${pages.length}`;
+      if (progressEl) progressEl.textContent = step ? "" : `Page ${idx + 1} of ${pages.length}`;
     }
 
     backBtn.onclick = () => {
@@ -447,6 +499,7 @@
         pages:      PRE_PAGES,
         surveyId:   "pre",
         step:       "Step 1 of 3 · Questions before the video",
+        lastLabel:  "last page before the video",
         finalLabel: "Continue to the video →",
         onComplete,
       });
@@ -459,7 +512,8 @@
         progressEl: document.getElementById("post-progress"),
         pages:      buildPostPages(),
         surveyId:   "post",
-        step:       "Step 3 of 3 · Questions about your experience — the last step",
+        step:       "Step 3 of 3 · Questions about your experience",
+        lastLabel:  "last page",
         finalLabel: "Submit and finish the study",
         onComplete,
       });
