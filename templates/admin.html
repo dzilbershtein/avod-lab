@@ -62,7 +62,8 @@
       <div class="admin-card">
         <h2>Experiment 1 — timing balance (4 conditions)</h2>
         <p style="font-size:12px;color:var(--muted);margin:0 0 8px;">
-          Counts completed sessions plus those started in the last {{ abandon_after_min }} minutes;
+          Counts completed sessions plus unfinished ones that opened their video in the last
+          {{ abandon_after_min }} minutes (or, before opening one, started in the last {{ abandon_after_min }} minutes);
           older unfinished sessions are treated as abandoned and no longer count. Test sessions are excluded.
         </p>
         {% set total = cell_counts.values() | sum %}

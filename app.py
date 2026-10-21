@@ -54,11 +54,12 @@ app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1 MB per event POST is ple
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "dev-admin-token")
 
 # A session counts toward balanced assignment once it has completed the
-# post-survey, or while it may still be in progress. One that started longer
-# ago than this and never finished is treated as abandoned and stops counting,
-# so drop-outs do not leave their cell over-filled. The study takes about
-# 17 minutes; the margin covers slow participants.
-ABANDON_AFTER_MIN = 60
+# post-survey, or while it may still be in progress: for this many minutes
+# after the participant opened a video, or, before they have opened one, after
+# the session started. Past that it is treated as abandoned and stops counting,
+# so drop-outs do not leave their cell over-filled. From opening a video, the
+# 8-minute clip, the ad and the post-survey take about 12 minutes.
+ABANDON_AFTER_MIN = 30
 
 
 def _counted_sql(alias: str = "") -> tuple[str, list]:
@@ -66,7 +67,8 @@ def _counted_sql(alias: str = "") -> tuple[str, list]:
     p = f"{alias}." if alias else ""
     cutoff = (datetime.now(timezone.utc) - timedelta(minutes=ABANDON_AFTER_MIN)).isoformat(
         timespec="seconds")
-    return f"({p}completed_at IS NOT NULL OR {p}created_at >= ?)", [cutoff]
+    return (f"({p}completed_at IS NOT NULL OR "
+            f"COALESCE({p}video_opened_at, {p}created_at) >= ?)", [cutoff])
 
 
 def load_config(
@@ -288,6 +290,7 @@ def init_db() -> None:
         "ALTER TABLE sessions ADD COLUMN ad_relevance_arm TEXT",
         "ALTER TABLE sessions ADD COLUMN is_test INTEGER DEFAULT 0",
         "ALTER TABLE sessions ADD COLUMN completed_at TEXT",
+        "ALTER TABLE sessions ADD COLUMN video_opened_at TEXT",
         "CREATE INDEX IF NOT EXISTS idx_sessions_cond ON sessions(condition)",
         "CREATE INDEX IF NOT EXISTS idx_sessions_rel  ON sessions(condition, ad_relevance_arm)",
     ]:
@@ -301,6 +304,13 @@ def init_db() -> None:
         "  SELECT MIN(e.ts_server) FROM events e WHERE e.session_id = sessions.id "
         "  AND e.kind = 'survey_complete' AND json_extract(e.payload, '$.survey') = 'post'"
         ") WHERE completed_at IS NULL"
+    )
+    # Same for the time the first video was opened.
+    conn.execute(
+        "UPDATE sessions SET video_opened_at = ("
+        "  SELECT substr(MIN(e.ts_server), 1, 19) || '+00:00' FROM events e "
+        "  WHERE e.session_id = sessions.id AND e.kind = 'watch_start'"
+        ") WHERE video_opened_at IS NULL"
     )
     conn.commit()
     conn.close()
@@ -382,6 +392,11 @@ def log_event():
             json.dumps(payload, separators=(",", ":")),
         ),
     )
+    if kind == "watch_start":
+        db.execute(
+            "UPDATE sessions SET video_opened_at = ? WHERE id = ? AND video_opened_at IS NULL",
+            (now.isoformat(timespec="seconds"), sid),
+        )
     if kind == "survey_complete" and isinstance(payload, dict) and payload.get("survey") == "post":
         db.execute(
             "UPDATE sessions SET completed_at = ? WHERE id = ? AND completed_at IS NULL",
@@ -480,7 +495,7 @@ def admin_export_participants_csv():
     db = get_db()
     include_test = request.args.get("include_test") == "1"
     query = ("SELECT id, condition, condition_source, ad_relevance_arm, condition_label, "
-             "created_at, completed_at, is_test FROM sessions")
+             "created_at, video_opened_at, completed_at, is_test FROM sessions")
     if not include_test:
         query += " WHERE (is_test IS NULL OR is_test = 0)"
     query += " ORDER BY created_at ASC"
@@ -488,7 +503,7 @@ def admin_export_participants_csv():
 
     meta_cols = [
         "session_id", "condition", "condition_source", "ad_relevance_arm", "is_test",
-        "condition_label", "created_at", "post_survey_complete", "completed_at",
+        "condition_label", "created_at", "video_opened_at", "post_survey_complete", "completed_at",
         # behaviour, derived from the event log
         "title_watched", "watch_duration_sec", "ad_id_shown", "ad_category",
         "ad_effective_relevance", "ad_placement", "ad_start_t_content",
@@ -509,6 +524,7 @@ def admin_export_participants_csv():
             "is_test": s["is_test"] or 0,
             "condition_label": s["condition_label"],
             "created_at": s["created_at"],
+            "video_opened_at": s["video_opened_at"] or "",
             "post_survey_complete": 1 if s["completed_at"] else 0,
             "completed_at": s["completed_at"] or "",
             "n_back_blocked": 0,
