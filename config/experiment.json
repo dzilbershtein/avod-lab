@@ -2,6 +2,7 @@
   "condition_label": "phase2b-default",
   "study_title": "AVOD-Lab",
   "intro_text": "Welcome. In this study you will:\n1. Answer a few short questions.\n2. Choose one video you'd like to watch from our streaming catalogue, and watch it to the end. It includes one short ad.\n3. Answer some questions about your experience.\n\nIt takes about 17 minutes, in one sitting. Please use a computer with the sound on, and keep this tab open until you finish.",
+  "prolific_completion_url": "",
   "_notes": {
     "video_sources": "All active titles are self-hosted: full-length files at /static/content/<id>.mp4 (run python scripts/download_all.py to populate) and trimmed copies at /static/content_short/<id>.mp4 (run python scripts/trim_content.py). Which set is served is controlled by content_version below.",
     "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s.",
@@ -12,7 +13,8 @@
       "intellectual_explorer": "Sci-fi, fantasy, science, technology — relevant ads: SYNAPSE (smartphone), RENDERLAB (3D software), CURIOSITY (telescope), HORIZON (VR headset)",
       "content_chameleon": "Comedy, family, musicals, animation — relevant ads: CHUCKLE (popcorn), TOONBOX (cereal), SINGALONG (karaoke), STAGECRAFT (theatre tickets)",
       "investigative_viewer": "Crime, noir, thrillers, courtroom — relevant ads: NIGHTWATCH (doorbell camera), TRIBUNAL (legal app), WHODUNIT (detective audiobooks), CASEROOM (crime-fiction magazine)"
-    }
+    },
+    "prolific_completion_url": "Paste the completion URL from Prolific (Study → Completion paths, e.g. https://app.prolific.com/submissions/complete?cc=XXXXXXX) into prolific_completion_url before launch. While it is empty the final screen tells participants to close the tab; once set, it shows a 'Last step: return to Prolific' link instead."
   },
   "catalog": {
     "hero": "big_buck_bunny",

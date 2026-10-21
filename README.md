@@ -246,7 +246,7 @@ Test sessions are stored like any other session but are flagged (`sessions.is_te
 
 Test sessions still show up in the admin session list, marked with a red **TEST** badge, and the admin header shows a running count ("N test sessions excluded").
 
-**Before sending the real study link to participants**, wipe out all accumulated test data for a guaranteed clean slate:
+**Before sending the real study link to participants**, set `prolific_completion_url` in `config/experiment.json` to the completion URL from Prolific (while it is empty, the final screen just tells participants to close the tab and they cannot confirm completion), then wipe out all accumulated test data for a guaranteed clean slate:
 
 ```bash
 python scripts/purge_sessions.py --all         # deletes every session and event — irreversible
