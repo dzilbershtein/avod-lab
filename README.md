@@ -104,8 +104,6 @@ Titles under 10 min have been retired. **Source duration** below is the length a
 | `suddenly_1954` | Suddenly | Crime · Thriller | 15:00 | investigative_viewer | Internet Archive (PD) |
 | `jigsaw_1949` | Jigsaw | Crime · Drama | 15:00 | investigative_viewer | Internet Archive (PD) |
 
-**Inactive titles** (in catalog but not shown in any row): `plan_9`, `night_of_living_dead`, `decay_cern`, `teenagers_outer_space`, `little_shop_horrors` — horror/B-movie content de-prioritised to balance the library.
-
 To add a title: add an entry under `catalog.titles` in `config/experiment.json` with a `source_url` (YouTube or direct HTTP), a `relevant_ad_category`, and `context_tags`; add its ID to the relevant `rows`; then run `download_all.py --ids <new_id>` followed by `trim_content.py --ids <new_id>`. Confirm the licence permits research reuse before adding it.
 
 ### Viewer profile ad categories
@@ -197,9 +195,11 @@ Assignment happens in two phases separated by an HTTP round-trip:
 
 **Phase 2 — session start (`POST /api/session/start`).** The client calls this immediately on page load (before the participant interacts). `load_config()` now runs with the database and performs two sequential minimisation steps:
 
-**Step A — timing condition.** Counts completed sessions per code in `random_pool`, finds the minimum, and randomly picks among all tied minimums (standard minimisation).
+**Step A — timing condition.** Counts sessions per code in `random_pool`, finds the minimum, and randomly picks among all tied minimums (standard minimisation).
 
 **Step B — relevance arm.** Within the just-chosen condition, counts `relevant` vs `irrelevant` sessions, picks the minimum. This keeps all eight (condition × relevance) cells near-equal.
+
+**Which sessions count.** A session counts once it has completed the post-survey (`sessions.completed_at`, set when the post-survey's `survey_complete` event arrives), or while it may still be in progress: started within the last `ABANDON_AFTER_MIN` minutes (60, in `app.py`). An older session that never finished is treated as abandoned and stops counting, so drop-out that differs by condition (at a pre-roll, say, or the A3 gate) does not leave completed cells unequal. In-progress sessions count so that a burst of simultaneous Prolific starts is still spread across cells. Real sessions are counted against real ones only, and test sessions against test ones.
 
 Both are written to `sessions` in one INSERT. The full resolved config is returned to the client, which discards the provisional page config and uses this response for the rest of the session.
 
@@ -241,8 +241,8 @@ http://localhost:8000/?cond=A0&test=1
 
 Test sessions are stored like any other session but are flagged (`sessions.is_test = 1`) and automatically excluded from:
 
-- The **cell-balance panel** and 8-cell breakdown on `/admin` — so testing doesn't skew balanced condition assignment for real participants.
-- The **participants CSV export** — pass `&include_test=1` to the export URL if you need to inspect your own test runs.
+- **Balanced assignment** for real participants, and the cell-balance panel and 8-cell breakdown on `/admin`. Test sessions are balanced among themselves instead, so consecutive test runs rotate through the conditions and both relevance arms rather than all landing in whichever cell the real data leaves emptiest.
+- The **data export** — the admin page's **Downloads** card has an *including test* link, or add `&include_test=1` to the export URL. The file is one row per session with assignment, behaviour, every survey answer and the full event log (`events_json`); its `is_test` and `condition_source` columns (`override` marks a `?cond=` link) and `post_survey_complete` / `completed_at` let analysis filter to completers and tabulate drop-out by cell. See TESTING.md §6 for the columns.
 
 Test sessions still show up in the admin session list, marked with a red **TEST** badge, and the admin header shows a running count ("N test sessions excluded").
 
@@ -329,26 +329,30 @@ Re-check subscale reliability in your own sample rather than citing the original
 ### Post-exposure battery (5 pages)
 
 **Page 1 — Intrusiveness**
-*(Li et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+*(adapted from Li et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+
+Each item maps to one of Li et al.'s seven adjectives (intrusive, forced, invasive, disturbing, obtrusive, interfering, distracting). `int_1`, `int_3` and `int_5`–`int_7` are reworded in plain language after pilot testers could not tell *intrusive*, *invasive* and *obtrusive* apart; *invasive* in particular read as a privacy judgement, overlapping with perceived tracking.
 
 | Item ID | Statement |
 |---------|-----------|
-| `int_1` | The ad was intrusive. |
+| `int_1` | The ad intruded on my viewing. |
 | `int_2` | The ad was forced on me. |
-| `int_3` | The ad was invasive. |
+| `int_3` | The ad took over my viewing. |
 | `int_4` | The ad disturbed me. |
-| `int_5` | The ad was obtrusive. |
-| `int_6` | The ad intruded on what I was doing. |
-| `int_7` | The ad interrupted my activity. |
+| `int_5` | The ad was hard to ignore, in an unwelcome way. |
+| `int_6` | The ad interfered with my watching of the video. |
+| `int_7` | The ad distracted me from the video. |
 
 **Page 2 — Irritation**
-*(Edwards et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+*(adapted from Edwards et al. 2002; 1 = Strongly disagree, 7 = Strongly agree)*
+
+`irr_3` reads *frustrating* rather than *aggravating*, which some readers take to mean "made worse".
 
 | Item ID | Statement |
 |---------|-----------|
 | `irr_1` | I found the ad irritating. |
 | `irr_2` | I found the ad annoying. |
-| `irr_3` | I found the ad aggravating. |
+| `irr_3` | I found the ad frustrating. |
 | `irr_4` | I found the ad unpleasant. |
 | `irr_5` | I was bothered by the ad. |
 
@@ -384,11 +388,11 @@ Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. T
 | `ctrl_1` | All | Likert-7 | I felt in control of when the ad played. |
 | `ctrl_2` | All | Likert-7 | It was up to me how the ad fit into my viewing. |
 | `ctrl_3` | All | Likert-7 | I had a say in how the advertising interrupted my video. |
-| `manip_ad_seen` | All | Radio | Did you see an advertisement during or after the video clip? |
+| `manip_ad_seen` | All | Radio | Did an ad play at any point while you were watching? |
 | `manip_prior_ad` | All | Radio | Had you seen this specific advertisement before today? |
 | `manip_relevance` | All | Likert-7 | The ad appeared to be chosen based on the type of video I watched. |
 | `track_1` | All | Likert-7 | This ad seemed to use personal information about me, beyond the video I chose. |
-| `track_2` | All | Likert-7 | I felt the platform was tracking what I do. |
+| `track_2` | All | Likert-7 | Seeing this ad made me feel watched by the service. |
 
 `ctrl_1`–`ctrl_3` form a perceived-control index (mean; report Cronbach's α). They serve two roles: (1) **manipulation check** — A3 should score higher than A0–A2, confirming the viewer-chosen condition actually raised perceived control; (2) **mediator** — perceived control is the proposed mechanism linking timing condition to lower intrusion (H1a mediation path).
 
@@ -440,7 +444,7 @@ python scripts/trim_content.py --trim-sec 480   # → static/content_short/ (8 m
 
 > **Don't skip `trim_content.py`.** `content_version` defaults to `"short"`, so the player serves from `static/content_short/` — which only that script creates. Skipping it leaves every title unplayable. (Set `content_version` to `"full"` to serve the untrimmed files from `static/content/` instead.)
 
-Posters are already committed to `static/posters/`, so a fresh clone has them — run `download_posters.py` only to refresh.
+All 19 thumbnails are committed to `static/posters/` and served from there, so a fresh clone has them and the server never fetches an image. Run `download_posters.py` only to rebuild them: six are downloaded artwork, and thirteen are a frame of the title's own clip (`FRAME_POSTERS` in the script, which needs the clips in `static/content_short/`), because their published artwork was wrong, unreachable or only a credits card.
 
 ### Step 2 — transfer to the server
 
@@ -493,7 +497,7 @@ avod-lab/
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads_v3.py)
 │   ├── content/                Content MP4s, full length (gitignored — run download_all.py)
 │   ├── content_short/          Content MP4s, 8 min (gitignored — run trim_content.py)
-│   ├── posters/                Film poster JPEGs (committed; run download_posters.py to refresh)
+│   ├── posters/                Catalogue thumbnails, all local (committed; download_posters.py rebuilds)
 │   └── style.css               Dark-theme UI + survey form styles
 ├── templates/
 │   ├── index.html              Participant page (intro → surveys → browse → player)
@@ -502,9 +506,9 @@ avod-lab/
 └── scripts/
     ├── generate_ads_v3.py      The 16 synthetic ads (Pillow + ffmpeg, 4 per viewer profile)
     ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by the ad generator
-    ├── download_all.py         Downloads all content + ad videos; trims to 900 s / 15 s
+    ├── download_all.py         Downloads the content videos (trimmed to 15 min)
     ├── trim_content.py         Creates the 8 min copies in static/content_short/ (originals untouched)
-    ├── download_posters.py     Fetches film poster JPEGs into static/posters/
+    ├── download_posters.py     Rebuilds the thumbnails in static/posters/
     ├── check_pilot.py          Checks an ad-relevance pilot export against the assignment mechanism
     └── purge_sessions.py       Clears test and/or all sessions from data/events.sqlite
 ```

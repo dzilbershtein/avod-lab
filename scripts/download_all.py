@@ -8,7 +8,7 @@ Usage:
   python scripts/download_all.py --ids big_buck_bunny sintel
 
 Content is trimmed to CONTENT_TRIM_SEC (900 s = 15 min). Run
-scripts/trim_content.py afterwards to produce the ≤11 min copies the
+scripts/trim_content.py afterwards to produce the 8-minute copies the
 player actually serves.
 
 Ads are not downloaded — all ad creatives are generated locally by
@@ -96,7 +96,7 @@ def download_item(item_id, source_url, local_path, trim_sec, force=False):
             ytdlp_download(source_url, abs_path, trim_sec)
         else:
             http_download(source_url, abs_path, trim_sec)
-        print(f"          OK")
+        print("          OK")
     except Exception as exc:
         print(f"          ERROR: {exc}", file=sys.stderr)
 
@@ -104,14 +104,9 @@ def download_item(item_id, source_url, local_path, trim_sec, force=False):
 def load_content_items(filter_ids=None):
     with open(EXP_PATH) as f:
         exp = json.load(f)
-    inactive_note = exp["_notes"].get("inactive_titles", "")
-    inactive = {s.strip() for s in inactive_note.split(",")} if inactive_note else set()
-
     items = []
     for tid, title in exp["catalog"]["titles"].items():
         if tid.startswith("_"):
-            continue
-        if tid in inactive:
             continue
         local_path = title.get("video_url", "")
         source_url = title.get("source_url", "")

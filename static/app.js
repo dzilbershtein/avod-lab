@@ -72,6 +72,7 @@
     const onBrowseOrPlayer = name === "browse" || name === "stage";
     $("topnav").classList.toggle("hidden", !onBrowseOrPlayer);
     $("back-to-browse").classList.toggle("hidden", name !== "stage");
+    window.scrollTo(0, 0); // each view starts at the top, not where the last one was scrolled
   }
 
   // The player calls window.experiment.show("done") when the video + any
@@ -99,9 +100,11 @@
     const p = $("prolific-link");
     if (!p) return;
     p.style.display = "";
-    p.innerHTML = `<a href="${escapeAttr(url)}" target="_blank" rel="noopener"
+    p.innerHTML = `<strong>Last step:</strong> <a href="${escapeAttr(url)}" rel="noopener"
       style="color:var(--accent-soft);font-weight:600;">
-      Click here to return to Prolific and confirm your submission</a>`;
+      click here to return to Prolific and confirm your submission</a>.`;
+    const note = $("close-tab-note");
+    if (note) note.style.display = "none";
   }
 
   function escapeAttr(s) {
@@ -140,12 +143,6 @@
     Player.teardown("back_button");
     show("browse");
     Session.log("back_to_browse", {});
-  });
-
-  $("done-back").addEventListener("click", () => {
-    _postSurveyShown = false; // allow post-survey again for a second watch
-    show("browse");
-    Session.log("done_back_to_browse", {});
   });
 
   $("submit-comment").addEventListener("click", () => {

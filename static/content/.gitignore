@@ -1,3 +1,2 @@
 # Downloaded content videos — regenerate with: python scripts/download_all.py
 *.mp4
-!sample_demo.mp4

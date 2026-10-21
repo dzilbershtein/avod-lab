@@ -20,10 +20,8 @@
   // DOM
   const content = $("content");
   const adVideo = $("ad-video");
-  const adOverlay = $("ad-overlay");
   const adControls = $("ad-controls");
   const adCountdown = $("ad-countdown");
-  const adSkipBtn = $("ad-skip");
   const banner = $("banner");
   const playerControls = $("player-controls");
   const playPauseBtn = $("play-pause");
@@ -33,6 +31,10 @@
   const nowWatching = $("now-watching");
   const adPrompt = $("ad-prompt");       // Exp-2 B-series user-initiated CTA
   const timingChoice = $("timing-choice"); // A3 viewer-chosen timing gate
+
+  // Drawn icons: the ▶ / ▮▮ characters render as emoji or at odd sizes on some systems.
+  const ICON_PLAY = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+  const ICON_PAUSE = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>';
 
   // Lazy-created status banner so the participant sees real errors instead
   // of a black box.
@@ -79,13 +81,13 @@
   }
 
   // state
-  let sessionVideoCount = 0;    // incremented each time a title is opened; drives ad_pool rotation
+  let sessionVideoCount = 0;    // incremented each time a title is opened; rotates the creative
   // Both locked in on first ad resolution so all videos in one session share
   // the same relevance arm and the same random creative-rotation starting point.
   let sessionAdRelevance = null;
   let sessionCreativeOffset = null; // random offset added to sessionVideoCount before pool index
 
-  let queue = [];          // midroll + overlay; start_at_sec resolved on loadedmetadata
+  let queue = [];          // midrolls; start_at_sec resolved on loadedmetadata
   let preroll = null;
   let postroll = null;     // A0 control: plays after content ends, before "done" view
   let userInitiated = null; // Exp-2 B-series: clickable prompt
@@ -182,16 +184,6 @@
     );
   }
 
-  // If an ad slot carries an ad_pool (from library_refs), cycle through it
-  // using sessionVideoCount so each new title play gets the next unused ad.
-  function pickFromPool(ad) {
-    if (!ad) return ad;
-    const pool = ad.ad_pool;
-    if (!Array.isArray(pool) || pool.length === 0) return ad;
-    const chosen = pool[sessionVideoCount % pool.length];
-    return Object.assign({}, ad, chosen, { placement: ad.placement, ad_pool: pool });
-  }
-
   const Player = {
     canLeave() {
       // Free to leave before any ad plays in this title; locked in once ad starts.
@@ -265,8 +257,8 @@
     const { cfg, Session } = window.experiment;
 
     // Build the URL chain: primary + fallbacks.
-    // When content_version is "short" the server serves trimmed (≤11 min) copies
-    // from /static/content_short/ instead of the full 15-min originals.
+    // When content_version is "short", clips are served from /static/content_short/
+    // (trimmed to exactly 8 minutes) instead of the full originals.
     let primaryUrl = title.video_url || "";
     if ((cfg.content_version || "full") === "short") {
       primaryUrl = primaryUrl.replace("/static/content/", "/static/content_short/");
@@ -279,19 +271,16 @@
     timeReadout.textContent = "0:00 / 0:00";
 
     // Bucket placements into their respective trigger paths.
-    // Resolve ad_relevance slots (category-matched to this title) and any
-    // ad_pool cycling so each new title play gets the next ad in the pool.
+    // Resolve ad_relevance slots against this title.
     const ads = cfg.ads || [];
-    const resolveSlot = (slot) => slot
-      ? pickFromPool(resolveAdByRelevance(slot, title))
-      : null;
+    const resolveSlot = (slot) => slot ? resolveAdByRelevance(slot, title) : null;
     preroll = resolveSlot(ads.find((a) => a.placement === "preroll") || null);
     postroll = resolveSlot(ads.find((a) => a.placement === "postroll") || null);
     userInitiated = resolveSlot(ads.find((a) => a.placement === "user_initiated") || null);
     userInitiatedFired = false;
     userChoice = resolveSlot(ads.find((a) => a.placement === "user_choice") || null);
     queue = ads
-      .filter((a) => a.placement === "midroll" || a.placement === "overlay")
+      .filter((a) => a.placement === "midroll")
       .map((a) => ({ ...resolveSlot(a), fired: false }));
     resolveQueueTimings(); // best-effort before metadata — re-runs after.
     setupUserInitiatedPrompt(userInitiated);
@@ -368,8 +357,14 @@
       if (content.paused) playContent();
       else content.pause();
     });
-    content.addEventListener("play", () => (playPauseBtn.innerHTML = "&#9646;&#9646;"));
-    content.addEventListener("pause", () => (playPauseBtn.innerHTML = "&#9654;"));
+    content.addEventListener("play", () => {
+      playPauseBtn.innerHTML = ICON_PAUSE;
+      playPauseBtn.setAttribute("aria-label", "Pause");
+    });
+    content.addEventListener("pause", () => {
+      playPauseBtn.innerHTML = ICON_PLAY;
+      playPauseBtn.setAttribute("aria-label", "Play");
+    });
 
   }
 
@@ -598,7 +593,7 @@
     const { Session } = window.experiment;
     currentAd = ad;
     // duration_target_sec hard-caps playback length so the protocol's
-    // "30-second ad" wording is enforced regardless of asset length.
+    // 15-second ad is enforced regardless of asset length.
     adDurationCap =
       typeof ad.duration_target_sec === "number" ? ad.duration_target_sec : null;
     adStartedInTitle = true;
@@ -613,11 +608,6 @@
       t_content: content.currentTime,
     });
 
-    if (ad.placement === "overlay") {
-      runOverlay(ad);
-      return;
-    }
-
     content.pause();
     content.classList.add("hidden");
     playerControls.classList.add("hidden");
@@ -629,7 +619,6 @@
     loadCurrentAdUrl();
     adVideo.classList.remove("hidden");
     adControls.classList.remove("hidden");
-    adSkipBtn.classList.add("hidden");
 
     // Belt-and-braces: start muted to dodge autoplay policies, unmute on
     // first frame so the participant still hears the ad audio.
@@ -641,16 +630,6 @@
     adVideo.addEventListener("playing", unmuteOnFirstFrame);
 
     showBannerIfConfigured(ad);
-
-    if (typeof ad.skippable_after_sec === "number") {
-      const onTime = () => {
-        if (adVideo.currentTime >= ad.skippable_after_sec) {
-          adSkipBtn.classList.remove("hidden");
-          adVideo.removeEventListener("timeupdate", onTime);
-        }
-      };
-      adVideo.addEventListener("timeupdate", onTime);
-    }
 
     startAdCountdown(ad);
 
@@ -664,7 +643,6 @@
       });
       if (ad.click_url) window.open(ad.click_url, "_blank", "noopener");
     };
-    adSkipBtn.onclick = () => finishAd("skipped");
 
     const p = adVideo.play();
     if (p && typeof p.catch === "function") {
@@ -714,31 +692,8 @@
     }
   }
 
-  function runOverlay(ad) {
-    const { Session } = window.experiment;
-    if (ad.image_url) {
-      adOverlay.src = ad.image_url;
-      adOverlay.onerror = () => {
-        Session.log("ad_source_error", { ad_id: ad.id, url: ad.image_url, kind: "overlay_image" });
-        adOverlay.classList.add("hidden");
-      };
-      adOverlay.classList.remove("hidden");
-      adOverlay.onclick = () => {
-        Session.log("ad_click", {
-          ad_id: ad.id,
-          category: ad.category || null,
-          title_id: titleId(),
-          t_content: content.currentTime,
-        });
-        if (ad.click_url) window.open(ad.click_url, "_blank", "noopener");
-      };
-    }
-    showBannerIfConfigured(ad);
-    setTimeout(() => finishAd("complete"), (ad.duration_sec || 10) * 1000);
-  }
-
   function startAdCountdown(ad) {
-    // Target length = duration cap if set (the protocol's 30s spec), else
+    // Target length = duration cap if set (the protocol's 15 s), else
     // the asset's natural duration. The cap also terminates the ad early.
     const target =
       adDurationCap != null
@@ -788,9 +743,6 @@
     }
     clearBanner();
     adControls.classList.add("hidden");
-    adSkipBtn.classList.add("hidden");
-    adOverlay.classList.add("hidden");
-    adOverlay.removeAttribute("src");
     adVideo.pause();
     adVideo.removeAttribute("src");
     adVideo.classList.add("hidden");

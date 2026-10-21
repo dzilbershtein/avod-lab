@@ -2,9 +2,7 @@
 
 Manual QA checklist for verifying a build before running real participants. See [README.md](README.md) for setup and configuration.
 
-> **Always append `&test=1`** to the participant URLs below. It tags the session as test data so it stays out of the cell-balance panel and the CSV export — see [Testing without polluting production data](README.md#testing-without-polluting-production-data).
->
-> **The one exception is [step 5](#5-cell-balance-check)**, which has to create untagged sessions because test sessions are deliberately excluded from the balance panel. Finish with [step 7](#7-clear-test-data-before-going-live) to wipe everything either way.
+> **Always append `&test=1`** to the participant URLs below. It tags the session as test data so it stays out of real participants' balancing, the cell-balance panel and the default CSV export — see [Testing without polluting production data](README.md#testing-without-polluting-production-data). Finish with [step 7](#7-clear-test-data-before-going-live).
 
 ---
 
@@ -83,35 +81,37 @@ http://localhost:8000/admin?token=dev-admin-token
 
 **5a — confirm test sessions are excluded.** After the runs above, the admin page should show a red **TEST** badge on each of those sessions and a count in the header ("N test sessions excluded"). The **Experiment 1 — cell balance** panel should still read **0** for every condition — test sessions are filtered out of it on purpose, so that QA runs never skew assignment for real participants.
 
-**5b — confirm balance itself works.** This needs untagged sessions, so open the bare URL (no `?cond=`, no `&test=1`) four or more times in fresh private windows and click through to the browse screen:
+**5b — confirm balance itself works.** Test sessions are balanced among themselves, so this works with tagged sessions. Open the URL without `?cond=` eight times in fresh private windows and click through to the browse screen:
 
 ```
-http://localhost:8000/
+http://localhost:8000/?test=1
 ```
 
-Each load should be assigned by minimisation — the balance panel should fill up and spread across A0–A3 rather than piling into one arm, with the "Source" badge reading **balanced**. Then verify relevance assignment is also spread: the 8-cell breakdown should show both a relevant and an irrelevant count accumulating within each condition.
+In the admin session list the eight should spread over A0–A3, two each, with both a relevant and an irrelevant session in every condition and the "Source" badge reading **balanced**. They should never all land in one cell.
 
-For per-session detail, the raw event log records the resolved arm as `"effective_relevance"` in the `ad_start` payload:
+For per-session detail, the data file's `ad_effective_relevance` column records the arm each ad was actually drawn for (use the *including test* link):
 
 ```
-http://localhost:8000/admin/export.csv?token=dev-admin-token
+http://localhost:8000/admin/export_participants.csv?token=dev-admin-token&include_test=1
 ```
-
-**These 5b sessions are real, untagged rows** — clear them in step 7 before recruiting.
 
 ### 6. CSV export and event schema
 
-The admin panel links to a single export — **Download data (CSV)** — one row per session with condition, arm, behavioural columns (`title_watched`, `ad_id_shown`, `ad_skipped`, `watch_duration_sec`, `ad_view_duration_sec`) and all survey answers as flat columns. Ready for analysis without joins. Test sessions (`?test=1`) are excluded by default — see [Testing without polluting production data](README.md#testing-without-polluting-production-data) in the README.
+The admin page's **Downloads** card has one file, *All data*, as *real sessions* or *including test*. It is one row per session, ready for analysis without joins:
+
+- **Assignment:** `condition`, `condition_source` (`override` marks a `?cond=` link), `ad_relevance_arm`, `is_test`, `created_at`, `post_survey_complete` (1/0) and `completed_at`.
+- **Behaviour, derived from the event log:** `title_watched`, `watch_duration_sec`, `ad_id_shown`, `ad_category`, `ad_effective_relevance`, `ad_placement`, `ad_start_t_content` (where in the clip the ad began), `ad_view_duration_sec`, `ad_end_reason`, `ad_timing_chosen` (A3), `ad_skipped`, `attn_pre_pass`, `attn_post_pass`, `n_back_blocked` and `n_load_errors`.
+- **Every survey answer** as its own column.
+- **`events_json`:** the session's complete event log (timestamps, kind and payload of every event), for any check not covered above.
+
+Test sessions (`?test=1`) are excluded; the *including test* link keeps them — see [Testing without polluting production data](README.md#testing-without-polluting-production-data) in the README.
 
 ```
 http://localhost:8000/admin/export_participants.csv?token=dev-admin-token
+http://localhost:8000/admin/export_participants.csv?token=dev-admin-token&include_test=1
 ```
 
-A second, unlinked route dumps the full raw event log (one row per event — `session_id`, `condition`, `kind`, `payload` JSON) for debugging or auditing:
-
-```
-http://localhost:8000/admin/export.csv?token=dev-admin-token
-```
+`events_json` can exceed Excel's 32,767-character cell limit for long sessions; read the file with R or pandas rather than Excel if you need it.
 
 The `sessions` table also has an `ad_relevance_arm` column (`"relevant"` or `"irrelevant"`) that records the balanced assignment for Experiment 1.
 
@@ -131,7 +131,7 @@ Events logged per session:
 | `timing_gate_shown` | A3: timing-choice gate displayed (start of deliberation window) |
 | `ad_timing_chosen` | A3: participant picked a timing (payload: `choice` = preroll / midroll / postroll); latency = this ts − `timing_gate_shown` ts |
 | `ad_prompt_shown` / `ad_prompt_clicked` / `ad_prompt_declined` | Exp-2 B-series user-initiated CTA events |
-| `ad_schedule_resolved` | Mid-roll/overlay timing computed |
+| `ad_schedule_resolved` | Mid-roll timing computed |
 | `banner_shown` / `banner_hidden` / `banner_click` | Explanation/sponsor banner |
 | `page_unload` | Browser tab closed / navigated away |
 

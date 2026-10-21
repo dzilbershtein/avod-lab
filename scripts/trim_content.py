@@ -53,12 +53,9 @@ def trim(src, dst, trim_sec):
 def load_active_titles(filter_ids=None):
     with open(EXP_PATH) as f:
         exp = json.load(f)
-    inactive_note = exp["_notes"].get("inactive_titles", "")
-    inactive = {s.strip() for s in inactive_note.split(",")} if inactive_note else set()
-
     titles = []
     for tid, entry in exp["catalog"]["titles"].items():
-        if tid.startswith("_") or tid in inactive:
+        if tid.startswith("_"):
             continue
         if not isinstance(entry, dict):
             continue
@@ -118,8 +115,8 @@ def main():
 
     print(f"\nDone: {ok} trimmed, {skipped} skipped, {missing} missing source.")
     if ok:
-        print(f'\nTo switch the experiment to short clips, set in experiment.json:')
-        print(f'  "content_version": "short"')
+        print('\nTo switch the experiment to short clips, set in experiment.json:')
+        print('  "content_version": "short"')
     sys.exit(0)
 
 

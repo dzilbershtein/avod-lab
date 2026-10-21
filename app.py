@@ -1,9 +1,9 @@
 """
-Experiment 1 VOD-simulator backend.
+AVOD-Lab backend.
 
-Phase 1: serves a single content clip with configurable ad insertions
-(pre-roll, mid-roll skippable, overlay) and an explanation banner.
-Logs every behavioural event the client emits to a SQLite database.
+Serves the streaming-catalogue stimulus, assigns each session a condition
+and an ad-relevance arm by balanced minimisation, and logs every behavioural
+and survey event the client emits to a SQLite database.
 
 Run locally:
     pip install -r requirements.txt
@@ -24,7 +24,7 @@ import random
 import secrets
 import sqlite3
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from flask import (
@@ -35,7 +35,6 @@ from flask import (
     jsonify,
     render_template,
     request,
-    send_from_directory,
 )
 
 # --------------------------------------------------------------------------- #
@@ -54,59 +53,73 @@ app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1 MB per event POST is ple
 # Very simple admin token — replace in production.
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "dev-admin-token")
 
+# A session counts toward balanced assignment once it has completed the
+# post-survey, or while it may still be in progress. One that started longer
+# ago than this and never finished is treated as abandoned and stops counting,
+# so drop-outs do not leave their cell over-filled. The study takes about
+# 17 minutes; the margin covers slow participants.
+ABANDON_AFTER_MIN = 60
+
+
+def _counted_sql(alias: str = "") -> tuple[str, list]:
+    """SQL condition (and its parameter) selecting sessions that count toward balance."""
+    p = f"{alias}." if alias else ""
+    cutoff = (datetime.now(timezone.utc) - timedelta(minutes=ABANDON_AFTER_MIN)).isoformat(
+        timespec="seconds")
+    return f"({p}completed_at IS NOT NULL OR {p}created_at >= ?)", [cutoff]
+
 
 def load_config(
     condition_override: str | None = None,
     db: sqlite3.Connection | None = None,
+    is_test: int = 0,
 ) -> dict:
-    """Load experiment.json and expand ad slots.
+    """Load experiment.json and resolve the session's condition.
 
-    If a `conditions` block is present, the active condition is resolved
-    into cfg["ads"] (the shape the client expects). Resolution order:
+    The active condition's ad slots are copied into cfg["ads"] (the shape
+    the client expects); the player picks the creative for each slot from
+    the ad library. Resolution order:
 
         1. `condition_override` (the `?cond=A2` query param) wins if it
            names a known condition, and the choice is flagged in cfg.
         2. ``condition_assignment_mode == "balanced"`` picks the arm with
-           the fewest completed sessions (minimisation); requires *db*.
+           the fewest counted sessions (minimisation; see ABANDON_AFTER_MIN);
+           requires *db*. Real
+           sessions are balanced against real ones and test sessions against
+           test ones, so testing neither skews the study nor gets stuck in
+           whichever cell the real data leaves emptiest.
         3. ``condition_assignment_mode == "random"`` picks uniformly from
            ``random_pool`` (or all condition keys).
         4. Otherwise the static ``active_condition`` is used.
-
-    Legacy configs with a top-level `ads` array still work — they fall
-    through the legacy branch unchanged.
     """
     with CONFIG_PATH.open() as f:
         cfg = json.load(f)
-    library = _load_ad_library()
-    cfg["_ad_library"] = library  # exposed so the client can see categories
+    cfg["_ad_library"] = _load_ad_library()  # the player draws creatives from it
 
-    conditions = cfg.get("conditions")
-    if conditions:
-        chosen, source = _pick_condition(cfg, conditions, condition_override, db=db)
-        cond_def = conditions.get(chosen, {})
-        cfg["active_condition_resolved"] = chosen
-        cfg["active_condition_source"] = source  # "override"|"balanced"|"random"|"fixed"
-        cfg["active_condition_label"] = cond_def.get("label", chosen)
-        cfg["active_condition_description"] = cond_def.get("description", "")
-        base_label = cfg.get("condition_label", "phase2b")
-        # Stamp the resolved code into the persisted condition_label so the
-        # CSV export and admin views show which arm a session was on.
-        if not base_label.endswith(f"-{chosen}"):
-            cfg["condition_label"] = f"{base_label}-{chosen}"
-        cfg["ads"] = [_resolve_ad(slot, library) for slot in cond_def.get("ads", [])]
+    conditions = cfg["conditions"]
+    chosen, source = _pick_condition(cfg, conditions, condition_override, db=db, is_test=is_test)
+    cond_def = conditions.get(chosen, {})
+    cfg["active_condition_resolved"] = chosen
+    cfg["active_condition_source"] = source  # "override"|"balanced"|"random"|"fixed"
+    cfg["active_condition_label"] = cond_def.get("label", chosen)
+    cfg["active_condition_description"] = cond_def.get("description", "")
+    base_label = cfg.get("condition_label", "phase2b")
+    # Stamp the resolved code into the persisted condition_label so the
+    # CSV export and admin views show which arm a session was on.
+    if not base_label.endswith(f"-{chosen}"):
+        cfg["condition_label"] = f"{base_label}-{chosen}"
+    cfg["ads"] = [dict(slot) for slot in cond_def.get("ads", [])]
 
-        # Resolve ad_relevance arm if any ad slot uses "balanced" or "random".
-        # Stored in cfg so the client player can use it without re-rolling.
-        uses_dynamic_relevance = any(
-            slot.get("ad_relevance") in ("balanced", "random")
-            for slot in cond_def.get("ads", [])
-        )
-        if uses_dynamic_relevance:
-            arm, arm_source = _pick_ad_relevance(chosen, db=db)
-            cfg["resolved_ad_relevance"] = arm
-            cfg["resolved_ad_relevance_source"] = arm_source
-    else:
-        cfg["ads"] = [_resolve_ad(slot, library) for slot in cfg.get("ads", [])]
+    # Resolve ad_relevance arm if any ad slot uses "balanced" or "random".
+    # Stored in cfg so the client player can use it without re-rolling.
+    uses_dynamic_relevance = any(
+        slot.get("ad_relevance") in ("balanced", "random")
+        for slot in cond_def.get("ads", [])
+    )
+    if uses_dynamic_relevance:
+        arm, arm_source = _pick_ad_relevance(chosen, db=db, is_test=is_test)
+        cfg["resolved_ad_relevance"] = arm
+        cfg["resolved_ad_relevance_source"] = arm_source
     return cfg
 
 
@@ -115,12 +128,13 @@ def _pick_condition(
     conditions: dict,
     override: str | None,
     db: sqlite3.Connection | None = None,
+    is_test: int = 0,
 ) -> tuple[str, str]:
     """Return (condition_id, source).
 
     source is one of: "override" | "balanced" | "random" | "fixed"
     """
-    if override and override in conditions:
+    if override and isinstance(conditions.get(override), dict):
         return override, "override"
 
     mode = (cfg.get("condition_assignment_mode") or "fixed").lower()
@@ -129,7 +143,7 @@ def _pick_condition(
         pool = cfg.get("random_pool") or list(conditions.keys())
         pool = [c for c in pool if c in conditions]
         if pool and db is not None:
-            counts = _count_condition_assignments(pool, db)
+            counts = _count_condition_assignments(pool, db, is_test=is_test)
             min_n = min(counts.values())
             candidates = [c for c in pool if counts[c] == min_n]
             return random.choice(candidates), "balanced"
@@ -153,6 +167,7 @@ def _pick_condition(
 def _pick_ad_relevance(
     condition: str,
     db: sqlite3.Connection | None,
+    is_test: int = 0,
 ) -> tuple[str, str]:
     """Return (arm, source) where arm is 'relevant' or 'irrelevant'.
 
@@ -164,12 +179,13 @@ def _pick_ad_relevance(
     if db is None:
         return random.choice(["relevant", "irrelevant"]), "random"
     counts: dict[str, int] = {"relevant": 0, "irrelevant": 0}
+    counted, params = _counted_sql()
     rows = db.execute(
         "SELECT ad_relevance_arm, COUNT(*) AS n FROM sessions "
         "WHERE condition = ? AND ad_relevance_arm IN ('relevant', 'irrelevant') "
-        "AND (is_test IS NULL OR is_test = 0) "
+        f"AND COALESCE(is_test, 0) = ? AND {counted} "
         "GROUP BY ad_relevance_arm",
-        (condition,),
+        (condition, is_test, *params),
     ).fetchall()
     for row in rows:
         if row["ad_relevance_arm"] in counts:
@@ -179,22 +195,24 @@ def _pick_ad_relevance(
     return random.choice(candidates), "balanced"
 
 
-def _count_condition_assignments(pool: list, db: sqlite3.Connection) -> dict:
+def _count_condition_assignments(
+    pool: list, db: sqlite3.Connection, is_test: int = 0
+) -> dict:
     """Return {condition_code: n_sessions} for every code in pool.
 
-    Queries the ``condition`` column added by the schema migration;
-    only counts sessions where the column is non-NULL (i.e. assigned
-    through this mechanism, not legacy rows).
+    Counts real sessions by default, or test sessions when is_test=1, and
+    skips abandoned ones (see ABANDON_AFTER_MIN).
     """
     counts = {c: 0 for c in pool}
     if not pool:
         return counts
     placeholders = ",".join("?" * len(pool))
+    counted, params = _counted_sql()
     rows = db.execute(
         f"SELECT condition, COUNT(*) AS n FROM sessions "
-        f"WHERE condition IN ({placeholders}) AND (is_test IS NULL OR is_test = 0) "
+        f"WHERE condition IN ({placeholders}) AND COALESCE(is_test, 0) = ? AND {counted} "
         f"GROUP BY condition",
-        pool,
+        [*pool, is_test, *params],
     ).fetchall()
     for row in rows:
         if row["condition"] in counts:
@@ -207,66 +225,6 @@ def _load_ad_library() -> dict:
         with AD_LIBRARY_PATH.open() as f:
             return json.load(f)
     return {"categories": [], "ads": []}
-
-
-def _merge_lib_entry(lib_entry: dict, slot: dict) -> dict:
-    """Merge a single ad-library entry with slot-level overrides."""
-    merged = {
-        "id": lib_entry["id"],
-        "url": lib_entry.get("video_url"),
-        "fallback_urls": lib_entry.get("fallback_urls", []),
-        "duration_sec": lib_entry.get("duration_sec"),
-        "click_url": lib_entry.get("click_url"),
-        "category": lib_entry.get("category"),
-        "source": lib_entry.get("source"),
-    }
-    if "default_banner" in lib_entry and "banner" not in slot:
-        merged["banner"] = {
-            "show": True,
-            "text": lib_entry["default_banner"],
-            "show_at_ad_sec": 0,
-            "hide_at_ad_sec": lib_entry.get("duration_sec", 12),
-        }
-    merged.update(
-        {k: v for k, v in slot.items() if k not in ("library_ref", "library_refs")}
-    )
-    return merged
-
-
-def _resolve_ad(slot: dict, library: dict) -> dict:
-    """If `slot` carries library_ref or library_refs, merge library entries.
-
-    library_refs (list): resolves the full pool, shuffles it randomly so
-        different participants see a different ordering, and stores it as
-        `ad_pool`. The client player cycles through the pool across
-        successive title plays so each video gets a fresh ad from the
-        correct relevance category. The primary `url` / `id` is taken from
-        the first entry after shuffling (backwards-compatible fallback).
-
-    library_ref (str): original single-entry path — behaviour unchanged.
-
-    Slot-level fields (placement, start_at_sec, banner, …) override every
-    library entry so per-placement tweaks still work.
-    """
-    ads_index = {a["id"]: a for a in library.get("ads", [])}
-
-    refs = slot.get("library_refs")
-    if refs and isinstance(refs, list):
-        pool = [_merge_lib_entry(ads_index[r], slot) for r in refs if r in ads_index]
-        if not pool:
-            return slot
-        random.shuffle(pool)
-        primary = pool[0].copy()
-        primary["ad_pool"] = pool
-        return primary
-
-    ref = slot.get("library_ref")
-    if not ref:
-        return slot
-    lib_entry = ads_index.get(ref)
-    if lib_entry is None:
-        return slot  # silently ignore — admin will see the missing event in logs
-    return _merge_lib_entry(lib_entry, slot)
 
 
 # --------------------------------------------------------------------------- #
@@ -329,6 +287,7 @@ def init_db() -> None:
         "ALTER TABLE sessions ADD COLUMN condition_source TEXT",
         "ALTER TABLE sessions ADD COLUMN ad_relevance_arm TEXT",
         "ALTER TABLE sessions ADD COLUMN is_test INTEGER DEFAULT 0",
+        "ALTER TABLE sessions ADD COLUMN completed_at TEXT",
         "CREATE INDEX IF NOT EXISTS idx_sessions_cond ON sessions(condition)",
         "CREATE INDEX IF NOT EXISTS idx_sessions_rel  ON sessions(condition, ad_relevance_arm)",
     ]:
@@ -336,6 +295,13 @@ def init_db() -> None:
             conn.execute(migration)
         except sqlite3.OperationalError:
             pass  # column / index already exists
+    # Backfill completion for sessions logged before completed_at existed.
+    conn.execute(
+        "UPDATE sessions SET completed_at = ("
+        "  SELECT MIN(e.ts_server) FROM events e WHERE e.session_id = sessions.id "
+        "  AND e.kind = 'survey_complete' AND json_extract(e.payload, '$.survey') = 'post'"
+        ") WHERE completed_at IS NULL"
+    )
     conn.commit()
     conn.close()
 
@@ -366,7 +332,7 @@ def start_session():
     is_test = 1 if (request.args.get("test") or body.get("test")) in ("1", "true", True) else 0
     # Pass the DB so balanced assignment can query current cell counts.
     db = get_db()
-    cfg = load_config(condition_override=override, db=db)
+    cfg = load_config(condition_override=override, db=db, is_test=is_test)
     sid = secrets.token_urlsafe(16)
     db.execute(
         "INSERT INTO sessions "
@@ -404,17 +370,23 @@ def log_event():
     if row is None:
         abort(404, "unknown session")
 
+    now = datetime.now(timezone.utc)
     db.execute(
         "INSERT INTO events (session_id, ts_server, ts_client, kind, payload) "
         "VALUES (?, ?, ?, ?, ?)",
         (
             sid,
-            datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+            now.isoformat(timespec="milliseconds"),
             ts_client,
             kind,
             json.dumps(payload, separators=(",", ":")),
         ),
     )
+    if kind == "survey_complete" and isinstance(payload, dict) and payload.get("survey") == "post":
+        db.execute(
+            "UPDATE sessions SET completed_at = ? WHERE id = ? AND completed_at IS NULL",
+            (now.isoformat(timespec="seconds"), sid),
+        )
     db.commit()
     return jsonify({"ok": True})
 
@@ -451,12 +423,13 @@ def admin():
     cell8_counts: dict[tuple, int] = {}
     if exp1_pool:
         placeholders = ",".join("?" * len(exp1_pool))
+        counted, params = _counted_sql()
         for row in db.execute(
             f"SELECT condition, ad_relevance_arm, COUNT(*) AS n FROM sessions "
             f"WHERE condition IN ({placeholders}) AND ad_relevance_arm IS NOT NULL "
-            f"AND (is_test IS NULL OR is_test = 0) "
+            f"AND COALESCE(is_test, 0) = 0 AND {counted} "
             f"GROUP BY condition, ad_relevance_arm",
-            exp1_pool,
+            [*exp1_pool, *params],
         ).fetchall():
             cell8_counts[(row["condition"], row["ad_relevance_arm"])] = row["n"]
 
@@ -473,6 +446,7 @@ def admin():
         cell_counts=cell_counts,
         cell8_counts=cell8_counts,
         n_test_sessions=n_test_sessions,
+        abandon_after_min=ABANDON_AFTER_MIN,
     )
 
 
@@ -495,7 +469,9 @@ def admin_session(sid: str):
 
 @app.get("/admin/export_participants.csv")
 def admin_export_participants_csv():
-    """One row per session: metadata + key behavioural columns + all survey answers.
+    """All data in one file, one row per session: session metadata, behaviour
+    derived from the event log, every survey answer, and the session's full
+    event log as JSON in `events_json`.
 
     Test sessions (started with ?test=1) are excluded by default.
     Pass ?include_test=1 to include them (e.g. to inspect your own test runs).
@@ -503,120 +479,113 @@ def admin_export_participants_csv():
     _require_admin()
     db = get_db()
     include_test = request.args.get("include_test") == "1"
-    query = "SELECT id, condition, ad_relevance_arm, condition_label, created_at FROM sessions"
+    query = ("SELECT id, condition, condition_source, ad_relevance_arm, condition_label, "
+             "created_at, completed_at, is_test FROM sessions")
     if not include_test:
         query += " WHERE (is_test IS NULL OR is_test = 0)"
     query += " ORDER BY created_at ASC"
     sessions = db.execute(query).fetchall()
 
+    meta_cols = [
+        "session_id", "condition", "condition_source", "ad_relevance_arm", "is_test",
+        "condition_label", "created_at", "post_survey_complete", "completed_at",
+        # behaviour, derived from the event log
+        "title_watched", "watch_duration_sec", "ad_id_shown", "ad_category",
+        "ad_effective_relevance", "ad_placement", "ad_start_t_content",
+        "ad_view_duration_sec", "ad_end_reason", "ad_timing_chosen", "ad_skipped",
+        "attn_pre_pass", "attn_post_pass", "n_back_blocked", "n_load_errors",
+    ]
     rows: dict[str, dict] = {}
+    logs: dict[str, list] = {}
     for s in sessions:
         sid = s["id"]
-        rows[sid] = {
+        rows[sid] = dict.fromkeys(meta_cols, "")
+        rows[sid].update({
             "session_id": sid,
             "condition": s["condition"],
+            "condition_source": s["condition_source"],
             "ad_relevance_arm": s["ad_relevance_arm"],
+            "is_test": s["is_test"] or 0,
             "condition_label": s["condition_label"],
             "created_at": s["created_at"],
-            # behavioural columns filled below
-            "title_watched": "",
-            "ad_id_shown": "",
-            "ad_skipped": "",
-            "watch_duration_sec": "",
-            "ad_view_duration_sec": "",
-        }
+            "post_survey_complete": 1 if s["completed_at"] else 0,
+            "completed_at": s["completed_at"] or "",
+            "n_back_blocked": 0,
+            "n_load_errors": 0,
+        })
+        logs[sid] = []
 
     events = db.execute(
-        "SELECT session_id, kind, payload FROM events ORDER BY id ASC"
+        "SELECT session_id, ts_server, ts_client, kind, payload FROM events ORDER BY id ASC"
     ).fetchall()
 
     for ev in events:
         sid = ev["session_id"]
         if sid not in rows:
             continue
+        row = rows[sid]
         kind = ev["kind"]
         try:
             data = json.loads(ev["payload"])
         except (json.JSONDecodeError, TypeError):
             data = {}
+        if not isinstance(data, dict):
+            data = {}
+        logs[sid].append({"ts_server": ev["ts_server"], "ts_client": ev["ts_client"],
+                          "kind": kind, "payload": data})
 
         if kind == "watch_start":
-            rows[sid]["title_watched"] = data.get("title_id", "")
+            row["title_watched"] = data.get("title_id", "")
         elif kind == "watch_end":
-            rows[sid]["watch_duration_sec"] = data.get("t_content", "")
+            row["watch_duration_sec"] = data.get("t_content", "")
         elif kind == "ad_start":
-            rows[sid]["ad_id_shown"] = data.get("ad_id", "")
-            rows[sid]["ad_skipped"] = False
+            row["ad_id_shown"] = data.get("ad_id", "")
+            row["ad_category"] = data.get("category", "")
+            row["ad_effective_relevance"] = data.get("effective_relevance", "")
+            row["ad_placement"] = data.get("placement", "")
+            row["ad_start_t_content"] = data.get("t_content", "")
+            row["ad_skipped"] = False
         elif kind == "ad_end":
-            rows[sid]["ad_view_duration_sec"] = data.get("t_ad", "")
+            row["ad_view_duration_sec"] = data.get("t_ad", "")
+            row["ad_end_reason"] = data.get("reason", "")
+        elif kind == "ad_timing_chosen":
+            row["ad_timing_chosen"] = data.get("choice", "")
         elif kind == "ad_prompt_declined":
-            rows[sid]["ad_skipped"] = True
+            row["ad_skipped"] = True
+        elif kind == "back_blocked":
+            row["n_back_blocked"] += 1
+        elif kind in ("video_source_error", "ad_source_error"):
+            row["n_load_errors"] += 1
+        elif kind == "survey_page":
+            for k, v in (data.get("responses") or {}).items():
+                if k in ("attn_pre_pass", "attn_post_pass"):
+                    row[k] = v
         elif kind == "survey_complete":
             responses = data.get("all_responses", data.get("responses", {}))
             if isinstance(responses, dict):
                 for k, v in responses.items():
-                    rows[sid][k] = v
+                    row[k] = v
 
-    if not rows:
-        return Response("session_id\n", mimetype="text/csv",
-                        headers={"Content-Disposition": "attachment; filename=participants.csv"})
-
-    meta_cols = ["session_id", "condition", "ad_relevance_arm", "condition_label",
-                 "created_at", "title_watched", "ad_id_shown", "ad_skipped",
-                 "watch_duration_sec", "ad_view_duration_sec"]
     survey_keys = sorted({k for row in rows.values() for k in row if k not in meta_cols})
-    all_cols = meta_cols + survey_keys
+    all_cols = meta_cols + survey_keys + ["events_json"]
 
     buf = io.StringIO()
     writer = csv.writer(buf)
     writer.writerow(all_cols)
-    for row in rows.values():
+    for sid, row in rows.items():
+        row["events_json"] = json.dumps(logs[sid], separators=(",", ":"))
         writer.writerow([row.get(c, "") for c in all_cols])
 
     return Response(
         buf.getvalue(),
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=participants.csv"},
-    )
-
-
-@app.get("/admin/export.csv")
-def admin_export_csv():
-    _require_admin()
-    db = get_db()
-    rows = db.execute(
-        "SELECT e.session_id, s.condition, s.ad_relevance_arm, s.condition_label, "
-        "       e.ts_server, e.ts_client, e.kind, e.payload "
-        "FROM events e JOIN sessions s ON s.id = e.session_id "
-        "ORDER BY e.session_id, e.id ASC"
-    ).fetchall()
-    buf = io.StringIO()
-    writer = csv.writer(buf)
-    writer.writerow(
-        ["session_id", "condition", "ad_relevance_arm", "condition_label",
-         "ts_server", "ts_client", "kind", "payload"]
-    )
-    for r in rows:
-        writer.writerow(
-            [r["session_id"], r["condition"], r["ad_relevance_arm"],
-             r["condition_label"], r["ts_server"], r["ts_client"],
-             r["kind"], r["payload"]]
-        )
-    return Response(
-        buf.getvalue(),
-        mimetype="text/csv",
-        headers={"Content-Disposition": "attachment; filename=events.csv"},
+        headers={"Content-Disposition": "attachment; filename=avod_lab_data.csv"},
     )
 
 
 # --------------------------------------------------------------------------- #
 #  Boilerplate
 # --------------------------------------------------------------------------- #
-
-
-@app.get("/static/<path:filename>")
-def static_files(filename: str):
-    return send_from_directory(app.static_folder, filename)
 
 
 @app.get("/healthz")

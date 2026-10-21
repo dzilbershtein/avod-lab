@@ -59,9 +59,8 @@ vm.runInContext('let sessionAdRelevance = null, sessionCreativeOffset = null, se
 
 const lib = JSON.parse(fs.readFileSync(repo + '/config/ad_library.json', 'utf8')).ads;
 const exp = JSON.parse(fs.readFileSync(repo + '/config/experiment.json', 'utf8'));
-const inactive = new Set((exp._notes.inactive_titles || '').split(',').map(s => s.trim()));
 const clips = Object.entries(exp.catalog.titles)
-  .filter(([id, t]) => !id.startsWith('_') && !inactive.has(id) && typeof t === 'object');
+  .filter(([id, t]) => !id.startsWith('_') && typeof t === 'object');
 ctx.window.experiment.cfg._ad_library = { ads: lib };
 
 const out = { relevant: {}, irrelevant: {} };

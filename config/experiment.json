@@ -1,7 +1,7 @@
 {
   "condition_label": "phase2b-default",
   "study_title": "AVOD-Lab",
-  "intro_text": "Welcome. You are about to use a short demo of an ad-supported streaming service. Browse the catalogue and pick something to watch. The clip will play with one short ad. Please keep this tab focused.",
+  "intro_text": "Welcome. In this study you will:\n1. Answer a few short questions.\n2. Choose one video you'd like to watch from our streaming catalogue, and watch it to the end. It includes one short ad.\n3. Answer some questions about your experience.\n\nIt takes about 17 minutes, in one sitting. Please use a computer with the sound on, and keep this tab open until you finish.",
   "_notes": {
     "video_sources": "All active titles are self-hosted: full-length files at /static/content/<id>.mp4 (run python scripts/download_all.py to populate) and trimmed copies at /static/content_short/<id>.mp4 (run python scripts/trim_content.py). Which set is served is controlled by content_version below.",
     "posters": "Posters use Internet Archive thumbnail service or Google sample-images bucket; tile gradients fall back if a poster 404s.",
@@ -12,31 +12,11 @@
       "intellectual_explorer": "Sci-fi, fantasy, science, technology — relevant ads: SYNAPSE (smartphone), RENDERLAB (3D software), CURIOSITY (telescope), HORIZON (VR headset)",
       "content_chameleon": "Comedy, family, musicals, animation — relevant ads: CHUCKLE (popcorn), TOONBOX (cereal), SINGALONG (karaoke), STAGECRAFT (theatre tickets)",
       "investigative_viewer": "Crime, noir, thrillers, courtroom — relevant ads: NIGHTWATCH (doorbell camera), TRIBUNAL (legal app), WHODUNIT (detective audiobooks), CASEROOM (crime-fiction magazine)"
-    },
-    "inactive_titles": "agent_327, caminandes_llamigos, charge_blender, coffee_run, cosmos_laundromat, date_with_your_family, decay_cern, for_bigger_blazes, for_bigger_escapes, for_bigger_fun, for_bigger_joyrides, for_bigger_meltdowns, foundation_foods, hero_blender, little_shop_horrors, local_demo, mdn_flower, night_of_living_dead, plan_9, spring_blender, subaru_outback, teenagers_outer_space, tv_bbb_demo, tv_jellyfish, tv_sintel_demo, uncle_jim_dairy, volkswagen_gti, we_are_going_on_bullrun, what_car_can_you_get"
+    }
   },
   "catalog": {
     "hero": "big_buck_bunny",
     "titles": {
-      "local_demo": {
-        "id": "local_demo",
-        "title": "AVOD-Lab Demo (Local)",
-        "tagline": "A bundled 30-second clip that always works — no internet required. Try this first if you are testing the setup.",
-        "genre": "Demo",
-        "year": 2026,
-        "duration_sec": 30,
-        "color": "#1a2a3a",
-        "poster": "",
-        "video_url": "/static/content/sample_demo.mp4",
-        "fallback_urls": [],
-        "license": "generated_locally",
-        "relevant_ad_category": "content_chameleon",
-        "context_tags": [
-          "animation",
-          "comedy",
-          "family"
-        ]
-      },
       "big_buck_bunny": {
         "id": "big_buck_bunny",
         "title": "Big Buck Bunny",
@@ -67,7 +47,7 @@
         "duration_sec": 480,
         "color": "#2c2c54",
         "relevant_ad_category": "intellectual_explorer",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
+        "poster": "/static/posters/elephant_dream.jpg",
         "video_url": "/static/content/elephant_dream.mp4",
         "fallback_urls": [],
         "source_url": "https://archive.org/download/Sintel_201709/Elephants%20Dream.mp4",
@@ -87,7 +67,7 @@
         "duration_sec": 480,
         "color": "#6b3f3a",
         "relevant_ad_category": "intellectual_explorer",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
+        "poster": "/static/posters/sintel.jpg",
         "video_url": "/static/content/sintel.mp4",
         "fallback_urls": [],
         "source_url": "https://archive.org/download/Sintel_201709/Sintel.mp4",
@@ -119,532 +99,7 @@
           "drama"
         ]
       },
-      "for_bigger_blazes": {
-        "id": "for_bigger_blazes",
-        "title": "For Bigger Blazes",
-        "tagline": "A short demo of Chromecast in action.",
-        "genre": "Promo",
-        "year": 2014,
-        "duration_sec": 15,
-        "color": "#a83232",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
-        "video_url": "/static/content/for_bigger_blazes.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "context_tags": [
-          "technology",
-          "streaming"
-        ]
-      },
-      "for_bigger_escapes": {
-        "id": "for_bigger_escapes",
-        "title": "For Bigger Escapes",
-        "tagline": "An escape worth streaming.",
-        "genre": "Promo",
-        "year": 2014,
-        "duration_sec": 15,
-        "color": "#3a7d5f",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
-        "video_url": "/static/content/for_bigger_escapes.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        "context_tags": [
-          "travel",
-          "adventure",
-          "streaming"
-        ]
-      },
-      "for_bigger_fun": {
-        "id": "for_bigger_fun",
-        "title": "For Bigger Fun",
-        "tagline": "Family fun, in 15 seconds.",
-        "genre": "Promo",
-        "year": 2014,
-        "duration_sec": 60,
-        "color": "#7d6f3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
-        "video_url": "/static/content/for_bigger_fun.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-        "context_tags": [
-          "family",
-          "comedy",
-          "streaming"
-        ]
-      },
-      "for_bigger_joyrides": {
-        "id": "for_bigger_joyrides",
-        "title": "For Bigger Joyrides",
-        "tagline": "Open-road moments worth chasing.",
-        "genre": "Promo",
-        "year": 2014,
-        "duration_sec": 15,
-        "color": "#3a6f7d",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
-        "video_url": "/static/content/for_bigger_joyrides.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-        "context_tags": [
-          "cars",
-          "adventure",
-          "action"
-        ]
-      },
-      "for_bigger_meltdowns": {
-        "id": "for_bigger_meltdowns",
-        "title": "For Bigger Meltdowns",
-        "tagline": "A short, sweet, hot one.",
-        "genre": "Promo",
-        "year": 2014,
-        "duration_sec": 15,
-        "color": "#a85932",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
-        "video_url": "/static/content/for_bigger_meltdowns.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-        "context_tags": [
-          "comedy",
-          "food"
-        ]
-      },
-      "subaru_outback": {
-        "id": "subaru_outback",
-        "title": "Subaru Outback: On Street And Dirt",
-        "tagline": "Road test through every kind of terrain.",
-        "genre": "Documentary",
-        "year": 2014,
-        "duration_sec": 596,
-        "color": "#3a4d2c",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
-        "video_url": "/static/content/subaru_outback.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-        "context_tags": [
-          "cars",
-          "adventure",
-          "outdoors",
-          "documentary"
-        ]
-      },
-      "volkswagen_gti": {
-        "id": "volkswagen_gti",
-        "title": "Volkswagen GTI Review",
-        "tagline": "A hot hatch, reviewed honestly.",
-        "genre": "Documentary",
-        "year": 2014,
-        "duration_sec": 596,
-        "color": "#2c4d6b",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
-        "video_url": "/static/content/volkswagen_gti.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
-        "context_tags": [
-          "cars",
-          "action",
-          "documentary"
-        ]
-      },
-      "we_are_going_on_bullrun": {
-        "id": "we_are_going_on_bullrun",
-        "title": "We Are Going On Bullrun",
-        "tagline": "Inside a coast-to-coast supercar rally.",
-        "genre": "Action",
-        "year": 2014,
-        "duration_sec": 47,
-        "color": "#6b2c2c",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
-        "video_url": "/static/content/we_are_going_on_bullrun.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-        "context_tags": [
-          "cars",
-          "action",
-          "adventure",
-          "sports"
-        ]
-      },
-      "what_car_can_you_get": {
-        "id": "what_car_can_you_get",
-        "title": "What Car Can You Get For A Grand?",
-        "tagline": "A budget challenge with surprising results.",
-        "genre": "Comedy",
-        "year": 2014,
-        "duration_sec": 596,
-        "color": "#7d3a6b",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
-        "video_url": "/static/content/what_car_can_you_get.mp4",
-        "fallback_urls": [],
-        "source_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-        "context_tags": [
-          "cars",
-          "comedy",
-          "documentary"
-        ]
-      },
-      "plan_9": {
-        "id": "plan_9",
-        "title": "Plan 9 from Outer Space",
-        "tagline": "Aliens implement Plan 9 — resurrecting the Earth's dead — to stop humanity. The cult classic that earned a Golden Turkey.",
-        "genre": "Sci-Fi · B&W",
-        "year": 1959,
-        "duration_sec": 4700,
-        "color": "#1f1f29",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "/static/posters/plan_9.jpg",
-        "video_url": "/static/content/plan_9.mp4",
-        "fallback_urls": [],
-        "license": "CC0 / public domain",
-        "source_url": "https://archive.org/download/plan-9-from-outer-space/plan-9-from-outer-space.mp4",
-        "context_tags": [
-          "sci-fi",
-          "horror",
-          "comedy",
-          "space"
-        ]
-      },
-      "night_of_living_dead": {
-        "id": "night_of_living_dead",
-        "title": "Night of the Living Dead",
-        "tagline": "Romero's foundational zombie film. Seven strangers barricade a farmhouse against the reanimated dead.",
-        "genre": "Horror",
-        "year": 1968,
-        "duration_sec": 5810,
-        "color": "#2a1a1a",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "/static/posters/night_of_living_dead.jpg",
-        "video_url": "/static/content/night_of_living_dead.mp4",
-        "fallback_urls": [],
-        "license": "Public Domain Mark 1.0",
-        "source_url": "https://archive.org/download/night-of-the-living-dead_1968/Night%20of%20the%20Living%20Dead%20-%20%281968%29.mp4",
-        "context_tags": [
-          "horror",
-          "thriller",
-          "action"
-        ]
-      },
-      "mdn_flower": {
-        "id": "mdn_flower",
-        "title": "Flower",
-        "tagline": "A short, hypnotic time-lapse of a flower blooming.",
-        "genre": "Nature · Short",
-        "year": 2020,
-        "duration_sec": 30,
-        "color": "#3a6b3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "",
-        "video_url": "/static/content/mdn_flower.mp4",
-        "fallback_urls": [],
-        "license": "CC0 (Mozilla shared-assets)",
-        "source_url": "https://developer.mozilla.org/shared-assets/videos/flower.mp4",
-        "context_tags": [
-          "nature",
-          "science"
-        ]
-      },
-      "tv_jellyfish": {
-        "id": "tv_jellyfish",
-        "title": "Jellyfish",
-        "tagline": "Slow-motion jellyfish drifting through a tank — a colour-test reference clip.",
-        "genre": "Nature · Short",
-        "year": 2019,
-        "duration_sec": 30,
-        "color": "#2a4a6b",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://test-videos.co.uk/user/pages/images/jellyfish-3-mbps-hd-h264.jpg",
-        "video_url": "/static/content/tv_jellyfish.mp4",
-        "fallback_urls": [],
-        "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_30MB.mp4",
-        "context_tags": [
-          "nature",
-          "science"
-        ]
-      },
-      "tv_bbb_demo": {
-        "id": "tv_bbb_demo",
-        "title": "Big Buck Bunny (1080p demo)",
-        "tagline": "A 30-second 1080p H.264 sample from the test-videos.co.uk reference set.",
-        "genre": "Animation · Short",
-        "year": 2019,
-        "duration_sec": 30,
-        "color": "#7d5f3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "https://test-videos.co.uk/user/pages/images/big_buck_bunny.jpg",
-        "video_url": "/static/content/tv_bbb_demo.mp4",
-        "fallback_urls": [],
-        "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_30MB.mp4",
-        "context_tags": [
-          "animation",
-          "comedy"
-        ]
-      },
-      "tv_sintel_demo": {
-        "id": "tv_sintel_demo",
-        "title": "Sintel (1080p demo)",
-        "tagline": "A 30-second 1080p H.264 sample of the Blender open movie Sintel.",
-        "genre": "Animation · Short",
-        "year": 2019,
-        "duration_sec": 30,
-        "color": "#6b4d3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "",
-        "video_url": "/static/content/tv_sintel_demo.mp4",
-        "fallback_urls": [],
-        "license": "test-videos.co.uk public test asset",
-        "source_url": "https://test-videos.co.uk/vids/sintel/mp4/h264/1080/Sintel_1080_10s_30MB.mp4",
-        "context_tags": [
-          "animation",
-          "fantasy"
-        ]
-      },
-      "date_with_your_family": {
-        "id": "date_with_your_family",
-        "title": "A Date with Your Family",
-        "tagline": "A 1950 etiquette short following an American family through their evening meal — roles, table manners, and pleasant dinner conversation. Narrated by Hugh Beaumont.",
-        "genre": "Educational · Short",
-        "year": 1950,
-        "duration_sec": 600,
-        "color": "#5a3e28",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "/static/posters/date_with_your_family.jpg",
-        "video_url": "/static/content/date_with_your_family.mp4",
-        "fallback_urls": [],
-        "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/DateWith1950/DateWith1950.mp4",
-        "context_tags": [
-          "family",
-          "comedy",
-          "education",
-          "drama"
-        ]
-      },
-      "foundation_foods": {
-        "id": "foundation_foods",
-        "title": "Foundation Foods",
-        "tagline": "A 1951 Avis Films nutrition short teaching children the seven food groups through the Brown family's daily meals.",
-        "genre": "Educational · Short",
-        "year": 1951,
-        "duration_sec": 660,
-        "color": "#3a5c2c",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "/static/posters/foundation_foods.jpg",
-        "video_url": "/static/content/foundation_foods.mp4",
-        "fallback_urls": [],
-        "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/Foundati1951/Foundati1951.mp4",
-        "context_tags": [
-          "education",
-          "food",
-          "family",
-          "science"
-        ]
-      },
-      "uncle_jim_dairy": {
-        "id": "uncle_jim_dairy",
-        "title": "Uncle Jim's Dairy Farm",
-        "tagline": "A 1963 National Dairy Council film in which city children visit their uncle's farm and discover how milk gets from cow to table.",
-        "genre": "Educational · Short",
-        "year": 1963,
-        "duration_sec": 729,
-        "color": "#4a6b3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "/static/posters/uncle_jim_dairy.jpg",
-        "video_url": "/static/content/uncle_jim_dairy.mp4",
-        "fallback_urls": [],
-        "license": "Public Domain (Prelinger Archives)",
-        "source_url": "https://archive.org/download/UncleJim1963/UncleJim1963.mp4",
-        "context_tags": [
-          "education",
-          "family",
-          "food",
-          "nature"
-        ]
-      },
       "_cc_note": "Entries with source=youtube_cc or source=archive_org_cc are fetched by `python scripts/download_all.py`, which trims to 15 min (900 s).",
-      "decay_cern": {
-        "id": "decay_cern",
-        "title": "Decay",
-        "tagline": "When experiments at CERN go wrong, zombie physicists stalk the tunnels beneath Geneva. A horror film made by actual PhD students on site.",
-        "genre": "Horror · Thriller",
-        "year": 2012,
-        "duration_sec": 4560,
-        "color": "#1a1a2e",
-        "relevant_ad_category": "investigative_viewer",
-        "poster": "/static/posters/decay_cern.jpg",
-        "video_url": "/static/content/decay_cern.mp4",
-        "fallback_urls": [],
-        "license": "CC BY-NC 3.0",
-        "source": "archive_org_cc",
-        "source_url": "https://archive.org/download/Decay2012-TheLhcZombieFilmfullFilm/Decay_2012_Low.mp4",
-        "context_tags": [
-          "horror",
-          "thriller",
-          "science",
-          "technology"
-        ]
-      },
-      "charge_blender": {
-        "id": "charge_blender",
-        "title": "Charge",
-        "tagline": "A soldier in a futuristic battlefield discovers an unexpected way out.",
-        "genre": "Sci-Fi Action",
-        "year": 2022,
-        "duration_sec": 542,
-        "color": "#1f2a3a",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "",
-        "video_url": "/static/content/charge_blender.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 4.0",
-        "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=UXqq0ZvbOnk",
-        "context_tags": [
-          "sci-fi",
-          "action",
-          "technology",
-          "thriller"
-        ]
-      },
-      "coffee_run": {
-        "id": "coffee_run",
-        "title": "Coffee Run",
-        "tagline": "A sleep-deprived animator makes a desperate run for caffeine.",
-        "genre": "Comedy Animation",
-        "year": 2020,
-        "duration_sec": 203,
-        "color": "#3a2a1f",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "",
-        "video_url": "/static/content/coffee_run.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 4.0",
-        "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=ir6LpkXfbHE",
-        "context_tags": [
-          "comedy",
-          "animation",
-          "food"
-        ]
-      },
-      "spring_blender": {
-        "id": "spring_blender",
-        "title": "Spring",
-        "tagline": "A shepherd and his dog make one last journey through the Italian hills at the end of the season.",
-        "genre": "Travel · Nature",
-        "year": 2019,
-        "duration_sec": 468,
-        "color": "#2c4a1e",
-        "relevant_ad_category": "intellectual_explorer",
-        "poster": "",
-        "video_url": "/static/content/spring_blender.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 4.0",
-        "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=WhWc3b3KhnY",
-        "context_tags": [
-          "travel",
-          "nature",
-          "drama",
-          "outdoors"
-        ]
-      },
-      "hero_blender": {
-        "id": "hero_blender",
-        "title": "Hero",
-        "tagline": "In a ruined city, a lone warrior protects the last glimmer of hope.",
-        "genre": "Action",
-        "year": 2018,
-        "duration_sec": 195,
-        "color": "#1f1f2a",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "",
-        "video_url": "/static/content/hero_blender.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 4.0",
-        "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=pKmSdY56VtY",
-        "context_tags": [
-          "action",
-          "drama",
-          "adventure"
-        ]
-      },
-      "agent_327": {
-        "id": "agent_327",
-        "title": "Agent 327: Operation Barbershop",
-        "tagline": "A Dutch secret agent goes undercover in a suspiciously busy barbershop.",
-        "genre": "Spy Thriller",
-        "year": 2017,
-        "duration_sec": 225,
-        "color": "#2a1f10",
-        "relevant_ad_category": "investigative_viewer",
-        "poster": "/static/posters/agent_327.jpg",
-        "video_url": "/static/content/agent_327.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 3.0",
-        "source": "youtube_cc",
-        "source_url": "https://www.youtube.com/watch?v=ld8cr6Fikc0",
-        "context_tags": [
-          "comedy",
-          "thriller",
-          "action",
-          "investigation"
-        ]
-      },
-      "caminandes_llamigos": {
-        "id": "caminandes_llamigos",
-        "title": "Caminandes: Llamigos",
-        "tagline": "A llama on the Patagonian steppe versus one very determined cactus berry.",
-        "genre": "Nature Comedy",
-        "year": 2013,
-        "duration_sec": 147,
-        "color": "#4a6b3a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "",
-        "video_url": "/static/content/caminandes_llamigos.mp4",
-        "fallback_urls": [],
-        "license": "CC BY 3.0",
-        "source": "youtube_cc",
-        "source_url": "https://archive.org/download/CaminandesLlamigos/Caminandes_%20Llamigos-1080p.mp4",
-        "context_tags": [
-          "animation",
-          "comedy",
-          "nature",
-          "adventure"
-        ]
-      },
-      "cosmos_laundromat": {
-        "id": "cosmos_laundromat",
-        "title": "Cosmos Laundromat",
-        "tagline": "A suicidal sheep on a desolate island meets a mysterious man who offers him a second chance — at a price.",
-        "genre": "Sci-Fi · Fantasy",
-        "year": 2015,
-        "duration_sec": 732,
-        "color": "#1a1040",
-        "relevant_ad_category": "intellectual_explorer",
-        "poster": "/static/posters/cosmos_laundromat.jpg",
-        "video_url": "/static/content/cosmos_laundromat.mp4",
-        "fallback_urls": [],
-        "source_url": "https://archive.org/download/CosmosLaundromatFirstCycle/Cosmos%20Laundromat%20-%20First%20Cycle%20%281080p%29.mp4",
-        "license": "CC BY 4.0",
-        "source": "archive_org_cc",
-        "context_tags": [
-          "sci-fi",
-          "fantasy",
-          "drama",
-          "space"
-        ]
-      },
       "sprite_fright": {
         "id": "sprite_fright",
         "title": "Sprite Fright",
@@ -688,49 +143,6 @@
           "thriller",
           "investigation",
           "drama"
-        ]
-      },
-      "teenagers_outer_space": {
-        "id": "teenagers_outer_space",
-        "title": "Teenagers from Outer Space",
-        "tagline": "An alien fleet arrives on Earth to use it as a breeding ground — only one young alien dares to resist.",
-        "genre": "Sci-Fi · Horror",
-        "year": 1959,
-        "duration_sec": 5160,
-        "color": "#0a1a0a",
-        "relevant_ad_category": "thrill_seeker",
-        "poster": "/static/posters/teenagers_outer_space.jpg",
-        "video_url": "/static/content/teenagers_outer_space.mp4",
-        "fallback_urls": [],
-        "source_url": "https://archive.org/download/TeenagersFromOuterSpace_1959/TeenagersFromOuterSpace.mp4",
-        "license": "public_domain",
-        "source": "archive_org_pd",
-        "context_tags": [
-          "sci-fi",
-          "horror",
-          "space",
-          "action"
-        ]
-      },
-      "little_shop_horrors": {
-        "id": "little_shop_horrors",
-        "title": "The Little Shop of Horrors",
-        "tagline": "A hapless florist's assistant nurtures a mysterious plant with an insatiable appetite — for human flesh.",
-        "genre": "Horror · Comedy",
-        "year": 1960,
-        "duration_sec": 4320,
-        "color": "#1a2a0a",
-        "relevant_ad_category": "content_chameleon",
-        "poster": "/static/posters/little_shop_horrors.jpg",
-        "video_url": "/static/content/little_shop_horrors.mp4",
-        "fallback_urls": [],
-        "source_url": "https://archive.org/download/the-little-shop-of-horrors-1960-colorized/The%20Little%20Shop%20Of%20Horrors%201960%20%28Colorized%29.mp4",
-        "license": "public_domain",
-        "source": "archive_org_pd",
-        "context_tags": [
-          "horror",
-          "comedy",
-          "food"
         ]
       },
       "pioneer_one": {
@@ -806,7 +218,7 @@
         "duration_sec": 480,
         "color": "#2a1a1a",
         "relevant_ad_category": "intellectual_explorer",
-        "poster": "",
+        "poster": "/static/posters/hemo_magnificent.jpg",
         "video_url": "/static/content/hemo_magnificent.mp4",
         "fallback_urls": [],
         "source_url": "https://www.youtube.com/watch?v=08QDu2pGtkc",
@@ -827,7 +239,7 @@
         "duration_sec": 480,
         "color": "#1a2a3a",
         "relevant_ad_category": "intellectual_explorer",
-        "poster": "",
+        "poster": "/static/posters/unchained_goddess.jpg",
         "video_url": "/static/content/unchained_goddess.mp4",
         "fallback_urls": [],
         "source_url": "https://www.youtube.com/watch?v=sqClSPWVnNE",
@@ -1104,8 +516,7 @@
         {
           "placement": "postroll",
           "ad_relevance": "balanced",
-          "duration_target_sec": 15,
-          "skippable_after_sec": null
+          "duration_target_sec": 15
         }
       ]
     },
@@ -1116,8 +527,7 @@
         {
           "placement": "preroll",
           "ad_relevance": "balanced",
-          "duration_target_sec": 15,
-          "skippable_after_sec": null
+          "duration_target_sec": 15
         }
       ]
     },
@@ -1129,8 +539,7 @@
           "placement": "midroll",
           "start_at_frac": 0.5,
           "ad_relevance": "balanced",
-          "duration_target_sec": 15,
-          "skippable_after_sec": null
+          "duration_target_sec": 15
         }
       ]
     },
@@ -1147,12 +556,11 @@
           ],
           "midroll_start_at_frac": 0.5,
           "ad_relevance": "balanced",
-          "duration_target_sec": 15,
-          "skippable_after_sec": null
+          "duration_target_sec": 15
         }
       ]
     },
-    "_exp2_notes": "Experiment 2 — 3×2 between-subjects (Explanation type E0/E1/E2 × Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Conditions B0–B5 replace the ad library reference with the same creative used in Exp 1; update library_ref to your actual 15-second consumer-electronics creative before running the main study. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
+    "_exp2_notes": "Experiment 2 — 3×2 between-subjects (Explanation type E0/E1/E2 × Placement P1/P2). P1=forced mid-roll (high intrusiveness); P2=user-initiated (low intrusiveness). Ad relevance is fixed to relevant, so creatives come from the same library and selection rule as Exp 1. The explanation banners are switched off (show: false) until Exp 2 runs. The 'banner' field carries the explanation text rendered as 'Why this ad?' below the ad during playback.",
     "B0": {
       "label": "Exp2: No explanation, Mid-roll",
       "description": "Forced mid-roll, no ad explanation (E0×P1). Control cell for Experiment 2.",
@@ -1162,7 +570,6 @@
           "start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false
           }
@@ -1178,7 +585,6 @@
           "start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false,
             "text": "Why this ad? This ad was selected based on what you watch on this platform.",
@@ -1197,7 +603,6 @@
           "start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false,
             "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",
@@ -1218,7 +623,6 @@
           "prompt_start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false
           }
@@ -1236,7 +640,6 @@
           "prompt_start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false,
             "text": "Why this ad? This ad was selected based on what you watch on this platform.",
@@ -1257,7 +660,6 @@
           "prompt_start_at_frac": 0.5,
           "ad_relevance": "relevant",
           "duration_target_sec": 15,
-          "skippable_after_sec": null,
           "banner": {
             "show": false,
             "text": "Why this ad? This ad was selected based on your browsing history and demographic profile.",

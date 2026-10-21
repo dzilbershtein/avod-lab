@@ -17,9 +17,6 @@
   <section id="intro" class="card centered">
     <h1 id="study-title"></h1>
     <p id="intro-text"></p>
-    <p style="font-size:13px;color:var(--muted);margin-top:12px;">
-      By clicking Begin you confirm you are aged 18 or over and consent to take part.
-    </p>
     <button id="begin-btn" type="button">Begin</button>
   </section>
 
@@ -37,6 +34,8 @@
 
   <!-- View 3 — browse -->
   <section id="browse" class="hidden">
+    <p class="browse-instructions"><strong>Step 2 of 3 · Choose one video.</strong>
+      Pick any video you'd like to watch, then watch it to the end. The questions continue when it finishes.</p>
     <div id="hero" class="hero"></div>
     <div id="rows"></div>
   </section>
@@ -48,11 +47,9 @@
       <video id="content" playsinline preload="auto"></video>
 
       <video id="ad-video" playsinline preload="auto" class="hidden"></video>
-      <img id="ad-overlay" class="hidden" alt="">
 
       <div id="ad-controls" class="hidden">
         <div id="ad-countdown"></div>
-        <button id="ad-skip" type="button" class="hidden">Skip ad</button>
       </div>
 
       <div id="banner" class="hidden"></div>
@@ -72,7 +69,7 @@
 
       <!-- Content controls overlay -->
       <div id="player-controls">
-        <button id="play-pause" type="button">&#9654;</button>
+        <button id="play-pause" type="button" aria-label="Play"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
         <progress id="seek-bar" value="0" max="1"></progress>
         <span id="time-readout">0:00 / 0:00</span>
       </div>
@@ -93,6 +90,7 @@
 
   <!-- View 6 — debriefing / done -->
   <section id="done" class="card centered hidden">
+    <p class="done-complete">✓ You have completed the study. Your answers have been saved.</p>
     <h2>Thank you for taking part</h2>
     <p>
       This study is investigating how people experience advertising in
@@ -113,7 +111,7 @@
     </p>
     <div id="debrief-comment-wrap" style="margin:20px 0 8px;">
       <label for="debrief-comment" style="display:block;font-size:14px;margin-bottom:6px;">
-        Any comments or technical issues? (optional)
+        Optional: any comments or technical issues? You have already finished — this is not required.
       </label>
       <textarea id="debrief-comment" rows="4"
         style="width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:14px;resize:vertical;"
@@ -121,14 +119,10 @@
       <button id="submit-comment" type="button" style="margin-top:8px;">Submit feedback</button>
       <span id="comment-sent" style="display:none;margin-left:10px;font-size:13px;color:var(--muted);">Saved ✓</span>
     </div>
-    <p style="font-size:13px;color:var(--muted);">
-      If you arrived here from Prolific, please use the completion link below.
-    </p>
     <p id="prolific-link" style="display:none;">
       <!-- Populated by app.js if cfg.prolific_completion_url is set -->
     </p>
-    <!-- Hidden: one clip, one ad and one post-survey per session (pre-registration). -->
-    <button id="done-back" type="button" class="hidden">Back to catalogue</button>
+    <p id="close-tab-note" style="font-size:14px;">You can now close this tab.</p>
   </section>
 
   <script>

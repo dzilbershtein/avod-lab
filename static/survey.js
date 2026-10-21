@@ -22,8 +22,11 @@
  *                           collection verbatim; awareness simplified but keeping
  *                           the original normative formulation; control keeps
  *                           ctl_3, with ctl_1/ctl_2 newly written. See README.
- *   Intrusiveness         : 7 items from Li et al. (2002)
- *   Irritation            : 5 items from Edwards et al. (2002)
+ *   Intrusiveness         : 7 items adapted from Li et al. (2002), one per
+ *                           original adjective; int_1, int_3, int_5–int_7
+ *                           reworded in plain language after pilot feedback
+ *   Irritation            : 5 items adapted from Edwards et al. (2002);
+ *                           irr_3 says "frustrating" for "aggravating"
  *   Ad / platform attitude: 3-item semantic differentials
  *   Consent form             : 6 required + 1 optional checkbox (page 0 of pre-survey)
  *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
@@ -61,7 +64,7 @@
     {
       id: "consent",
       title: "Statement of Consent",
-      intro: "Designing Tolerable Ad Breaks: Placement, Relevance, and Explanatory Transparency in Ad-Supported Video Streaming · Maastricht University\n\nBefore participating, please confirm each of the following items by ticking the corresponding box. You will not be able to continue to the study until all required items are ticked.",
+      intro: "Designing Tolerable Ad Breaks: Placement, Relevance, and Explanatory Transparency in Ad-Supported Video Streaming · Maastricht University\n\nBefore participating, please confirm each of the following items by ticking the corresponding box. The information letter is the document describing this study that you received with the invitation to take part. You will not be able to continue to the study until all required items are ticked.",
       items: [
         CHK("consent_read",
           "I confirm that I have read and understood the information letter for this study (Version 1.0) and have had the opportunity to consider whether to participate."),
@@ -141,13 +144,13 @@
         title: "About the ad",
         intro: "Please rate your agreement with each statement about the ad you just saw.\n(1 = Strongly disagree  ·  7 = Strongly agree)",
         items: [
-          L7("int_1", "The ad was intrusive."),
+          L7("int_1", "The ad intruded on my viewing."),
           L7("int_2", "The ad was forced on me."),
-          L7("int_3", "The ad was invasive."),
+          L7("int_3", "The ad took over my viewing."),
           L7("int_4", "The ad disturbed me."),
-          L7("int_5", "The ad was obtrusive."),
-          L7("int_6", "The ad intruded on what I was doing."),
-          L7("int_7", "The ad interrupted my activity."),
+          L7("int_5", "The ad was hard to ignore, in an unwelcome way."),
+          L7("int_6", "The ad interfered with my watching of the video."),
+          L7("int_7", "The ad distracted me from the video."),
         ],
       },
       {
@@ -157,7 +160,7 @@
         items: [
           L7("irr_1", "I found the ad irritating."),
           L7("irr_2", "I found the ad annoying."),
-          L7("irr_3", "I found the ad aggravating."),
+          L7("irr_3", "I found the ad frustrating."),
           L7("irr_4", "I found the ad unpleasant."),
           L7("irr_5", "I was bothered by the ad."),
         ],
@@ -204,7 +207,7 @@
       L7("ctrl_2", "It was up to me how the ad fit into my viewing."),
       L7("ctrl_3", "I had a say in how the advertising interrupted my video."),
       RDO("manip_ad_seen",
-        "Did you see an advertisement during or after the video clip?",
+        "Did an ad play at any point while you were watching?",
         ["Yes, and I watched it", "Yes, but I did not pay much attention to it", "No"]),
       RDO("manip_prior_ad",
         "Had you seen this specific advertisement before today?",
@@ -213,7 +216,7 @@
         "The ad appeared to be chosen based on the type of video I watched."),
       // perceived tracking (exploratory; the route behind H2b)
       L7("track_1", "This ad seemed to use personal information about me, beyond the video I chose."),
-      L7("track_2", "I felt the platform was tracking what I do.")
+      L7("track_2", "Seeing this ad made me feel watched by the service.")
     );
     return items;
   }
@@ -374,17 +377,19 @@
 
   // ── Survey runner ───────────────────────────────────────────────────────────
 
-  function runSurvey({ bodyEl, backBtn, nextBtn, progressEl, pages, surveyId, onComplete }) {
+  function runSurvey({ bodyEl, backBtn, nextBtn, progressEl, pages, surveyId, step, finalLabel, onComplete }) {
     let pageIdx = 0;
     const responses = {};
 
     function goTo(idx) {
       pageIdx = idx;
       renderPage(bodyEl, pages[idx], responses);
+      // Where this questionnaire sits in the whole study (the intro's three steps).
+      if (step) bodyEl.prepend(el("p", "survey-step", step));
       window.scrollTo(0, 0);
       backBtn.classList.toggle("hidden", idx === 0);
-      nextBtn.textContent = idx < pages.length - 1 ? "Next →" : "Submit";
-      if (progressEl) progressEl.textContent = `${idx + 1} / ${pages.length}`;
+      nextBtn.textContent = idx < pages.length - 1 ? "Next →" : (finalLabel || "Submit");
+      if (progressEl) progressEl.textContent = `Page ${idx + 1} of ${pages.length}`;
     }
 
     backBtn.onclick = () => {
@@ -441,6 +446,8 @@
         progressEl: document.getElementById("pre-progress"),
         pages:      PRE_PAGES,
         surveyId:   "pre",
+        step:       "Step 1 of 3 · Questions before the video",
+        finalLabel: "Continue to the video →",
         onComplete,
       });
     },
@@ -452,6 +459,8 @@
         progressEl: document.getElementById("post-progress"),
         pages:      buildPostPages(),
         surveyId:   "post",
+        step:       "Step 3 of 3 · Questions about your experience — the last step",
+        finalLabel: "Submit and finish the study",
         onComplete,
       });
     },
