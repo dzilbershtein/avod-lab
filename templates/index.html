@@ -109,15 +109,17 @@
       academic research. You may withdraw your data by contacting the
       research team within four weeks of completing the study.
     </p>
-    <div id="debrief-comment-wrap" style="margin:20px 0 8px;">
-      <label for="debrief-comment" style="display:block;font-size:14px;margin-bottom:6px;">
-        Optional: any comments or technical issues? You have already finished — this is not required.
+    <div id="debrief-comment-wrap">
+      <label for="debrief-comment">
+        <strong>Comments or technical issues? (optional)</strong><br>
+        You have already finished — this is not required, but it helps us improve the study.
       </label>
       <textarea id="debrief-comment" rows="4"
-        style="width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:14px;resize:vertical;"
-        placeholder="Your feedback helps us improve the study."></textarea>
-      <button id="submit-comment" type="button" style="margin-top:8px;">Submit feedback</button>
-      <span id="comment-sent" style="display:none;margin-left:10px;font-size:13px;color:var(--muted);">Saved ✓</span>
+        placeholder="Type any comments here…"></textarea>
+      <div class="debrief-comment-actions">
+        <button id="submit-comment" type="button">Send comment</button>
+        <span id="comment-sent" style="display:none;">Saved ✓ Thank you.</span>
+      </div>
     </div>
     <p id="prolific-link" style="display:none;">
       <!-- Populated by app.js if cfg.prolific_completion_url is set -->

@@ -494,6 +494,7 @@ def admin_export_participants_csv():
         "ad_effective_relevance", "ad_placement", "ad_start_t_content",
         "ad_view_duration_sec", "ad_end_reason", "ad_timing_chosen", "ad_skipped",
         "attn_pre_pass", "attn_post_pass", "n_back_blocked", "n_load_errors",
+        "debrief_comment",
     ]
     rows: dict[str, dict] = {}
     logs: dict[str, list] = {}
@@ -548,6 +549,8 @@ def admin_export_participants_csv():
         elif kind == "ad_end":
             row["ad_view_duration_sec"] = data.get("t_ad", "")
             row["ad_end_reason"] = data.get("reason", "")
+        elif kind == "debrief_comment":
+            row["debrief_comment"] = data.get("text", "")
         elif kind == "ad_timing_chosen":
             row["ad_timing_chosen"] = data.get("choice", "")
         elif kind == "ad_prompt_declined":

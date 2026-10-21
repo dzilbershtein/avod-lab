@@ -147,7 +147,9 @@
 
   $("submit-comment").addEventListener("click", () => {
     const text = ($("debrief-comment").value || "").trim();
+    if (!text) return;
     Session.log("debrief_comment", { text });
+    $("debrief-comment").readOnly = true;
     $("submit-comment").disabled = true;
     const sent = $("comment-sent");
     if (sent) sent.style.display = "inline";
