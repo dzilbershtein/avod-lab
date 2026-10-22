@@ -273,17 +273,16 @@ The full battery is implemented in [`static/survey.js`](static/survey.js). Items
 
 **Page 1 — Informed consent**
 
-Six required checkboxes and one optional checkbox. All required items must be ticked before the participant can advance. Responses are logged as `true`/`false`.
+Six required checkboxes. All must be ticked before the participant can advance. Responses are logged as `true`/`false`.
 
 | Item ID | Required | Statement |
 |---------|----------|-----------|
-| `consent_read` | Yes | I confirm that I have read and understood the information letter for this study (Version 1.0) … |
+| `consent_read` | Yes | I confirm that I have read and understood the information about this study on the previous page … |
 | `consent_age` | Yes | I am at least 18 years of age. |
 | `consent_voluntary` | Yes | I understand that my participation is voluntary … |
 | `consent_data` | Yes | I consent to the collection and processing of the data … |
 | `consent_deletion` | Yes | I understand that I may request deletion of my data within 14 days … |
 | `consent_publication` | Yes | I consent to the anonymous publication of the research results … |
-| `consent_summary` | No | I would like to receive a plain-language summary of the research results … |
 
 **Page 2 — Demographics**
 

@@ -505,7 +505,7 @@ def admin_export_participants_csv():
         "session_id", "condition", "condition_source", "ad_relevance_arm", "is_test",
         "condition_label", "created_at", "video_opened_at", "post_survey_complete", "completed_at",
         # behaviour, derived from the event log
-        "title_watched", "watch_duration_sec", "ad_id_shown", "ad_category",
+        "hero_title", "title_watched", "watch_duration_sec", "ad_id_shown", "ad_category",
         "ad_effective_relevance", "ad_placement", "ad_start_t_content",
         "ad_view_duration_sec", "ad_end_reason", "ad_timing_chosen", "ad_skipped",
         "attn_pre_pass", "attn_post_pass", "n_back_blocked", "n_load_errors",
@@ -551,7 +551,9 @@ def admin_export_participants_csv():
         logs[sid].append({"ts_server": ev["ts_server"], "ts_client": ev["ts_client"],
                           "kind": kind, "payload": data})
 
-        if kind == "watch_start":
+        if kind == "hero_shown":
+            row["hero_title"] = data.get("title_id", "")
+        elif kind == "watch_start":
             row["title_watched"] = data.get("title_id", "")
         elif kind == "watch_end":
             row["watch_duration_sec"] = data.get("t_content", "")

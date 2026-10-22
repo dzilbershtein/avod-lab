@@ -1,7 +1,7 @@
 {
   "condition_label": "phase2b-default",
   "study_title": "AVOD-Lab",
-  "intro_text": "Welcome. In this study you will:\n1. Answer a few short questions.\n2. Choose one video you'd like to watch from our streaming catalogue, and watch it to the end. It includes one short ad.\n3. Answer some questions about your experience.\n\nIt takes about 17 minutes, in one sitting. Please use a computer with the sound on, and keep this tab open until you finish.",
+  "intro_text": "Welcome. In this study you will:\n1. Answer a few short questions.\n2. Choose one video you'd like to watch from our streaming catalogue, and watch it to the end. It includes one short ad.\n3. Answer some questions about your experience.\n\nIt takes about 15 minutes, in one sitting. Please use a computer with the sound on, and keep this tab open until you finish.\n\nAbout this study: researchers at Maastricht University are studying how viewers experience advertising on streaming services. We record your answers and simple interactions with the streaming site (for example, when you start or pause the video, or click the ad). We do not collect your name, email address or IP address; your data are anonymous and stored under a random session ID. Taking part is voluntary: you can stop at any time by closing this tab, without giving a reason, and partial data will not be analysed. Within 14 days you can ask for your data to be deleted by emailing the principal investigator, Francesco Barile (f.barile@maastrichtuniversity.nl), with the session ID shown at the end. Questions: Dina Zilbershtein (zilbershtein.dina@maastrichtuniversity.nl).",
   "prolific_completion_url": "",
   "allow_return_to_catalogue": false,
   "_notes": {
@@ -16,10 +16,11 @@
       "investigative_viewer": "Crime, noir, thrillers, courtroom — relevant ads: NIGHTWATCH (doorbell camera), TRIBUNAL (legal app), WHODUNIT (detective audiobooks), CASEROOM (crime-fiction magazine)"
     },
     "prolific_completion_url": "Paste the completion URL from Prolific (Study → Completion paths, e.g. https://app.prolific.com/submissions/complete?cc=XXXXXXX) into prolific_completion_url before launch. While it is empty the final screen tells participants to close the tab; once set, it shows a 'Last step: return to Prolific' link instead.",
-    "allow_return_to_catalogue": "false for Experiment 1: once a participant opens a video there is no way back to the catalogue, and the Step 2 instruction says so. true restores the '← Browse' button, which lets them return before the ad starts (never after it)."
+    "allow_return_to_catalogue": "false for Experiment 1: once a participant opens a video there is no way back to the catalogue, and the Step 2 instruction says so. true restores the '← Browse' button, which lets them return before the ad starts (never after it).",
+    "catalog_hero": "catalog.hero is 'random': each participant sees a randomly chosen catalogue title in the featured slot at the top of the catalogue (logged as hero_shown, exported as hero_title). Set a title id to fix it."
   },
   "catalog": {
-    "hero": "big_buck_bunny",
+    "hero": "random",
     "titles": {
       "big_buck_bunny": {
         "id": "big_buck_bunny",

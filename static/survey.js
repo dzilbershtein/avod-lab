@@ -27,7 +27,7 @@
  *                           and the seven adjectives, shown as a grid
  *   Irritation            : 5 items written for this study
  *   Ad / platform attitude: 3-item semantic differentials
- *   Consent form             : 6 required + 1 optional checkbox (page 0 of pre-survey)
+ *   Consent form             : 6 required checkboxes (page 0 of pre-survey)
  *   Perceived ad-content fit : 3 items (rel_1–rel_3; H3b/H3c mediator)
  *   Skip intention           : 1 item
  *   Perceived control        : 3 items (ctrl_1–ctrl_3; page 5, all conditions) —
@@ -47,7 +47,6 @@
   const RDO = (id, label, options)    => ({ id, type: "radio",    label, options });
   const SD  = (id, left, right, grp)  => ({ id, type: "semdiff",  left, right, _group: grp || null });
   const CHK = (id, label)             => ({ id, type: "checkbox", label, _required: true });
-  const CHK_OPT = (id, label)         => ({ id, type: "checkbox", label, _required: false });
   const ATT = (id, correct)           => L7(id,
     `Attention check — please select "${LABELS7[correct - 1]}" (${correct}) to confirm you are reading carefully.`,
     { _attn: true, _correct: correct });
@@ -63,22 +62,20 @@
     {
       id: "consent",
       title: "Statement of Consent",
-      intro: "Designing Tolerable Ad Breaks: Placement, Relevance, and Explanatory Transparency in Ad-Supported Video Streaming · Maastricht University\n\nBefore participating, please confirm each of the following items by ticking the corresponding box. The information letter is the document describing this study that you received with the invitation to take part. You will not be able to continue to the study until all required items are ticked.",
+      intro: "Designing Tolerable Ad Breaks: Placement, Relevance, and Explanatory Transparency in Ad-Supported Video Streaming · Maastricht University\n\nBefore participating, please confirm each of the following items by ticking the corresponding box. You will not be able to continue to the study until all required items are ticked.",
       items: [
         CHK("consent_read",
-          "I confirm that I have read and understood the information letter for this study (Version 1.0) and have had the opportunity to consider whether to participate."),
+          "I confirm that I have read and understood the information about this study on the previous page and have had the opportunity to consider whether to participate."),
         CHK("consent_age",
           "I am at least 18 years of age."),
         CHK("consent_voluntary",
           "I understand that my participation is voluntary, and that I am free to withdraw at any time during the session by closing the browser tab, without giving a reason and without penalty."),
         CHK("consent_data",
-          "I consent to the collection and processing of the data described in the information letter (my responses to the questionnaire and a record of my interactions with the streaming simulator), under the conditions described."),
+          "I consent to the collection and processing of the data described on the previous page (my responses to the questionnaire and a record of my interactions with the streaming simulator), under the conditions described."),
         CHK("consent_deletion",
           "I understand that I may request deletion of my data within 14 days of participation by emailing the principal investigator, after which deletion is no longer technically possible."),
         CHK("consent_publication",
           "I consent to the anonymous publication of the research results, including possible deposit of fully anonymous data in a public scientific repository under a Creative Commons CC-BY 4.0 licence."),
-        CHK_OPT("consent_summary",
-          "I would like to receive a plain-language summary of the research results when they become available. (If ticked, you will be asked on the debriefing screen for an email address or Prolific opt-in.)"),
       ],
     },
     {

@@ -100,7 +100,7 @@ http://localhost:8000/admin/export_participants.csv?token=dev-admin-token&includ
 The admin page's **Downloads** card has one file, *All data*, as *real sessions* or *including test*. It is one row per session, ready for analysis without joins:
 
 - **Assignment:** `condition`, `condition_source` (`override` marks a `?cond=` link), `ad_relevance_arm`, `is_test`, `created_at`, `video_opened_at`, `post_survey_complete` (1/0) and `completed_at`.
-- **Behaviour, derived from the event log:** `title_watched`, `watch_duration_sec`, `ad_id_shown`, `ad_category`, `ad_effective_relevance`, `ad_placement`, `ad_start_t_content` (where in the clip the ad began), `ad_view_duration_sec`, `ad_end_reason`, `ad_timing_chosen` (A3), `ad_skipped`, `attn_pre_pass`, `attn_post_pass`, `n_back_blocked`, `n_load_errors` and `debrief_comment` (the optional comment on the final screen).
+- **Behaviour, derived from the event log:** `hero_title` (the randomly featured title at the top of the catalogue), `title_watched`, `watch_duration_sec`, `ad_id_shown`, `ad_category`, `ad_effective_relevance`, `ad_placement`, `ad_start_t_content` (where in the clip the ad began), `ad_view_duration_sec`, `ad_end_reason`, `ad_timing_chosen` (A3), `ad_skipped`, `attn_pre_pass`, `attn_post_pass`, `n_back_blocked`, `n_load_errors` and `debrief_comment` (the optional comment on the final screen).
 - **Every survey answer** as its own column.
 - **`events_json`:** the session's complete event log (timestamps, kind and payload of every event), for any check not covered above.
 

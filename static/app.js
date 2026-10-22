@@ -89,6 +89,7 @@
       _postSurveyShown = true;
       show("post-survey");
       window.experiment.Survey.openPost(() => {
+        $("debrief-session-id").textContent = Session.id || "";
         show("done");
         maybeShowProlificLink();
       });

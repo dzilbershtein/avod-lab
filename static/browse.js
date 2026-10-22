@@ -23,8 +23,16 @@
 
   // ---------- hero -----------------------------------------------------------
   function renderHero(cat) {
-    const t = cat.titles[cat.hero];
+    // "random": a different catalogue title for each participant, so no single
+    // film gets the featured slot's extra exposure. Logged as hero_shown.
+    let heroId = cat.hero;
+    if (heroId === "random") {
+      const ids = [...new Set(cat.rows.flatMap((r) => r.title_ids))];
+      heroId = ids[Math.floor(Math.random() * ids.length)];
+    }
+    const t = cat.titles[heroId];
     if (!t) return;
+    window.experiment.Session.log("hero_shown", { title_id: t.id });
     const hero = document.getElementById("hero");
     hero.style.background = bg(t);
     hero.innerHTML = `

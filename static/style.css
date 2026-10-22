@@ -478,6 +478,16 @@ button:focus-visible { outline: 2px solid var(--accent-soft); outline-offset: 2p
 }
 #submit-comment:disabled { opacity: 0.5; cursor: default; }
 #comment-sent { font-size: 13px; color: #5cdb5c; }
+#done a { color: var(--accent-soft); }
+.debrief-session-id code {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #0f0f13;
+  border: 1px solid #3a3a44;
+  font-size: 15px;
+  user-select: all;
+}
 .done-complete {
   margin: 0 0 16px;
   padding: 12px 16px;
