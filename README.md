@@ -5,7 +5,7 @@ Browser-based AVOD stimulus platform for Experiment 1 (ad placement × ad releva
 **Contents**
 
 - [Quick start](#quick-start)
-- [Content and ad videos](#content-and-ad-videos) — [catalogue](#content-catalogue) · [viewer profile ad categories](#viewer-profile-ad-categories)
+- [Content and ad videos](#content-and-ad-videos) — [catalogue](#content-catalogue) · [content categories](#content-categories)
 - [Conditions and assignment](#conditions-and-assignment) — Exp 1 / Exp 2 condition URLs, balanced minimisation
 - [Testing without polluting production data](#testing-without-polluting-production-data) — the `?test=1` flag
 - [Testing pipeline](#testing-pipeline--experiment-1) — manual QA checklist, in **[TESTING.md](TESTING.md)**
@@ -52,7 +52,7 @@ All video files are excluded from git. Before running the server, generate synth
 
 ```bash
 # 1. Generate synthetic ad MP4s
-python scripts/generate_ads_v3.py    # 16 ads — 4 per viewer profile
+python scripts/generate_ads_v3.py    # 16 ads — 4 per content category
 
 # Regenerate specific ads only
 python scripts/generate_ads_v3.py --only ad_intel_horizon ad_thrill_ranger
@@ -82,7 +82,7 @@ The 480 s cap is below the shortest source clip (629 s), so **every active clip 
 
 Titles under 10 min have been retired. **Source duration** below is the length as downloaded (capped at 15 min by `download_all.py`). Every clip is truncated to 8:00 at playback, so source length affects only how much of each film is available, not what participants see.
 
-| ID | Title | Genre | Source duration | Viewer profile | Source |
+| ID | Title | Genre | Source duration | Content category | Source |
 |---|---|---|---|---|---|
 | `big_buck_bunny` | Big Buck Bunny | Animated Comedy | 10:35 | content_chameleon | Internet Archive (CC BY 3.0) |
 | `elephant_dream` | Elephant's Dream | Sci-Fi Animation | 10:54 | intellectual_explorer | Internet Archive (CC BY 2.5) |
@@ -106,18 +106,20 @@ Titles under 10 min have been retired. **Source duration** below is the length a
 
 To add a title: add an entry under `catalog.titles` in `config/experiment.json` with a `source_url` (YouTube or direct HTTP), a `relevant_ad_category`, and `context_tags`; add its ID to the relevant `rows`; then run `download_all.py --ids <new_id>` followed by `trim_content.py --ids <new_id>`. Confirm the licence permits research reuse before adding it.
 
-### Viewer profile ad categories
+### Content categories
 
-Every title carries a `relevant_ad_category` field using one of four **viewer-profile labels**. The player uses this field to pick synthetic ads from `config/ad_library.json`: the *relevant* arm selects an ad whose `category` matches the title's profile; the *irrelevant* arm selects one that does not.
+Every title carries a `relevant_ad_category` field naming one of four **content categories**. The player uses this field to pick synthetic ads from `config/ad_library.json`: the *relevant* arm selects an ad whose `category` matches the title's category; the *irrelevant* arm selects one that does not. Categories describe the content only; nothing about the participant is used.
 
-**Single taxonomy:** every title and every ad uses one of these four labels and nothing else. A title tagged with a label that no ad matches would leave the relevant pool empty, and the player would silently fall back to an arbitrary ad — quietly breaking the relevance manipulation.
+The category IDs (`thrill_seeker`, `intellectual_explorer`, `content_chameleon`, `investigative_viewer`) are legacy names kept in the config files; they label content categories, not viewers.
 
-| Profile | Content genres | Ads (product) |
+**Single taxonomy:** every title and every ad uses one of these four categories and nothing else. A title tagged with a label that no ad matches would leave the relevant pool empty, and the player would silently fall back to an arbitrary ad — quietly breaking the relevance manipulation.
+
+| Category (ID) | Content genres | Ads (product) |
 |---|---|---|
-| `thrill_seeker` | Action, adventure, sports, horror | THUNDERDROP (rollercoaster-park tickets), ADRENALINE (energy drink), APEX (running shoes), RANGER (climbing gear) |
-| `intellectual_explorer` | Sci-Fi, fantasy, science, technology | SYNAPSE (smartphone), RENDERLAB (3D animation software), CURIOSITY (home telescope), HORIZON (VR headset) |
-| `content_chameleon` | Comedy, family, musicals, animation | CHUCKLE (popcorn), TOONBOX (breakfast cereal), SINGALONG (karaoke machine), STAGECRAFT (theatre tickets) |
-| `investigative_viewer` | Crime, noir, thrillers, courtroom | NIGHTWATCH (doorbell camera), TRIBUNAL (legal-advice app), WHODUNIT (detective audiobooks), CASEROOM (crime-fiction magazine) |
+| Action and thrills (`thrill_seeker`) | Action, adventure, sports, horror | THUNDERDROP (rollercoaster-park tickets), ADRENALINE (energy drink), APEX (running shoes), RANGER (climbing gear) |
+| Science and discovery (`intellectual_explorer`) | Sci-Fi, fantasy, science, technology | SYNAPSE (smartphone), RENDERLAB (3D animation software), CURIOSITY (home telescope), HORIZON (VR headset) |
+| Comedy and lifestyle (`content_chameleon`) | Comedy, family, musicals, animation | CHUCKLE (popcorn), TOONBOX (breakfast cereal), SINGALONG (karaoke machine), STAGECRAFT (theatre tickets) |
+| Drama and crime (`investigative_viewer`) | Crime, noir, thrillers, courtroom | NIGHTWATCH (doorbell camera), TRIBUNAL (legal-advice app), WHODUNIT (detective audiobooks), CASEROOM (crime-fiction magazine) |
 
 These 16 ads are the **v3 set** (`source: "synthetic_v3"` in `ad_library.json`), generated by `scripts/generate_ads_v3.py`. Earlier v1/v2 sets have been removed — v3 is the only synthetic set, and the player selects from it unconditionally.
 
@@ -212,7 +214,7 @@ Both are written to `sessions` in one INSERT. The full resolved config is return
 
 **Race condition note.** Two simultaneous `session_start` calls can both read the same counts before either INSERT commits, landing in the same arm. This self-corrects at scale and is inherent to minimisation without row-level locking. It is not a concern at the target sample size (N = 1000).
 
-**Ad relevance assignment (Exp 1 only).** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the viewer profile of the specific video the participant chose.
+**Ad relevance assignment (Exp 1 only).** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the content category of the specific video the participant chose.
 
 ### Experiment 2 — condition URLs
 
@@ -422,10 +424,10 @@ Each ad slot in a condition carries an `ad_relevance` field:
 | Value | Behaviour |
 |---|---|
 | `"balanced"` | Server assigns "relevant" or "irrelevant" using balanced minimisation within that condition (Exp 1) |
-| `"relevant"` | Always show an ad matching the video's viewer profile (Exp 2 / B conditions) |
-| `"irrelevant"` | Always show an ad that does not match the video's viewer profile |
+| `"relevant"` | Always show an ad matching the video's content category (Exp 2 / B conditions) |
+| `"irrelevant"` | Always show an ad that does not match the video's content category |
 
-To add or swap ad creatives: add an entry to `config/ad_library.json` with a `category` matching one of the four viewer profile IDs (see [Viewer profile ad categories](#viewer-profile-ad-categories)), then generate the MP4 into `static/ads/` with the matching generation script.
+To add or swap ad creatives: add an entry to `config/ad_library.json` with a `category` matching one of the four content category IDs (see [Content categories](#content-categories)), then generate the MP4 into `static/ads/` with the matching generation script.
 
 ---
 
@@ -488,13 +490,13 @@ avod-lab/
 ├── pilot/                      Survey-code maps for ad-relevance pilots (no response data)
 ├── config/
 │   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
-│   └── ad_library.json         Ad metadata; 4 viewer-profile categories; the 16 live synthetic_v3 ads
+│   └── ad_library.json         Ad metadata; 4 content categories; the 16 live synthetic_v3 ads
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
 │   ├── survey.js               Pre- and post-exposure questionnaire (Exp 1)
 │   ├── browse.js               Catalogue / hero rendering
-│   ├── player.js               Video + ad scheduler + viewer-profile ad selection
+│   ├── player.js               Video + ad scheduler + content-matched ad selection
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads_v3.py)
 │   ├── content/                Content MP4s, full length (gitignored — run download_all.py)
 │   ├── content_short/          Content MP4s, 8 min (gitignored — run trim_content.py)
@@ -505,7 +507,7 @@ avod-lab/
 │   ├── admin.html              Cell-balance panel; session list; condition URLs
 │   └── session.html            Per-session event drill-down
 └── scripts/
-    ├── generate_ads_v3.py      The 16 synthetic ads (Pillow + ffmpeg, 4 per viewer profile)
+    ├── generate_ads_v3.py      The 16 synthetic ads (Pillow + ffmpeg, 4 per content category)
     ├── ad_audio.py             Pure-Python audio synthesis (stdlib only); imported by the ad generator
     ├── download_all.py         Downloads the content videos (trimmed to 15 min)
     ├── trim_content.py         Creates the 8 min copies in static/content_short/ (originals untouched)
