@@ -212,7 +212,7 @@ Both are written to `sessions` in one INSERT. The full resolved config is return
 | `random` | DB unavailable at assignment time (should not occur in production) |
 | `fixed` | `condition_assignment_mode = "fixed"` in config |
 
-**Race condition note.** Two simultaneous `session_start` calls can both read the same counts before either INSERT commits, landing in the same arm. This self-corrects at scale and is inherent to minimisation without row-level locking. It is not a concern at the target sample size (N = 1000).
+**Race condition note.** Two simultaneous `session_start` calls can both read the same counts before either INSERT commits, landing in the same arm. This self-corrects at scale and is inherent to minimisation without row-level locking. It is not a concern at the target sample size (N = 256, 32 valid participants per cell).
 
 **Ad relevance assignment (Exp 1 only).** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the content category of the specific video the participant chose.
 
