@@ -1,4 +1,4 @@
-# Testing pipeline — Experiment 1
+# Testing pipeline
 
 Manual QA checklist for verifying a build before running real participants. See [README.md](README.md) for setup and configuration.
 
@@ -79,7 +79,7 @@ Participants who fail both checks should be flagged for exclusion per the pre-re
 http://localhost:8000/admin?token=dev-admin-token
 ```
 
-**5a — confirm test sessions are excluded.** After the runs above, the admin page should show a red **TEST** badge on each of those sessions and a count in the header ("N test sessions excluded"). The **Experiment 1 — cell balance** panel should still read **0** for every condition — test sessions are filtered out of it on purpose, so that QA runs never skew assignment for real participants.
+**5a — confirm test sessions are excluded.** After the runs above, the admin page should show a red **TEST** badge on each of those sessions and a count in the header ("N test sessions excluded"). The **timing balance** panel should still read **0** for every condition — test sessions are filtered out of it on purpose, so that QA runs never skew assignment for real participants.
 
 **5b — confirm balance itself works.** Test sessions are balanced among themselves, so this works with tagged sessions. Open the URL without `?cond=` eight times in fresh private windows and click through to the browse screen:
 
@@ -113,7 +113,7 @@ http://localhost:8000/admin/export_participants.csv?token=dev-admin-token&includ
 
 `events_json` can exceed Excel's 32,767-character cell limit for long sessions; read the file with R or pandas rather than Excel if you need it.
 
-The `sessions` table also has an `ad_relevance_arm` column (`"relevant"` or `"irrelevant"`) that records the balanced assignment for Experiment 1.
+The `sessions` table also has an `ad_relevance_arm` column (`"relevant"` or `"irrelevant"`) that records the balanced relevance assignment.
 
 Events logged per session:
 

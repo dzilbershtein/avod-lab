@@ -1,15 +1,15 @@
 # AVOD-Lab
 
-Browser-based AVOD stimulus platform for Experiment 1 (ad placement × ad relevance) and Experiment 2 (ad explanation × placement). Runs as a Flask app; logs every behavioural and survey event to SQLite.
+Browser-based AVOD stimulus platform for a 4 × 2 experiment (ad placement × ad relevance). Runs as a Flask app; logs every behavioural and survey event to SQLite.
 
 **Contents**
 
 - [Quick start](#quick-start)
 - [Content and ad videos](#content-and-ad-videos) — [catalogue](#content-catalogue) · [content categories](#content-categories)
-- [Conditions and assignment](#conditions-and-assignment) — Exp 1 / Exp 2 condition URLs, balanced minimisation
+- [Conditions and assignment](#conditions-and-assignment) — condition URLs, balanced minimisation
 - [Testing without polluting production data](#testing-without-polluting-production-data) — the `?test=1` flag
-- [Testing pipeline](#testing-pipeline--experiment-1) — manual QA checklist, in **[TESTING.md](TESTING.md)**
-- [Questionnaire — Experiment 1](#questionnaire--experiment-1) — full item battery
+- [Testing pipeline](#testing-pipeline) — manual QA checklist, in **[TESTING.md](TESTING.md)**
+- [Questionnaire](#questionnaire) — full item battery
 - [Configuring conditions](#configuring-conditions)
 - [Deployment](#deployment)
 - [Project layout](#project-layout)
@@ -155,9 +155,9 @@ Previously the ranking never took effect — the pool held exactly three ads and
 
 Append `?cond=<code>` to any participant URL to override the balanced assignment. Use this for testing and for sending condition-specific Prolific links.
 
-### Experiment 1 — condition URLs
+### Condition URLs
 
-Experiment 1 is a **4 × 2 between-subjects design**: four ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
+The study is a **4 × 2 between-subjects design**: four ad placement conditions crossed with ad relevance (relevant / irrelevant), both balanced independently across participants.
 
 | Code | Label | URL | Design note |
 |------|-------|-----|-------------|
@@ -214,22 +214,7 @@ Both are written to `sessions` in one INSERT. The full resolved config is return
 
 **Race condition note.** Two simultaneous `session_start` calls can both read the same counts before either INSERT commits, landing in the same arm. This self-corrects at scale and is inherent to minimisation without row-level locking. It is not a concern at the target sample size (N = 256, 32 valid participants per cell).
 
-**Ad relevance assignment (Exp 1 only).** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the content category of the specific video the participant chose.
-
-### Experiment 2 — condition URLs
-
-Experiment 2 is a **3 × 2 between-subjects design**: explanation type × placement. Ad relevance is fixed to *relevant* in all B conditions so that the explanation banners are truthful.
-
-| Code | Label | URL |
-|------|-------|-----|
-| B0   | No explanation, Mid-roll                  | `/?cond=B0` |
-| B1   | Content-based explanation, Mid-roll       | `/?cond=B1` |
-| B2   | Data-based explanation, Mid-roll          | `/?cond=B2` |
-| B3   | No explanation, User-initiated            | `/?cond=B3` |
-| B4   | Content-based explanation, User-initiated | `/?cond=B4` |
-| B5   | Data-based explanation, User-initiated    | `/?cond=B5` |
-
-> **Note.** Switch the active experiment by changing `random_pool` in `config/experiment.json` — see [Configuring conditions](#configuring-conditions).
+**Ad relevance assignment.** The chosen arm is stored in `sessions.ad_relevance_arm` and logged in the `ad_start` event as `effective_relevance`. The ad creative is picked at play time to match (or mismatch) the content category of the specific video the participant chose.
 
 ---
 
@@ -248,7 +233,7 @@ Test sessions are stored like any other session but are flagged (`sessions.is_te
 
 Test sessions still show up in the admin session list, marked with a red **TEST** badge, and the admin header shows a running count ("N test sessions excluded").
 
-**Returning to the catalogue.** `allow_return_to_catalogue` in `config/experiment.json` is `false` for Experiment 1: once a participant opens a video there is no way back, and the Step 2 instruction says they must watch the full video. Set it to `true` to restore the *← Browse* button, which allows going back before the ad starts (never once it has started); the instruction's no-return sentence then hides itself.
+**Returning to the catalogue.** `allow_return_to_catalogue` in `config/experiment.json` is `false`: once a participant opens a video there is no way back, and the Step 2 instruction says they must watch the full video. Set it to `true` to restore the *← Browse* button, which allows going back before the ad starts (never once it has started); the instruction's no-return sentence then hides itself.
 
 **Before sending the real study link to participants**, set `prolific_completion_url` in `config/experiment.json` to the completion URL from Prolific (while it is empty, the final screen just tells participants to close the tab and they cannot confirm completion), then wipe out all accumulated test data for a guaranteed clean slate:
 
@@ -261,13 +246,13 @@ Both prompt for confirmation; pass `--yes` to skip the prompt.
 
 ---
 
-## Testing pipeline — Experiment 1
+## Testing pipeline
 
 The full manual QA checklist — pre-flight check, per-condition smoke test, timing-gate verification, attention-check validation, cell-balance check, and the event schema reference — lives in **[TESTING.md](TESTING.md)**.
 
 ---
 
-## Questionnaire — Experiment 1
+## Questionnaire
 
 The full battery is implemented in [`static/survey.js`](static/survey.js). Items are rendered in-browser; responses are logged as `survey_page` events.
 
@@ -410,11 +395,9 @@ Score `rel_1`–`rel_3` as a mean (perceived fit index); report Cronbach's α. T
 `config/experiment.json` is read on every request — no restart needed.
 
 ```jsonc
-// Switch between experiments:
 "condition_assignment_mode": "balanced",   // balanced | random | fixed
 "active_condition": "A0",                  // used only when mode = "fixed"
-"random_pool": ["A0","A1","A2","A3"],      // Experiment 1
-// "random_pool": ["B0","B1","B2","B3","B4","B5"],  // switch to Experiment 2
+"random_pool": ["A0","A1","A2","A3"],      // conditions assigned by balancing
 ```
 
 ### Ad relevance per condition
@@ -423,8 +406,8 @@ Each ad slot in a condition carries an `ad_relevance` field:
 
 | Value | Behaviour |
 |---|---|
-| `"balanced"` | Server assigns "relevant" or "irrelevant" using balanced minimisation within that condition (Exp 1) |
-| `"relevant"` | Always show an ad matching the video's content category (Exp 2 / B conditions) |
+| `"balanced"` | Server assigns "relevant" or "irrelevant" using balanced minimisation within that condition (used by A0–A3) |
+| `"relevant"` | Always show an ad matching the video's content category |
 | `"irrelevant"` | Always show an ad that does not match the video's content category |
 
 To add or swap ad creatives: add an entry to `config/ad_library.json` with a `category` matching one of the four content category IDs (see [Content categories](#content-categories)), then generate the MP4 into `static/ads/` with the matching generation script.
@@ -489,12 +472,12 @@ avod-lab/
 ├── requirements-build.txt      Asset-building deps (Pillow + yt-dlp), local machine only
 ├── pilot/                      Survey-code maps for ad-relevance pilots (no response data)
 ├── config/
-│   ├── experiment.json         Conditions A0–A3, B0–B5; catalogue; ad_relevance per slot
+│   ├── experiment.json         Conditions A0–A3; catalogue; ad_relevance per slot
 │   └── ad_library.json         Ad metadata; 4 content categories; the 16 live synthetic_v3 ads
 ├── data/events.sqlite          Created on first run
 ├── static/
 │   ├── app.js                  Session management; view routing; survey intercept
-│   ├── survey.js               Pre- and post-exposure questionnaire (Exp 1)
+│   ├── survey.js               Pre- and post-exposure questionnaire
 │   ├── browse.js               Catalogue / hero rendering
 │   ├── player.js               Video + ad scheduler + content-matched ad selection
 │   ├── ads/                    Synthetic ad MP4s (gitignored — run generate_ads_v3.py)
