@@ -2,7 +2,7 @@
 
 Manual QA checklist for verifying a build before running real participants. See [README.md](README.md) for setup and configuration.
 
-> **Always append `&test=1`** to the participant URLs below. It tags the session as test data so it stays out of real participants' balancing, the cell-balance panel and the default CSV export — see [Testing without polluting production data](README.md#testing-without-polluting-production-data). Finish with [step 7](#7-clear-test-data-before-going-live).
+> **Always append `&test=1`** to the participant URLs below. It tags the session as test data so it stays out of real participants' balancing, the cell-balance panel and the default CSV export — see [Test sessions and launch checklist](README.md#test-sessions-and-launch-checklist). Finish with [step 7](#7-clear-test-data-before-going-live).
 
 ---
 
@@ -104,7 +104,7 @@ The admin page's **Downloads** card has one file, *All data*, as *real sessions*
 - **Every survey answer** as its own column.
 - **`events_json`:** the session's complete event log (timestamps, kind and payload of every event), for any check not covered above.
 
-Test sessions (`?test=1`) are excluded; the *including test* link keeps them — see [Testing without polluting production data](README.md#testing-without-polluting-production-data) in the README.
+Test sessions (`?test=1`) are excluded; the *including test* link keeps them — see [Test sessions and launch checklist](README.md#test-sessions-and-launch-checklist) in the README.
 
 ```
 http://localhost:8000/admin/export_participants.csv?token=dev-admin-token
